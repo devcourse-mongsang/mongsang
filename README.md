@@ -1,29 +1,45 @@
-# vue_todo
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
 ```
+mongsang
+├─ .git
+├─ .gitignore
+├─ README.md
+├─ index.html
+├─ jsconfig.json
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  └─ favicon.ico
+├─ src
+│  ├─ App.vue
+│  ├─ assets
+│  │  └─ css
+│  │     ├─ index.css
+│  │     └─ tailwind.css
+│  ├─ components
+│  │  ├─ HelloWorld.vue
+│  │  ├─ TheWelcome.vue
+│  │  ├─ WelcomeItem.vue
+│  │  ├─ common
+│  │  ├─ custom-hook
+│  │  └─ icons
+│  │     ├─ IconCommunity.vue
+│  │     ├─ IconDocumentation.vue
+│  │     ├─ IconEcosystem.vue
+│  │     ├─ IconSupport.vue
+│  │     └─ IconTooling.vue
+│  ├─ layouts
+│  ├─ main.js
+│  ├─ pages
+│  │  ├─ Diary.vue
+│  │  ├─ Home.vue
+│  │  └─ Record.vue
+│  ├─ router
+│  │  └─ index.js
+│  ├─ store
+│  └─ styles
+├─ tailwind.config.js
+├─ vite.config.js
+└─ yarn.lock
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
 ```
