@@ -1,5 +1,6 @@
 <script setup></script>
 <template>
-  <h1>메인</h1>
+  <div class="bg-blue-300 h-[805px]"></div>
+  <div class="bg-red-200 h-[300px]"></div>
 </template>
 <style scoped></style>
