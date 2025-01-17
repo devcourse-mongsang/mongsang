@@ -4,6 +4,7 @@ import people_icon from "../../../public/assets/icons/people_icon.svg";
 import sidebarhr from "../../../public/assets/icons/sidebar_hr.svg";
 import arrow_down_icon from "../../../public/assets/icons/arrow_down_icon.svg";
 
+import { Icon } from "@iconify/vue";
 const menus = [
   { name: "자유게시판", path: "/community/free-board" },
   { name: "초현실몽", path: "/community/surreal-dream" },
@@ -61,11 +62,8 @@ const leave = (el, done) => {
 </script>
 
 <template>
-  <div class="relative inline-block dropdown-container mt-[122px]">
-    <img
-      :src="people_icon"
-      alt="커뮤니티 별 바로가기 목록이 있는 드롭다운 메뉴입니다."
-    />
+  <div class="relative inline-block dropdown-container mt-[13.875rem]">
+    <Icon icon="material-symbols:groups-outline" width="50" height="50" />
 
     <img :src="sidebarhr" />
     <button
@@ -73,10 +71,12 @@ const leave = (el, done) => {
       class="flex items-center justify-between w-full mt-2 text-white transition"
     >
       <p class="font-semibold text-[18px]">커뮤니티</p>
-      <img
-        class="w-[12px] h-[12px] transition-transform duration-300"
+      <Icon
+        icon="material-symbols:arrow-drop-down-rounded"
+        width="30"
+        height="30"
+        class="transition-transform duration-300"
         :class="{ 'rotate-180': isDropdownOpen, 'rotate-0': !isDropdownOpen }"
-        :src="arrow_down_icon"
       />
     </button>
 
