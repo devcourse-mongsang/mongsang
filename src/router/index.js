@@ -29,46 +29,46 @@ const router = createRouter({
           component: LayoutCommunity,
           children: [
             {
-              path: "free-board",
+              path: "자유게시판",
               name: "free-board",
               component: () => import("../pages/community-pages/FreeBoard.vue"),
             },
             {
-              path: "surreal-dream",
+              path: "초현실몽",
               name: "surreal-dream",
               component: () =>
                 import("../pages/community-pages/SurrealDream.vue"),
             },
             {
-              path: "prophetic-dream",
+              path: "예지몽",
               name: "prophetic-dream",
               component: () =>
                 import("../pages/community-pages/PropheticDream.vue"),
             },
             {
-              path: "recurrent-dream",
+              path: "반복몽",
               name: "recurrent-dream",
               component: () =>
                 import("../pages/community-pages/RecurrentDream.vue"),
             },
             {
-              path: "lucid-dream",
+              path: "자각몽",
               name: "lucid-dream",
               component: () =>
                 import("../pages/community-pages/RucidDream.vue"),
             },
             {
-              path: "nightmare",
+              path: "악몽",
               name: "nightmare",
               component: () => import("../pages/community-pages/Nightmare.vue"),
             },
             {
-              path: "good-dream",
+              path: "길몽",
               name: "good-dream",
               component: () => import("../pages/community-pages/GoodDream.vue"),
             },
             {
-              path: "dream-interpretation",
+              path: "해몽",
               name: "dream-interpretation",
               component: () =>
                 import("../pages/community-pages/DreamInterpretation.vue"),

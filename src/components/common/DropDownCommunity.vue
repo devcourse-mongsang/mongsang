@@ -6,14 +6,14 @@ import arrow_down_icon from "../../../public/assets/icons/arrow_down_icon.svg";
 
 import { Icon } from "@iconify/vue";
 const menus = [
-  { name: "자유게시판", path: "/community/free-board" },
-  { name: "초현실몽", path: "/community/surreal-dream" },
-  { name: "예지몽", path: "/community/prophetic-dream" },
-  { name: "반복몽", path: "/community/recurrent-dream" },
-  { name: "자각몽", path: "/community/lucid-dream" },
-  { name: "악몽", path: "/community/nightmare" },
-  { name: "길몽", path: "/community/good-dream" },
-  { name: "해몽", path: "/community/dream-interpretation" },
+  { name: "자유게시판", path: "/community/자유게시판" },
+  { name: "초현실몽", path: "/community/초현실몽" },
+  { name: "예지몽", path: "/community/예지몽" },
+  { name: "반복몽", path: "/community/반복몽" },
+  { name: "자각몽", path: "/community/자각몽" },
+  { name: "악몽", path: "/community/악몽" },
+  { name: "길몽", path: "/community/길몽" },
+  { name: "해몽", path: "/community/해몽" },
 ];
 
 const isDropdownOpen = ref(false);
