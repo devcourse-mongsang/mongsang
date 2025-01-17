@@ -1,69 +1,86 @@
 <script setup>
-import hamberger from "../../../public/assets/icons/hamberger_icon.svg";
-import home from "../../../public/assets/icons/home_icon.svg";
+import { useSidebarStore } from "../../store/sidebar";
+import { Icon } from "@iconify/vue";
+
+const sidebarStore = useSidebarStore();
 </script>
 
 <template>
-  <input type="checkbox" id="menuicon" class="hidden peer" />
-  <label for="menuicon" class="z-20" aria-label="메뉴 열기">
-    <span></span>
-    <span></span>
-    <span></span>
-  </label>
-
-  <router-link
-    to="/"
-    class="absolute top-0 right-0 z-20 flex items-center justify-center w-10 h-10 bg-transparent cursor-pointer mt-[30px] mr-4"
+  <!-- 상단 바 -->
+  <nav
+    class="flex items-center justify-between h-10 p-[30px] z-20 fixed mx-auto w-full"
   >
-    <img :src="home" alt="홈 바로가기 아이콘 입니다." class="w-6 h-6" />
-  </router-link>
+    <!-- 햄버거 메뉴 -->
+    <div class="flex items-center">
+      <input
+        type="checkbox"
+        id="menuicon"
+        v-model="sidebarStore.isHamburgerOpen"
+        class="hidden"
+        @change="handleToggle"
+      />
+      <label
+        for="menuicon"
+        class="z-20 w-[24px] h-[23.5px] absolute cursor-pointer"
+        aria-label="메뉴 열기"
+      >
+        <span
+          class="block absolute w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300"
+          :class="{
+            'rotate-45 translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
+          }"
+        ></span>
+        <span
+          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300"
+          :class="{
+            'opacity-0': sidebarStore.isHamburgerOpen,
+          }"
+        ></span>
+        <span
+          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300"
+          :class="{
+            '-rotate-45 -translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
+          }"
+        ></span>
+      </label>
+    </div>
+
+    <!-- 홈 바로가기 -->
+    <div id="home-icon">
+      <router-link to="/" class="bg-transparent cursor-pointer">
+        <Icon
+          icon="material-symbols:home-outline-rounded"
+          width="32"
+          height="32"
+          style="color: #729ecb"
+        />
+      </router-link>
+    </div>
+  </nav>
 </template>
 
 <style scoped>
-input[id="menuicon"] + label {
-  top: 0;
-  left: 0;
-  margin-top: 40px;
-  margin-left: 40px;
-  display: block;
-  width: 25px;
-  height: 25px;
-  position: absolute;
-  cursor: pointer;
-}
-
-input[id="menuicon"] + label span {
+label span {
   display: block;
   position: absolute;
   width: 25px;
   height: 2.5px;
+  background: #729ecb;
   border-radius: 30px;
-  background: white;
-  transition: all 0.35s;
+  transition: all 0.35s ease;
 }
 
-input[id="menuicon"]:checked + label span:nth-child(1) {
-  transform: translateY(10.5px) rotate(45deg);
-}
-
-input[id="menuicon"]:checked + label span:nth-child(2) {
-  opacity: 0;
-}
-
-input[id="menuicon"]:checked + label span:nth-child(3) {
-  transform: translateY(-11.5px) rotate(-45deg);
-}
-
-input[id="menuicon"] + label span:nth-child(1) {
+/* 햄버거 버튼 초기 위치 */
+label span:nth-child(1) {
   top: 0;
 }
 
-input[id="menuicon"] + label span:nth-child(2) {
+label span:nth-child(2) {
   top: 50%;
   transform: translateY(-50%);
 }
 
-input[id="menuicon"] + label span:nth-child(3) {
+label span:nth-child(3) {
   bottom: 0;
 }
 </style>

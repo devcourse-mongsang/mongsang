@@ -1,166 +1,126 @@
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+
+const popularPosts = ref([
+  {
+    image:
+      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
+    title: "TITLE 1",
+    name: "name 1",
+  },
+  {
+    image:
+      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
+    title: "TITLE 2",
+    name: "name 2",
+  },
+  {
+    image:
+      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
+    title: "TITLE 3",
+    name: "name 3",
+  },
+  {
+    image:
+      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
+    title: "TITLE 4",
+    name: "name 4",
+  },
+]);
+</script>
 
 <template>
   <div
-    class="flex items-center justify-center flex-col pt-[7.1875em] pb-[14.375em] mx-auto"
+    class="flex flex-col items-center w-full py-8 sm:py-12 lg:py-16 px-4 md:px-[40px] lg:px-[120px] mb-[202px]"
   >
-    <img
-      class="w-[33.375em] h-[19.125em]"
-      src="../../public/assets/imgs/big_logo.png"
-      alt=""
-    />
-    <div class="mt-[1.875em] font-pre text-center">
-      <h2 class="text-[2em] font-semibold mb-[0.625em]">
+    <!-- 로고 -->
+    <div class="w-2/3 max-w-lg">
+      <img
+        class="w-full"
+        src="../../public/assets/imgs/big_logo.png"
+        alt="로고 이미지입니다."
+      />
+    </div>
+
+    <!-- 소개 섹션 -->
+    <div class="flex flex-col items-center mt-8 space-y-4 text-center">
+      <h1 class="text-lg font-semibold sm:text-xl lg:text-2xl">
         꿈을 기록하는 몽상가가 되어보세요
-      </h2>
-      <div>
-        <p>
+      </h1>
+      <div class="space-y-2 text-base sm:text-lg lg:text-xl">
+        <h2>
           꿈에 담긴 감정을 AI로 시각화하고 분석된 심리 상태에 맞는 ASMR로 마음을
           어루만지세요.
-        </p>
-        <p>몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.</p>
+        </h2>
+        <h2>
+          몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.
+        </h2>
       </div>
     </div>
-  </div>
 
-  <div class="px-[8.9375em]">
-    <h2 class="text-[1.5em] font-semibold mx-[0.375em]">
-      실시간 커뮤니티 인기글
-    </h2>
-    <div class="mt-[2.3125em]">
-      <ul class="flex flex-wrap justify-center gap-4">
-        <li>
-          <div>
+    <!-- 실시간 커뮤니티 인기글 -->
+    <div class="max-w-[1141px] sm:px-0 md:px-8 lg:px-11 py-8 mt-20">
+      <h3 class="mb-8 text-2xl font-semibold">실시간 커뮤니티 인기글</h3>
+      <ul
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
+      >
+        <li v-for="(item, index) in popularPosts" :key="index">
+          <div class="">
             <img
-              class="h-[13.625em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
+              class="object-cover w-full max-h-[300px] rounded-[20px]"
+              :src="item.image"
+              :alt="`${item.title} 이미지입니다.`"
             />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
+            <div class="text-start">
+              <h4 class="text-lg font-semibold">{{ item.title }}</h4>
+              <p class="text-sm text-gray-600">{{ item.name }}</p>
+            </div>
           </div>
         </li>
-        <li>
-          <div>
-            <img
-              class="h-[13.625em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        <li>
-          <div>
-            <img
-              class="h-[13.625em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        <li>
-          <div>
-            <img
-              class="h-[13.625em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        <li>
-          <div>
-            <img
-              class="h-[13.625em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-
       </ul>
     </div>
-  </div>
 
-  <div
-    id="asmr-container"
-    class="mt-[7.625em] mx-[6.25em] px-[2.6875em] pt-[3.125em] pb-[2.5625em] bg-[rgba(255,255,255,0.3)] rounded-[1.875em] mb-[12.625em]"
-  >
-    <h2 class="text-[1.5em] font-semibold mb-[2.3125em]">
-      당신의 꿈에 귀 기울이는 순간, ASMR 추천
-    </h2>
-    <div>
-      <ul class="flex gap-4">
-        <li>
-          <div>
+    <!-- AI 추천 ASMR -->
+    <div
+      class="max-w-[1141px] px-4 md:px-8 lg:px-11 py-8 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px]"
+    >
+      <h3 class="mb-8 text-2xl font-semibold">
+        당신의 꿈에 귀 기울이는 순간, ASMR 추천
+      </h3>
+      <ul
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
+      >
+        <li v-for="(item, index) in popularPosts" :key="index">
+          <div class="">
             <img
-              class="h-[9.75em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
+              class="object-cover w-full max-h-[300px] rounded-[20px]"
+              :src="item.image"
+              :alt="`${item.title} 이미지입니다.`"
             />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
+            <div class="text-start">
+              <h4 class="text-lg font-semibold">{{ item.title }}</h4>
+              <p class="text-sm text-gray-600">{{ item.name }}</p>
+            </div>
           </div>
         </li>
-        <li>
-          <div>
-            <img
-              class="h-[9.75em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        <li>
-          <div>
-            <img
-              class="h-[9.75em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        <li>
-          <div>
-            <img
-              class="h-[9.75em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        <li>
-          <div>
-            <img
-              class="h-[9.75em] w-[13.625em] rounded-[1.25em] mb-[0.625em]"
-              src="https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg"
-              alt="꿈 이미지 영역입니다."
-            />
-            <h3 class="text-[1.25em] font-semibold">TITLE</h3>
-            <p class="text-[1.25em]">name</p>
-          </div>
-        </li>
-        
       </ul>
     </div>
   </div>
 </template>
 
 <style scoped>
-#asmr-container {
-  box-shadow: 0 0 0 0.4375em rgba(255, 255, 255, 0.3) inset;
+/* 공통된 스타일을 간결화 */
+h1,
+h2,
+h3 {
+  color: #333;
 }
+
+/* img {
+  transition: transform 0.3s ease;
+} */
+
+/* img:hover {
+  transform: scale(1.05);
+} */
 </style>
