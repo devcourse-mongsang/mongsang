@@ -27,11 +27,11 @@ defineProps({
             :src="post.image"
             alt="User image"
           />
-          <p class="text-xl font-semibold">{{ post.userName }}</p>
+          <p class="font-semibold lg:text-xl">{{ post.userName }}</p>
         </span>
 
         <span class="flex flex-col gap-[10px]">
-          <h2 class="text-2xl font-semibold leading-[140%]">
+          <h2 class="text-xl lg:text-2xl font-semibold leading-[140%]">
             {{ post.title }}
           </h2>
           <p class="text-[#757575]">{{ post.date }}</p>

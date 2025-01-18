@@ -4,6 +4,7 @@ import DropDownCommunity from "./DropDownCommunity.vue";
 import { Icon } from "@iconify/vue";
 import sidebarHr from "../../../public/assets/icons/sidebar_hr.svg";
 import Headers from "./Headers.vue";
+import { RouterLink } from "vue-router";
 
 const sidebarStore = useSidebarStore(); // Pinia store 초기화
 
@@ -27,7 +28,7 @@ function handleToggle() {
   >
     <!-- 사이드바 콘텐츠 -->
     <img :src="sidebarHr" alt="구분선 이미지" />
-    <div class="leading-[1.4] flex gap-[0.625rem]">
+    <RouterLink to="/mypage/profile" class="leading-[1.4] flex gap-[0.625rem]">
       <img
         class="h-[1.875rem] w-[1.875rem] rounded-full mt-[0.375rem]"
         src="https://cdn.pixabay.com/photo/2019/11/08/11/56/kitten-4611189_1280.jpg"
@@ -37,7 +38,7 @@ function handleToggle() {
         <p class="text-[1rem] font-semibold">@Mala_love</p>
         <p class="text-[1rem] text-[#000]">저는 마라를 사랑합니다.</p>
       </div>
-    </div>
+    </RouterLink>
 
     <div class="flex justify-between mb-[0.4375rem] mt-[0.5625rem]">
       <div>
