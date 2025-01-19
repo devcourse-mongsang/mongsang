@@ -6,7 +6,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid";
   <Menu as="div" class="relative inline-block text-left">
     <div>
       <MenuButton
-        class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-hc-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
       >
         filter
         <ChevronDownIcon
@@ -25,7 +25,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid";
       leave-to-class="transform scale-95 opacity-0"
     >
       <MenuItems
-        class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none"
+        class="absolute right-0 z-10 w-56 mt-2 origin-top-right rounded-md shadow-lg bg-hc-white ring-1 ring-black/5 focus:outline-none"
       >
         <div class="py-1">
           <MenuItem v-slot="{ active }">
