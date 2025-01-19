@@ -37,47 +37,14 @@ const router = createRouter({
       component: LayoutCommunity,
       children: [
         {
-          path: "자유게시판",
-          name: "free-board",
-          component: () => import("../pages/community-pages/FreeBoard.vue"),
+          path: "/community/:boardType",
+          name: "communityBoard",
+          component: () => import("../pages/community-pages/CommunityBoard.vue"),
         },
         {
-          path: "초현실몽",
-          name: "surreal-dream",
-          component: () => import("../pages/community-pages/SurrealDream.vue"),
-        },
-        {
-          path: "예지몽",
-          name: "prophetic-dream",
-          component: () =>
-            import("../pages/community-pages/PropheticDream.vue"),
-        },
-        {
-          path: "반복몽",
-          name: "recurrent-dream",
-          component: () =>
-            import("../pages/community-pages/RecurrentDream.vue"),
-        },
-        {
-          path: "자각몽",
-          name: "lucid-dream",
-          component: () => import("../pages/community-pages/LucidDream.vue"),
-        },
-        {
-          path: "악몽",
-          name: "nightmare",
-          component: () => import("../pages/community-pages/Nightmare.vue"),
-        },
-        {
-          path: "길몽",
-          name: "good-dream",
-          component: () => import("../pages/community-pages/GoodDream.vue"),
-        },
-        {
-          path: "해몽",
-          name: "dream-interpretation",
-          component: () =>
-            import("../pages/community-pages/DreamInterpretation.vue"),
+          path: "/:boardType/:postId",
+          name: "postDetail",
+          component: () => import("../pages/community-pages/PostDetails.vue"),
         },
       ],
     },

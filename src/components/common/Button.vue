@@ -45,7 +45,7 @@ export default defineComponent({
 
     const buttonSize = {
       sm: "w-[50px] h-[50px] rounded-[70px]",
-      md: "w-[160px] h-[48px] text-[16px] rounded-[20px]",
+      md: "w-[160px] h-[45px] text-[16px] rounded-[20px]",
       lg: "w-[480px] h-[63px] text-[24px] rounded-[70px] font-semibold",
     };
 

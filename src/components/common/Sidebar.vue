@@ -47,6 +47,7 @@ function handleToggle() {
           icon="material-symbols:logout-rounded"
           width="1.5rem"
           height="1.5rem"
+          style="color: #ffffff"
         />
       </div>
       <div class="flex gap-[0.649375rem]">
@@ -55,12 +56,14 @@ function handleToggle() {
           icon="material-symbols:notifications-outline"
           width="1.5rem"
           height="1.5rem"
+          style="color: #ffffff"
         />
         <Icon
           id="weather-icon"
           icon="material-symbols:wb-sunny-rounded"
           width="1.5rem"
           height="1.5rem"
+          style="color: #ffffff"
         />
       </div>
     </div>
@@ -95,7 +98,7 @@ function handleToggle() {
     <div class="flex flex-col gap-[1.25rem] mt-[6.375rem]">
       <RouterLink
         to="/record"
-        class="bg-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
+        class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
       >
         <Icon
           icon="material-symbols:edit-outline"
@@ -106,7 +109,7 @@ function handleToggle() {
       </RouterLink>
       <RouterLink
         to="/diary"
-        class="bg-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
+        class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
       >
         <Icon
           icon="material-symbols:book-2-outline"
