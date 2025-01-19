@@ -1,5 +1,7 @@
 <script setup></script>
 <template>
-  <h1>surReal-dream</h1>
+  <div>
+    <h1>404 Not Found</h1>
+  </div>
 </template>
 <style scoped></style>

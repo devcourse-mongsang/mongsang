@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx,vue}"],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        blue: "-4px 4px 50px 0px rgba(114, 158, 203, 0.70)",
+      },
+    },
     screens: {
       sm: "640px",
 

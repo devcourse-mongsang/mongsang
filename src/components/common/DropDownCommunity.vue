@@ -63,12 +63,17 @@ const leave = (el, done) => {
 
 <template>
   <div class="relative inline-block dropdown-container mt-[13.875rem]">
-    <Icon icon="material-symbols:groups-outline" width="50" height="50" />
+    <Icon
+      icon="material-symbols:groups-outline"
+      width="50"
+      height="50"
+      style="color: #ffffff"
+    />
 
     <img :src="sidebarhr" />
     <button
       @click="toggleDropdown"
-      class="flex items-center justify-between w-full mt-2 text-white transition"
+      class="flex items-center justify-between w-full mt-2 transition text-hc-white"
     >
       <p class="font-semibold text-[18px]">커뮤니티</p>
       <Icon
@@ -91,7 +96,7 @@ const leave = (el, done) => {
           <li v-for="menu in menus" :key="menu.name">
             <RouterLink
               :to="menu.path"
-              class="block hover:text-[#729ECB] hover:bg-white px-[19px] rounded-full pt-1 pb-[6px] transition-colors duration-500 ease-in-out"
+              class="block text-hc-white hover:text-[#729ECB] hover:bg-hc-white px-[19px] rounded-full pt-1 pb-[6px] transition-colors duration-500 ease-in-out"
               >{{ menu.name }}</RouterLink
             >
           </li>

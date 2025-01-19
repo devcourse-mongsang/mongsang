@@ -1,7 +1,6 @@
 <script setup>
-import Sidebar from "../components/common/Sidebar.vue";
+import Sidebar from "@/components/common/Sidebar.vue";
 </script>
-
 <template>
   <div
     id="back-ground"
@@ -10,9 +9,7 @@ import Sidebar from "../components/common/Sidebar.vue";
   >
     <Sidebar />
     <div class="pt-[70px]">
-      <div
-        class="mt-[115px] w-full max-w-[989px] px-[16px] sm:px-[24px] md:px-[100px] mx-auto mb-[49px]"
-      >
+      <div class="pt-[30px] pb-[140px] px-[145px] flex justify-center">
         <RouterView />
       </div>
     </div>
