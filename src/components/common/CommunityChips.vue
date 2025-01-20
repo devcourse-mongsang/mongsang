@@ -24,12 +24,21 @@ const tags = ref([
               :color="isHovering ? '#4C6F9A' : 'indigo'"
               :variant="isHovering ? 'flat' : 'tonal'"
             >
-              <Icon
-                icon="material-symbols:tag-rounded"
-                width="24"
-                height="24"
-              />
-              {{ tag.name }}
+              <div class="flex">
+                <Icon
+                  class="hidden sm:flex"
+                  icon="material-symbols:tag-rounded"
+                  width="24"
+                  height="24"
+                />
+                <Icon
+                  class="sm:hidden"
+                  icon="material-symbols:tag-rounded"
+                  width="16"
+                  height="16"
+                />
+                <p class="text-xs sm:text-base">{{ tag.name }}</p>
+              </div>
             </v-chip>
           </template>
         </v-hover>

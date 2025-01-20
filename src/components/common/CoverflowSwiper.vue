@@ -7,15 +7,18 @@ register();
 </script>
 <template>
   <div
-    class="font-semibold max-w-[1141px] mx-auto px-4 md:px-8 lg:px-11 mt-[128px] flex flex-col gap-5"
+    class="font-semibold max-w-[1141px] mx-auto px-4 md:px-8 lg:px-11 xm:mt-[60px] sm:mt-[128px] flex flex-col gap-5"
   >
-    <h2 class="text-[32px]">카테고리별 인기글 TOP 5</h2>
+    <h2 class="xm:text-base sm:text-2xl md:text-[32px]">
+      카테고리별 인기글 TOP 5
+    </h2>
     <CommunityChips />
   </div>
   <div>
     <swiper-container
+      navigation="true"
       class="mySwiper"
-      initial-slide="2"
+      initial-slide="3"
       pagination="true"
       effect="coverflow"
       grab-cursor="true"
@@ -28,62 +31,98 @@ register();
       coverflow-effect-slide-shadows="false"
     >
       <swiper-slide
-        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30"
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
       >
         <img
           class="w-full h-[70%] object-cover rounded-[20px]"
           :src="imgPlaceholder"
         />
         <div class="text-xl mt-[24px] leading-tight">
-          <h3 class="font-semibold">TITLE</h3>
+          <h3 class="font-semibold">자유게시판</h3>
           <p class="text-base">name</p>
         </div>
       </swiper-slide>
       <swiper-slide
-        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30"
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
       >
         <img
           class="w-full h-[70%] object-cover rounded-[20px]"
           :src="imgPlaceholder"
         />
         <div class="text-xl mt-[24px] leading-tight">
-          <h3 class="font-semibold">TITLE</h3>
+          <h3 class="font-semibold">초현실몽</h3>
           <p class="text-base">name</p>
         </div>
       </swiper-slide>
       <swiper-slide
-        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30"
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
       >
         <img
           class="w-full h-[70%] object-cover rounded-[20px]"
           :src="imgPlaceholder"
         />
         <div class="text-xl mt-[24px] leading-tight">
-          <h3 class="font-semibold">TITLE</h3>
+          <h3 class="font-semibold">예지몽</h3>
           <p class="text-base">name</p>
         </div>
       </swiper-slide>
       <swiper-slide
-        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30"
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
       >
         <img
           class="w-full h-[70%] object-cover rounded-[20px]"
           :src="imgPlaceholder"
         />
         <div class="text-xl mt-[24px] leading-tight">
-          <h3 class="font-semibold">TITLE</h3>
+          <h3 class="font-semibold">반복몽</h3>
           <p class="text-base">name</p>
         </div>
       </swiper-slide>
       <swiper-slide
-        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30"
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
       >
         <img
           class="w-full h-[70%] object-cover rounded-[20px]"
           :src="imgPlaceholder"
         />
         <div class="text-xl mt-[24px] leading-tight">
-          <h3 class="font-semibold">TITLE</h3>
+          <h3 class="font-semibold">자각몽</h3>
+          <p class="text-base">name</p>
+        </div>
+      </swiper-slide>
+      <swiper-slide
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
+      >
+        <img
+          class="w-full h-[70%] object-cover rounded-[20px]"
+          :src="imgPlaceholder"
+        />
+        <div class="text-xl mt-[24px] leading-tight">
+          <h3 class="font-semibold">악몽</h3>
+          <p class="text-base">name</p>
+        </div>
+      </swiper-slide>
+      <swiper-slide
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
+      >
+        <img
+          class="w-full h-[70%] object-cover rounded-[20px]"
+          :src="imgPlaceholder"
+        />
+        <div class="text-xl mt-[24px] leading-tight">
+          <h3 class="font-semibold">길몽</h3>
+          <p class="text-base">name</p>
+        </div>
+      </swiper-slide>
+      <swiper-slide
+        class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
+      >
+        <img
+          class="w-full h-[70%] object-cover rounded-[20px]"
+          :src="imgPlaceholder"
+        />
+        <div class="text-xl mt-[24px] leading-tight">
+          <h3 class="font-semibold">해몽</h3>
           <p class="text-base">name</p>
         </div>
       </swiper-slide>

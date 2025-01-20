@@ -25,11 +25,6 @@ const router = createRouter({
           name: "record",
           component: () => import("../pages/Record.vue"),
         },
-        {
-          path: "/diary",
-          name: "diary",
-          component: () => import("../pages/Diary.vue"),
-        },
       ],
     },
     {
@@ -67,6 +62,11 @@ const router = createRouter({
           path: "/username/follow", // 임시 경로
           name: "follow",
           component: () => import("../pages/Follow.vue"),
+        },
+        {
+          path: "/diary",
+          name: "diary",
+          component: () => import("../pages/Diary.vue"),
         },
       ],
     },
