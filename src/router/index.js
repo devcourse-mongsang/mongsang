@@ -25,11 +25,6 @@ const router = createRouter({
           name: "record",
           component: () => import("../pages/Record.vue"),
         },
-        {
-          path: "/diary",
-          name: "diary",
-          component: () => import("../pages/Diary.vue"),
-        },
       ],
     },
     {
@@ -59,9 +54,15 @@ const router = createRouter({
           component: () => import("../pages/my-pages/Profile.vue"),
         },
         {
+<<<<<<< Updated upstream
           path: "profile/edit",
           name: "profileEdit",
           component: () => import("../pages/my-pages/ProfileEdit.vue"),
+=======
+          path: "/diary",
+          name: "diary",
+          component: () => import("../pages/Diary.vue"),
+>>>>>>> Stashed changes
         },
       ],
     },
