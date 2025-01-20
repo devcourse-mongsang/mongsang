@@ -37,9 +37,9 @@ const popularPosts = ref([
     class="flex flex-col items-center w-full py-8 sm:py-12 lg:py-16 px-4 md:px-[40px] lg:px-[120px] mb-[202px] mt-[30px]"
   >
     <!-- 로고 -->
-    <div class="w-2/3 max-w-lg">
+    <div class="flex justify-center w-2/3 max-w-lg">
       <img
-        class="w-full"
+        class="sm:w-full xm:w-[231px]"
         src="../../public/assets/imgs/big_logo.png"
         alt="로고 이미지입니다."
       />
@@ -47,7 +47,7 @@ const popularPosts = ref([
 
     <!-- 소개 섹션 -->
     <div class="flex flex-col items-center mt-8 space-y-4 text-center">
-      <h1 class="font-semibold text-[32px]">
+      <h1 class="font-semibold sm:text-[24px] md:text-[32px] text-base">
         꿈을 기록하는 몽상가가 되어보세요
       </h1>
       <div class="hidden mt-[10px] mb-6 text-xl md:flex md:flex-col">
@@ -63,7 +63,7 @@ const popularPosts = ref([
         ><Button
           variant="shadowed"
           size="lg"
-          class-name="w-[336px] mt-[40px] md:mt-0 hover:scale-[105%]"
+          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] xm:w-[192px] xm:text-[14px] sm:text-2xl xm:h-[47px] sm:h-[63px]"
         >
           꿈 기록하러 가기
         </Button></RouterLink

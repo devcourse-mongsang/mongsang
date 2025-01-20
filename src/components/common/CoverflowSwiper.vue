@@ -7,9 +7,11 @@ register();
 </script>
 <template>
   <div
-    class="font-semibold max-w-[1141px] mx-auto px-4 md:px-8 lg:px-11 mt-[128px] flex flex-col gap-5"
+    class="font-semibold max-w-[1141px] mx-auto px-4 md:px-8 lg:px-11 xm:mt-[60px] sm:mt-[128px] flex flex-col gap-5"
   >
-    <h2 class="text-[32px]">카테고리별 인기글 TOP 5</h2>
+    <h2 class="xm:text-base sm:text-2xl md:text-[32px]">
+      카테고리별 인기글 TOP 5
+    </h2>
     <CommunityChips />
   </div>
   <div>
