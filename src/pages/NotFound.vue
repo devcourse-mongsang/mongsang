@@ -31,13 +31,12 @@ function goHome() {
 <style scoped>
 .not-found {
   background-image: url("/assets/imgs/bg_not_found_mobile.png");
-  background-size: 90%; /* 이미지를 요소 크기에 맞게 조정 */
-  background-position: center; /* 이미지를 중앙에 배치 */
-  height: 100vh; /* 화면 전체 높이를 차지하도록 설정 */
+  background-position: center;
+  height: 100vh;
   display: flex;
   justify-content: center;
-
   align-items: center;
+  background-size: cover;
 }
 @media (min-width: 1024px) {
   .not-found {
