@@ -27,19 +27,22 @@ watch(
 
 <template>
   <div>
-    <div class="flex justify-between h-[46px] items-start mb-[18px]">
+    <div
+      class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-[0px]"
+    >
       <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
       <DropDown />
     </div>
-    <div
-      class="w-full max-w-[941px] bg-hc-white h-[45px] rounded-[20px] mb-[35px]"
-    ></div>
+    <div class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden"></div>
+    <div class="flex justify-center mx-4">
+      <div class="w-full bg-hc-white h-[45px] rounded-[20px] mb-[35px]"></div>
+    </div>
 
     <!-- 게시글 목록 -->
     <ul v-if="currentBoard.posts && currentBoard.posts.length">
       <li v-for="post in currentBoard.posts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
-          <div class="flex justify-between mb-7">
+          <div class="flex justify-between mx-4 mb-7">
             <div class="flex flex-col mt-6 gap-7">
               <span class="flex items-center gap-[10px]">
                 <img
@@ -64,7 +67,9 @@ watch(
               alt="Post image"
             />
           </div>
-          <div class="h-[1px] w-full mb-[27px] bg-hc-blue"></div>
+          <div class="sm:px-4">
+            <div class="h-[1px] w-full mb-[27px] bg-hc-blue"></div>
+          </div>
         </RouterLink>
       </li>
     </ul>

@@ -34,7 +34,7 @@ const popularPosts = ref([
 
 <template>
   <div
-    class="flex flex-col items-center w-full py-8 sm:py-12 lg:py-16 px-4 md:px-[40px] lg:px-[120px] mb-[202px]"
+    class="flex flex-col items-center w-full py-8 sm:py-12 lg:py-16 px-4 md:px-[40px] lg:px-[120px] mb-[202px] mt-[30px]"
   >
     <!-- 로고 -->
     <div class="w-2/3 max-w-lg">
@@ -63,7 +63,7 @@ const popularPosts = ref([
         ><Button
           variant="shadowed"
           size="lg"
-          class-name="w-[336px] mt-[40px] md:mt-0"
+          class-name="w-[336px] mt-[40px] md:mt-0 hover:scale-[105%]"
         >
           꿈 기록하러 가기
         </Button></RouterLink

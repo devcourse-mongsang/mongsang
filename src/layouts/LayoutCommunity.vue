@@ -6,16 +6,25 @@ import Sidebar from "../components/common/Sidebar.vue";
   <div
     id="back-ground"
     class="max-w-full mx-auto min-h-screen bg-cover bg-center bg-no-repeat relative overflow-y-auto z-[-10px]"
-    style="background-image: url('/assets/imgs/bg_circle 1.png')"
   >
     <Sidebar />
     <div class="pt-[70px]">
       <div
-        class="mt-[115px] w-full max-w-[989px] px-[16px] sm:px-[24px] md:px-[100px] mx-auto mb-[49px]"
+        class="sm:mt-[115px] w-full max-w-[989px] px-[0px] sm:px-[24px] md:px-[100px] mx-auto mb-[49px]"
       >
         <RouterView />
       </div>
     </div>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+#back-ground {
+  background-image: url("../../public/assets/imgs/bg_circle_mobile.png");
+}
+
+@media (min-width: 768px) {
+  #back-ground {
+    background-image: url("/assets/imgs/bg_circle 1.png");
+  }
+}
+</style>
