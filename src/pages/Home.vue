@@ -1,4 +1,7 @@
 <script setup>
+import Button from "@/components/common/Button.vue";
+
+import CoverflowSwiper from "@/components/common/CoverflowSwiper.vue";
 import { ref } from "vue";
 
 const popularPosts = ref([
@@ -44,10 +47,10 @@ const popularPosts = ref([
 
     <!-- 소개 섹션 -->
     <div class="flex flex-col items-center mt-8 space-y-4 text-center">
-      <h1 class="text-lg font-semibold sm:text-xl lg:text-2xl">
+      <h1 class="font-semibold text-[32px]">
         꿈을 기록하는 몽상가가 되어보세요
       </h1>
-      <div class="space-y-2 text-base sm:text-lg lg:text-xl">
+      <div class="hidden mt-[10px] mb-6 text-xl md:flex md:flex-col">
         <h2>
           꿈에 담긴 감정을 AI로 시각화하고 분석된 심리 상태에 맞는 ASMR로 마음을
           어루만지세요.
@@ -56,10 +59,23 @@ const popularPosts = ref([
           몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.
         </h2>
       </div>
+      <RouterLink to="/record"
+        ><Button
+          variant="shadowed"
+          size="lg"
+          class-name="w-[336px] mt-[40px] md:mt-0"
+        >
+          꿈 기록하러 가기
+        </Button></RouterLink
+      >
+    </div>
+
+    <div class="max-w-[1300px] w-full">
+      <CoverflowSwiper />
     </div>
 
     <!-- 실시간 커뮤니티 인기글 -->
-    <div class="max-w-[1141px] sm:px-0 md:px-8 lg:px-11 py-8 mt-20">
+    <!-- <div class="max-w-[1141px] sm:px-0 md:px-8 lg:px-11 py-8 mt-20">
       <h3 class="mb-8 text-2xl font-semibold">실시간 커뮤니티 인기글</h3>
       <ul
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
@@ -78,7 +94,7 @@ const popularPosts = ref([
           </div>
         </li>
       </ul>
-    </div>
+    </div> -->
 
     <!-- AI 추천 ASMR -->
     <div
