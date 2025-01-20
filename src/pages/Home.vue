@@ -1,4 +1,5 @@
 <script setup>
+import CoverflowSwiper from "@/components/common/CoverflowSwiper.vue";
 import { ref } from "vue";
 
 const popularPosts = ref([
@@ -58,8 +59,12 @@ const popularPosts = ref([
       </div>
     </div>
 
+    <div class="max-w-[1300px] w-full">
+      <CoverflowSwiper />
+    </div>
+
     <!-- 실시간 커뮤니티 인기글 -->
-    <div class="max-w-[1141px] sm:px-0 md:px-8 lg:px-11 py-8 mt-20">
+    <!-- <div class="max-w-[1141px] sm:px-0 md:px-8 lg:px-11 py-8 mt-20">
       <h3 class="mb-8 text-2xl font-semibold">실시간 커뮤니티 인기글</h3>
       <ul
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
@@ -78,7 +83,7 @@ const popularPosts = ref([
           </div>
         </li>
       </ul>
-    </div>
+    </div> -->
 
     <!-- AI 추천 ASMR -->
     <div
