@@ -1,9 +1,11 @@
+<!-- Input.vue -->
 <template>
   <input
     :class="[
       'text-hc-gray bg-hc-white focus:outline-none flex items-center justify-center',
+      isProfilePage ? 'w-full' : '',
       inputVar[variant],
-      inputSize[size],
+      isProfilePage ? profileInputSize[size] : inputSize[size],
       inputBorderRadius[borderRadius],
       className,
     ]"
@@ -35,6 +37,10 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    isProfilePage: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props, { attrs }) {
     const inputVar = {
@@ -42,6 +48,7 @@ export default defineComponent({
       custom: "",
     };
 
+    // 기존 사이즈 설정
     const inputSize = {
       xs: "w-[398px] h-[63px] text-[24px] pl-[40px]",
       sm: "w-[480px] h-[63px] text-[24px] pl-[40px]",
@@ -49,13 +56,25 @@ export default defineComponent({
       lg: "w-[830px] h-[63px] text-[24px] pl-[40px]",
       xl: "w-[941px] h-[45px] text-[20px] pl-[16px]",
     };
+
+    // ProfileEdit 페이지용 사이즈 설정
+    const profileInputSize = {
+      xs: "h-[63px] md:h-[63px] text-sm md:text-xl pl-4 md:pl-[40px]",
+      sm: "h-[63px] md:h-[63px] text-sm md:text-xl pl-4 md:pl-[40px]",
+      md: "h-[45px] md:h-[45px] text-sm md:text-lg pl-4 md:pl-[16px]",
+      lg: "h-[63px] md:h-[63px] text-sm md:text-xl pl-4 md:pl-[40px]",
+      xl: "h-[45px] md:h-[45px] text-sm md:text-lg pl-4 md:pl-[16px]",
+    };
+
     const inputBorderRadius = {
       md: "rounded-[20px]",
       lg: "rounded-[70px]",
     };
+
     return {
       inputVar,
       inputSize,
+      profileInputSize,
       inputBorderRadius,
       otherProps: attrs,
     };

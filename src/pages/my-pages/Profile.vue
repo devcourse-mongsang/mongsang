@@ -105,10 +105,6 @@ const toggleFollow = () => {
 const handleFollowClick = () => {
   alert("팔로워 / 팔로잉 페이지로 이동!");
 };
-
-const handleButtonClick = () => {
-  alert(`${buttonType} 하기`);
-};
 </script>
 
 <template>
@@ -121,14 +117,15 @@ const handleButtonClick = () => {
       <div class="w-[830px] mx-auto pt-[138px] relative">
         <!-- 버튼 컴포넌트 사용 -->
         <template v-if="buttonType === 'edit'">
-          <Button
-            @click="handleButtonClick"
-            variant="custom"
-            size="md"
-            class="absolute right-0 top-[138px] text-xl bg-hc-white"
-          >
-            프로필 편집
-          </Button>
+          <router-link to="/mypage/profile/edit">
+            <Button
+              variant="custom"
+              size="md"
+              class="absolute right-0 top-[138px] text-xl bg-hc-white"
+            >
+              프로필 편집
+            </Button>
+          </router-link>
         </template>
 
         <template v-else-if="buttonType === 'follow'">
