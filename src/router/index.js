@@ -59,6 +59,11 @@ const router = createRouter({
           component: () => import("../pages/my-pages/ProfileEdit.vue"),
         },
         {
+          path: "/username/follow", // 임시 경로
+          name: "follow",
+          component: () => import("../pages/Follow.vue"),
+        },
+        {
           path: "/diary",
           name: "diary",
           component: () => import("../pages/Diary.vue"),
