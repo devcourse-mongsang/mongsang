@@ -39,7 +39,8 @@ const router = createRouter({
         {
           path: "/community/:boardType",
           name: "communityBoard",
-          component: () => import("../pages/community-pages/CommunityBoard.vue"),
+          component: () =>
+            import("../pages/community-pages/CommunityBoard.vue"),
         },
         {
           path: "/:boardType/:postId",
@@ -56,6 +57,11 @@ const router = createRouter({
           path: "profile",
           name: "profile",
           component: () => import("../pages/my-pages/Profile.vue"),
+        },
+        {
+          path: "profile/edit",
+          name: "profileEdit",
+          component: () => import("../pages/my-pages/ProfileEdit.vue"),
         },
       ],
     },
