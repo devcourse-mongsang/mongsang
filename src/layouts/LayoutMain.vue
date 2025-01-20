@@ -13,3 +13,14 @@ import Sidebar from "../components/common/Sidebar.vue";
     </div>
   </div>
 </template>
+<style scoped>
+#back-ground {
+  background-image: url("/assets/imgs/bg_light_home.png");
+}
+
+@media (min-width: 768px) {
+  #back-ground {
+    background-image: url("/assets/imgs/bg_mobile.png");
+  }
+}
+</style>

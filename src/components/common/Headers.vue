@@ -1,8 +1,10 @@
 <script setup>
+import { useRoute } from "vue-router";
 import { useSidebarStore } from "../../store/sidebar";
 import { Icon } from "@iconify/vue";
 
 const sidebarStore = useSidebarStore();
+const route = useRoute();
 </script>
 
 <template>
@@ -21,7 +23,7 @@ const sidebarStore = useSidebarStore();
       />
       <label
         for="menuicon"
-        class="z-20 w-[24px] h-[23.5px] absolute cursor-pointer"
+        class="w-[24px] h-[23.5px] absolute cursor-pointer"
         aria-label="메뉴 열기"
       >
         <span

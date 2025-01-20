@@ -3,6 +3,8 @@ import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import dateConverter from "../../utils/dateConveter";
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
+
+import { register } from "swiper/element/bundle";
 import { Icon } from "@iconify/vue";
 
 const post = {
@@ -81,34 +83,100 @@ const comments = [
     updated_at: new Date().toISOString(),
   },
 ];
+
+register();
 </script>
 <template>
-  <div class="flex justify-between mb-3">
+  <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
     <div class="flex items-center gap-[10px]">
       <img
         :src="author.profile_url || imgPlaceholder"
         alt=""
-        class="w-[50px] h-[50px] rounded-full"
+        class="w-[45px] h-[45px] rounded-full"
       />
-      <p>@{{ author.username }}</p>
-      <p class="text-hc-gray">{{ dateConverter(post.created_at) }}</p>
+
+      <p class="text-base font-semibold">@{{ author.username }}</p>
     </div>
-    <Button variant="regular" size="md" class-name="w-[128px]">팔로잉</Button>
+    <Button
+      variant="regular"
+      size="md"
+      class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+      >팔로잉</Button
+    >
   </div>
   <div>
-    <img class="rounded-[20px]" :src="post.img_url" alt="" />
-    <div class="my-[45px] mb-[27px]">
-      <h1 class="text-2xl font-semibold">{{ post.title }}</h1>
-      <p class="text-xl">{{ post.content }}</p>
+    <swiper-container
+      navigation="true"
+      class="mySwiper"
+      initial-slide="0"
+      pagination="true"
+      effect="Fade"
+      centered-slides="true"
+      slides-per-view="auto"
+      speed="450"
+    >
+      <swiper-slide class="bg-hc-white/50">
+        <div class="flex items-center aspect-square">
+          <img
+            class="object-contain w-full"
+            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
+          />
+        </div>
+      </swiper-slide>
+      <swiper-slide class="bg-hc-white/50">
+        <div class="flex items-center aspect-square">
+          <img
+            class="object-contain w-full"
+            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
+          />
+        </div>
+      </swiper-slide>
+      <swiper-slide class="bg-hc-white/50">
+        <div class="flex items-center aspect-square">
+          <img
+            class="object-contain w-full"
+            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
+          />
+        </div>
+      </swiper-slide>
+      <swiper-slide class="bg-hc-white/50">
+        <div class="flex items-center aspect-square">
+          <img
+            class="object-contain w-full"
+            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
+          />
+        </div>
+      </swiper-slide>
+    </swiper-container>
+
+    <div class="mb-6">
+      <div class="mt-[45px] xm:px-4 sm:px-[0px]">
+        <div class="flex items-center justify-between">
+          <h1 class="font-semibold xm:text-xl sm:text-2xl">{{ post.title }}</h1>
+          <Icon
+            class="cursor-pointer"
+            icon="stash:heart-light"
+            width="35"
+            height="35"
+            style="color: #729ecb"
+          />
+        </div>
+        <p>{{ dateConverter(post.created_at) }}</p>
+        <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>
+      </div>
+      <div class="px-4 pt-6 mb-10 sm:hidden">
+        {{ post.content }}
+      </div>
     </div>
+
     <div>
       <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
       <!-- 댓글 입력창 -->
-      <div class="flex gap-[10px] items-center">
+      <div class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px]">
         <img
           :src="user.profile_url || imgPlaceholder"
           alt=""
-          class="w-[50px] h-[50px] rounded-full"
+          class="w-[45px] h-[45px] rounded-full"
         />
         <Input
           variant="custom"
@@ -120,7 +188,7 @@ const comments = [
         <Icon icon="material-symbols:send-rounded" width="24" height="24" />
       </div>
       <!-- 댓글 목록 -->
-      <div class="mt-[29px]">
+      <div class="mt-[29px] xm:mx-4 sm:mx-[0px]">
         <ul class="flex flex-col gap-[26px]">
           <li
             v-for="comment in comments"
@@ -133,8 +201,10 @@ const comments = [
                 alt=""
                 class="w-[50px] h-[50px] rounded-full"
               />
-              <p class="text-xl font-semibold">@{{ user.username }}</p>
-              <p>{{ comment.content }}</p>
+              <div>
+                <p class="font-semibold">@{{ user.username }}</p>
+                <p>{{ comment.content }}</p>
+              </div>
             </div>
             <p class="right-0 text-hc-gray">
               {{ dateConverter(comment.created_at) }}
