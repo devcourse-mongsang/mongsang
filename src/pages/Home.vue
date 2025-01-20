@@ -74,28 +74,6 @@ const popularPosts = ref([
       <CoverflowSwiper />
     </div>
 
-    <!-- 실시간 커뮤니티 인기글 -->
-    <!-- <div class="max-w-[1141px] sm:px-0 md:px-8 lg:px-11 py-8 mt-20">
-      <h3 class="mb-8 text-2xl font-semibold">실시간 커뮤니티 인기글</h3>
-      <ul
-        class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
-      >
-        <li v-for="(item, index) in popularPosts" :key="index">
-          <div class="">
-            <img
-              class="object-cover w-full max-h-[300px] rounded-[20px]"
-              :src="item.image"
-              :alt="`${item.title} 이미지입니다.`"
-            />
-            <div class="text-start">
-              <h4 class="text-lg font-semibold">{{ item.title }}</h4>
-              <p class="text-sm text-gray-600">{{ item.name }}</p>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div> -->
-
     <!-- AI 추천 ASMR -->
     <div
       class="max-w-[1141px] px-4 md:px-8 lg:px-11 py-8 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px]"

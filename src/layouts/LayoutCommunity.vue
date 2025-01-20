@@ -10,7 +10,7 @@ import Sidebar from "../components/common/Sidebar.vue";
     <Sidebar />
     <div class="pt-[70px]">
       <div
-        class="sm:mt-[115px] w-full max-w-[989px] px-[0px] sm:px-[24px] md:px-[100px] mx-auto mb-[49px]"
+        class="xm:mt-[20px] sm:mt-[115px] w-full max-w-[989px] px-[0px] sm:px-[24px] md:px-[100px] xm: mx-auto mb-[49px]"
       >
         <RouterView />
       </div>
