@@ -8,6 +8,8 @@ export default {
       },
     },
     screens: {
+      xm: "376px",
+
       sm: "640px",
 
       md: "768px",
