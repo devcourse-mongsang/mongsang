@@ -1,8 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import people_icon from "../../../public/assets/icons/people_icon.svg";
 import sidebarhr from "../../../public/assets/icons/sidebar_hr.svg";
-import arrow_down_icon from "../../../public/assets/icons/arrow_down_icon.svg";
 
 import { Icon } from "@iconify/vue";
 const menus = [
@@ -62,7 +60,7 @@ const leave = (el, done) => {
 </script>
 
 <template>
-  <div class="relative inline-block dropdown-container mt-[13.875rem]">
+  <div class="relative inline-block dropdown-container">
     <Icon
       icon="material-symbols:groups-outline"
       width="50"
@@ -92,7 +90,7 @@ const leave = (el, done) => {
       @leave="leave"
     >
       <div v-if="isDropdownOpen" class="absolute w-48 mt-2 overflow-hidden">
-        <ul class="flex flex-col gap-2 mt-2">
+        <ul class="flex flex-col sm:mt-2">
           <li v-for="menu in menus" :key="menu.name">
             <RouterLink
               :to="menu.path"
