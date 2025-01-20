@@ -47,6 +47,7 @@ export default defineComponent({
       sm: "w-[63px] h-[63px] rounded-[70px]",
       md: "w-[160px] h-[45px] text-[16px] rounded-[20px]",
       lg: "w-[480px] h-[63px] text-[24px] rounded-[70px] font-semibold",
+      xl: "w-[128px] h-[45px] rounded-[20px]",
     };
 
     return {
