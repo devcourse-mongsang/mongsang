@@ -110,7 +110,7 @@ const handleFollowClick = () => {
 <template>
   <div class="w-full max-w-[1156px] mx-auto relative pt-[143.5px]">
     <div
-      class="w-full h-[80vh] border-[7px] border-hc-white/50 rounded-tl-[20px] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px] bg-hc-white/30 overflow-y-auto"
+      class="w-full h-[80vh] border-[7px] border-hc-white/50 rounded-tl-[20px] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px] bg-hc-white/30 overflow-y-auto no-scrollbar"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
       <!-- 프로필 섹션 -->
@@ -199,17 +199,16 @@ const handleFollowClick = () => {
 </template>
 
 <style scoped>
-/* 임시 스크롤바 */
-::-webkit-scrollbar {
-  width: 8px;
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-hc-blue/70;
-  border-radius: 20px;
+/* 스크롤바 숨기기 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-::-webkit-scrollbar-track {
-  background-color: transparent;
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 </style>
