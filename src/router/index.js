@@ -66,7 +66,12 @@ const router = createRouter({
         {
           path: "/diary",
           name: "diary",
-          component: () => import("../pages/Diary.vue"),
+          component: () => import("../pages/diary-pages/Diary.vue"),
+        },
+        {
+          path: "/diary/details", // 임시 경로
+          name: "diaryDetail",
+          component: () => import("../pages/diary-pages/DiaryDetails.vue"),
         },
       ],
     },
