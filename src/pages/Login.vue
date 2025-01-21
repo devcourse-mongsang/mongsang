@@ -4,8 +4,14 @@ import Input from "@/components/common/Input.vue";
 import { ChevronLeftIcon } from "@heroicons/vue/24/solid";
 import { HomeIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
+import { ref } from "vue";
+import supabase from "@/config/supabase";
+import { useAuthStore } from "@/store/authStore";
 
+const authStore = useAuthStore();
 const router = useRouter();
+const email = ref("");
+const password = ref("");
 
 function goBack() {
   router.back();
@@ -13,6 +19,75 @@ function goBack() {
 
 function goHome() {
   router.push("/");
+}
+
+function showError(message) {
+  alert(message);
+  console.error(message);
+}
+
+async function handleLogin() {
+  if (!email.value || !password.value) {
+    alert("이메일과 비밀번호를 입력해주세요.");
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    });
+
+    if (error) {
+      showError("로그인에 실패했습니다: " + error.message);
+      return;
+    }
+
+    // 로그인 성공 후 사용자 정보를 Pinia에 설정
+    await authStore.setUser(data.user.id);
+
+    alert("로그인 성공!");
+    router.push("/");
+  } catch (err) {
+    console.error("로그인 중 오류 발생:", err.message);
+    showError("로그인 중 문제가 발생했습니다.");
+  }
+}
+
+async function loginWithProvider(provider) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: "/",
+      },
+    });
+    console.log(data, error);
+    if (error) {
+      showError(`${provider} 로그인 실패: ${error.message}`);
+      return;
+    }
+
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+
+    if (sessionError) {
+      showError("세션 정보 가져오기 실패: " + sessionError.message);
+      return;
+    }
+
+    if (sessionData?.session?.user) {
+      const user = sessionData.session.user;
+      console.log("로그인 성공, 사용자 정보:", user);
+      router.replace("/");
+    }
+  } catch (err) {
+    showError("로그인 중 오류 발생: " + err.message);
+  }
+}
+
+function handleSocialLogin(platform) {
+  loginWithProvider(platform);
 }
 </script>
 
@@ -31,7 +106,6 @@ function goHome() {
       <button class="font-bold size-8 text-hc-blue ml-[30px]" @click="goBack">
         <ChevronLeftIcon />
       </button>
-
       <button class="font-bold size-8 text-hc-blue mr-[30px]" @click="goHome">
         <HomeIcon />
       </button>
@@ -41,17 +115,18 @@ function goHome() {
       alt="Mongsang Logo"
       class="w-[276px] mb-7"
     />
-
     <div
-      class="rounded-xl shadow-blue w-[641px] flex flex-col items-center h-[602px] justify-center"
+      class="rounded-xl shadow-blue w-full max-w-[641px] flex flex-col items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
       style="
         border-radius: 20px;
         border: 7px solid rgba(255, 255, 255, 0.5);
         background: rgba(255, 255, 255, 0.3);
       "
     >
-      <!-- 로그인 폼 -->
-      <form class="flex flex-col items-center w-full mb-[50px]">
+      <form
+        class="flex flex-col items-center w-full mb-[50px]"
+        @submit.prevent="handleLogin"
+      >
         <div class="mb-5">
           <label class="block mb-1 ml-10 text-2xl font-semibold text-hc-blue"
             >이메일</label
@@ -62,6 +137,7 @@ function goHome() {
             variant="shadowed"
             size="sm"
             borderRadius="lg"
+            v-model="email"
           />
         </div>
         <div class="mb-[50px]">
@@ -69,32 +145,32 @@ function goHome() {
             >비밀번호</label
           >
           <Input
-            type="email"
+            type="password"
             placeholder="비밀번호를 입력해주세요"
             variant="shadowed"
             size="sm"
             borderRadius="lg"
+            v-model="password"
           />
         </div>
         <Button variant="shadowed" size="lg">로그인하기</Button>
       </form>
-
-      <!-- 소셜 로그인 -->
       <div class="flex items-center justify-center space-x-4">
-        <Button variant="custom" size="sm"
-          ><img
+        <Button variant="custom" size="sm" @click="handleSocialLogin('google')">
+          <img
             src="/assets/imgs/google_logo.png"
             alt="Google"
             class="w-[50px] h-[50px]"
-        /></Button>
-        <Button variant="custom" size="sm">
+          />
+        </Button>
+        <Button variant="custom" size="sm" @click="handleSocialLogin('kakao')">
           <img
             src="/assets/imgs/kakao_logo.png"
             alt="Kakao"
             class="w-[50px] h-[50px]"
           />
         </Button>
-        <Button variant="custom" size="sm">
+        <Button variant="custom" size="sm" @click="handleSocialLogin('gitHub')">
           <img
             src="/assets/imgs/github_logo.png"
             alt="GitHub"
@@ -102,13 +178,9 @@ function goHome() {
           />
         </Button>
       </div>
-
-      <!-- 회원가입 -->
       <p class="mt-[38px] text-2xl text-hc-blue">
         <a href="/join" class="underline">회원가입</a>
       </p>
     </div>
   </div>
 </template>
-
-<style scoped></style>

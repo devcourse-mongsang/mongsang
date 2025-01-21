@@ -3,7 +3,9 @@ import Button from "@/components/common/Button.vue";
 
 import CoverflowSwiper from "@/components/common/CoverflowSwiper.vue";
 import { ref } from "vue";
+import { useAuthStore } from "@/store/authStore";
 
+const authStore = useAuthStore();
 const popularPosts = ref([
   {
     image:
@@ -33,6 +35,11 @@ const popularPosts = ref([
 </script>
 
 <template>
+  <div v-if="authStore.isLoggedIn && authStore.profile">
+    {{ authStore.profile.username }}님
+  </div>
+  <div v-else>로그인해주세요.</div>
+
   <div
     class="flex flex-col items-center w-full py-8 sm:py-12 lg:py-16 px-4 md:px-[40px] lg:px-[120px] mb-[202px] mt-[30px]"
   >
