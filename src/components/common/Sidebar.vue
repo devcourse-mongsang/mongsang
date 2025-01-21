@@ -5,8 +5,20 @@ import { Icon } from "@iconify/vue";
 import sidebarHr from "../../../public/assets/icons/sidebar_hr.svg";
 import Headers from "./Headers.vue";
 import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/store/authStore";
 
+const authStore = useAuthStore();
 const sidebarStore = useSidebarStore(); // Pinia store 초기화
+const router = useRouter();
+
+async function handleLogout() {
+  const success = await authStore.logout();
+  if (success) {
+    alert("로그아웃 성공!");
+    router.push("/");
+  }
+}
 </script>
 
 <template>
@@ -43,6 +55,7 @@ const sidebarStore = useSidebarStore(); // Pinia store 초기화
             <Icon
               id="logout-icon"
               icon="material-symbols:logout-rounded"
+              @click="handleLogout"
               width="1.5rem"
               height="1.5rem"
               style="color: #ffffff"
