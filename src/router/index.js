@@ -25,11 +25,6 @@ const router = createRouter({
           name: "record",
           component: () => import("../pages/Record.vue"),
         },
-        {
-          path: "/diary",
-          name: "diary",
-          component: () => import("../pages/Diary.vue"),
-        },
       ],
     },
     {
@@ -39,7 +34,8 @@ const router = createRouter({
         {
           path: "/community/:boardType",
           name: "communityBoard",
-          component: () => import("../pages/community-pages/CommunityBoard.vue"),
+          component: () =>
+            import("../pages/community-pages/CommunityBoard.vue"),
         },
         {
           path: "/:boardType/:postId",
@@ -56,6 +52,21 @@ const router = createRouter({
           path: "profile",
           name: "profile",
           component: () => import("../pages/my-pages/Profile.vue"),
+        },
+        {
+          path: "profile/edit",
+          name: "profileEdit",
+          component: () => import("../pages/my-pages/ProfileEdit.vue"),
+        },
+        {
+          path: "/username/follow", // 임시 경로
+          name: "follow",
+          component: () => import("../pages/Follow.vue"),
+        },
+        {
+          path: "/diary",
+          name: "diary",
+          component: () => import("../pages/Diary.vue"),
         },
       ],
     },
