@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from "vue";
+import { Icon } from "@iconify/vue";
 import DropDown from "../../components/common/DropDown.vue";
 import { useRoute } from "vue-router";
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
@@ -23,6 +24,12 @@ watch(
   },
   { immediate: true }
 );
+
+const menuItems = [
+  { title: "인기순" },
+  { title: "최신순" },
+  { title: "작성순" },
+];
 </script>
 
 <template>
@@ -31,14 +38,13 @@ watch(
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-[0px]"
     >
       <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
-      <DropDown />
+      <DropDown :items="menuItems" buttonText="인기순" />
     </div>
     <div class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden"></div>
     <div class="flex justify-center mx-4">
       <div class="w-full bg-hc-white h-[45px] rounded-[20px] mb-[35px]"></div>
     </div>
 
-    <!-- 게시글 목록 -->
     <ul v-if="currentBoard.posts && currentBoard.posts.length">
       <li v-for="post in currentBoard.posts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
@@ -77,6 +83,20 @@ watch(
     </ul>
     <p v-else>게시글이 없습니다.</p>
   </div>
+
+  <RouterLink :to="`/${route.params.boardType}/create-post`"
+    ><v-fab
+      icon="$mdi-plus"
+      class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+    >
+      <Icon
+        id="weather-icon"
+        icon="material-symbols:edit-outline"
+        width="1.5rem"
+        height="1.5rem"
+        style="color: #729ecb"
+      /> </v-fab
+  ></RouterLink>
 </template>
 
 <style scoped></style>

@@ -42,6 +42,11 @@ const router = createRouter({
           name: "postDetail",
           component: () => import("../pages/community-pages/PostDetails.vue"),
         },
+        {
+          path: "/:boardType/create-post",
+          name: "createPost",
+          component: () => import("../pages/community-pages/CreatePost.vue"),
+        },
       ],
     },
     {
