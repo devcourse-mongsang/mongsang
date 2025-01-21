@@ -35,8 +35,7 @@ const popularPosts = ref([
 </script>
 
 <template>
-  <div v-if="loading">로딩 중...</div>
-  <div v-else-if="authStore.isLoggedIn && authStore.profile">
+  <div v-if="authStore.isLoggedIn && authStore.profile">
     {{ authStore.profile.username }}님
   </div>
   <div v-else>로그인해주세요.</div>
