@@ -4,32 +4,12 @@ import dateConverter from "../../utils/dateConveter";
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
 
+import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { register } from "swiper/element/bundle";
 import { Icon } from "@iconify/vue";
-
-const post = {
-  id: "9b2d60f3-742a-4e1b-9f3e-8b3e21f1e700",
-  title: "오늘의 자유로운 이야기",
-  content: "오늘 날씨가 정말 좋네요. 다들 기분 좋은 하루 보내세요!",
-  author_id: "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
-  img_url:
-    "https://cdn.pixabay.com/photo/2023/12/22/12/08/beach-8463642_1280.jpg",
-  youtube_url: "",
-  category: "free-board",
-  created_at: "2025-01-18T11:57:00Z",
-  updated_at: "2025-01-18T11:57:00Z",
-};
-
-const author = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  username: "dreamer01",
-  profile_bio: "저는 꿈 해석 전문가입니다.",
-  profile_url:
-    "https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg",
-  created_at: "2025-01-18T12:00:00Z",
-  updated_at: "2025-01-18T12:30:00Z",
-  time_stamp: "2025-01-18T12:45:00Z",
-};
+import { getPostById } from "@/api/api-community/api";
+import { getUserById } from "@/api/api-user/api";
 
 const user = {
   id: "123e4567-e89b-12d3-a456-426614174001",
@@ -84,6 +64,57 @@ const comments = [
   },
 ];
 
+const postId = ref("");
+const post = ref({});
+const author = ref({});
+const route = useRoute();
+
+const fetchPostItem = async (postId) => {
+  if (postId) {
+    try {
+      const fetchedPost = await getPostById(postId);
+      post.value = fetchedPost || {};
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    }
+  }
+};
+
+const fetchAuthor = async (userId) => {
+  if (userId) {
+    try {
+      const fetchedUser = await getUserById(userId);
+      author.value = fetchedUser[0] || {};
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  }
+};
+
+postId.value = route.params.postId;
+
+watch(
+  () => route.params.postId,
+  (newPostId) => {
+    postId.value = newPostId;
+    fetchPostItem(newPostId);
+  }
+);
+
+onMounted(async () => {
+  if (postId.value) {
+    try {
+      await fetchPostItem(postId.value);
+      console.log(post.value);
+      if (post.value.author_id) {
+        await fetchAuthor(post.value.author_id);
+      }
+    } catch (error) {
+      console.error("Error during initial data fetch:", error);
+    }
+  }
+});
+
 register();
 </script>
 <template>
@@ -91,7 +122,7 @@ register();
     <div class="flex items-center gap-[10px]">
       <img
         :src="author.profile_url || imgPlaceholder"
-        alt=""
+        alt="작성자 프로필 사진입니다."
         class="w-[45px] h-[45px] rounded-full"
       />
 

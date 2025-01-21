@@ -872,10 +872,32 @@
     "@supabase/realtime-js" "2.11.2"
     "@supabase/storage-js" "2.7.1"
 
+"@tanstack/match-sorter-utils@^8.19.4":
+  version "8.19.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/match-sorter-utils/-/match-sorter-utils-8.19.4.tgz#dacf772b5d94f4684f10dbeb2518cf72dccab8a5"
+  integrity sha512-Wo1iKt2b9OT7d+YGhvEPD3DXvPv2etTusIMhMUoG7fbhmxcXCtIjJDEygy91Y2JFlwGyjqiBPRozme7UD8hoqg==
+  dependencies:
+    remove-accents "0.5.0"
+
+"@tanstack/query-core@5.64.2":
+  version "5.64.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.64.2.tgz#be06e7c7966d14ea3e7c82bea1086b463f2f6809"
+  integrity sha512-hdO8SZpWXoADNTWXV9We8CwTkXU88OVWRBcsiFrk7xJQnhm6WRlweDzMD+uH+GnuieTBVSML6xFa17C2cNV8+g==
+
 "@tanstack/virtual-core@3.11.2":
   version "3.11.2"
   resolved "https://registry.npmjs.org/@tanstack/virtual-core/-/virtual-core-3.11.2.tgz"
   integrity sha512-vTtpNt7mKCiZ1pwU9hfKPhpdVO2sVzFQsxoVBGtOSHxlrRRzYr8iQ2TlwbAcRYCcEiZ9ECAM8kBzH0v2+VzfKw==
+
+"@tanstack/vue-query@^5.64.2":
+  version "5.64.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/vue-query/-/vue-query-5.64.2.tgz#d77c5fcd26dd4572fce9ae1cc3e86f6b055573ed"
+  integrity sha512-W5jvqLKK8VUeTqK1tQ1CF7fV8Z7w0oAxYiYHdcJyBRmhPVVHuSsgjIh1DX8uwbr8fTSQDt7iGboT7HqkIkPziA==
+  dependencies:
+    "@tanstack/match-sorter-utils" "^8.19.4"
+    "@tanstack/query-core" "5.64.2"
+    "@vue/devtools-api" "^6.6.3"
+    vue-demi "^0.14.10"
 
 "@tanstack/vue-virtual@^3.0.0-beta.60":
   version "3.11.2"
@@ -2120,6 +2142,11 @@ regenerator-runtime@^0.14.0:
   version "0.14.1"
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz"
   integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==
+
+remove-accents@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/remove-accents/-/remove-accents-0.5.0.tgz#77991f37ba212afba162e375b627631315bed687"
+  integrity sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==
 
 resolve-from@^4.0.0:
   version "4.0.0"
