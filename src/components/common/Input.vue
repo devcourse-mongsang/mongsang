@@ -1,4 +1,3 @@
-<!-- Input.vue -->
 <template>
   <input
     :class="[
@@ -9,6 +8,8 @@
       inputBorderRadius[borderRadius],
       className,
     ]"
+    :value="modelValue"
+    @input="$emit('update:modelValue', $event.target.value)"
     v-bind="otherProps"
   />
 </template>
@@ -19,6 +20,10 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "Input",
   props: {
+    modelValue: {
+      type: String,
+      default: "", // 기본값 설정
+    },
     variant: {
       type: String,
       validator: (value) => ["shadowed", "custom"].includes(value),
@@ -48,7 +53,6 @@ export default defineComponent({
       custom: "",
     };
 
-    // 기존 사이즈 설정
     const inputSize = {
       xs: "w-[398px] h-[63px] text-[24px] pl-[40px]",
       sm: "w-[480px] h-[63px] text-[24px] pl-[40px]",
@@ -57,7 +61,6 @@ export default defineComponent({
       xl: "w-[941px] h-[45px] text-[20px] pl-[16px]",
     };
 
-    // ProfileEdit 페이지용 사이즈 설정
     const profileInputSize = {
       xs: "h-[63px] md:h-[63px] text-sm md:text-xl pl-4 md:pl-[40px]",
       sm: "h-[63px] md:h-[63px] text-sm md:text-xl pl-4 md:pl-[40px]",
