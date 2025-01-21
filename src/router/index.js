@@ -68,6 +68,11 @@ const router = createRouter({
           name: "diary",
           component: () => import("../pages/Diary.vue"),
         },
+        {
+          path: "/diary/:postId",
+          name: "diaryDetail",
+          component: () => import("../pages/Diary.vue"),
+        },
       ],
     },
     {

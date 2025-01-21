@@ -1,7 +1,15 @@
 <script setup>
-import Calendar from "../components/common/Calender.vue";
+import Calender from "../components/common/Calender.vue";
 import DropDownDiary from "../components/common/DropDownDiary.vue";
-import GlassBox from "../components/common/glassBox.vue";
+import GlassBox from "../components/common/GlassBox.vue";
+import { ref } from "vue";
+
+const selectedDate = ref([new Date().getFullYear(), new Date().getMonth() + 1]);
+
+const updateDate = (dateArray) => {
+  selectedDate.value = dateArray;
+  console.log("업데이트된 날짜:", selectedDate.value);
+};
 
 const springs = [
   { class: "top-left-1", style: { top: "-23px", left: "90px" } },
@@ -10,6 +18,7 @@ const springs = [
   { class: "top-right-2", style: { top: "-23px", right: "150px" } },
 ];
 </script>
+
 <template>
   <div class="container">
     <GlassBox class="custom-box">
@@ -21,10 +30,14 @@ const springs = [
         />
       </div>
       <div class="dropdown-container">
-        <DropDownDiary />
+        <DropDownDiary @updateDate="updateDate" />
       </div>
       <div class="inner-box">
-        <Calendar />
+        <Calender
+          :year="selectedDate[0]"
+          :month="selectedDate[1]"
+          class="calender-center"
+        />
       </div>
       <div
         v-for="spring in springs"
@@ -50,6 +63,7 @@ const springs = [
     </GlassBox>
   </div>
 </template>
+
 <style scoped>
 .container {
   display: flex;
@@ -59,7 +73,11 @@ const springs = [
 }
 .custom-box {
   width: 838px;
-  height: 838px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
 }
 .logo-container {
   display: flex;
@@ -76,21 +94,28 @@ const springs = [
 
 .dropdown-container {
   position: absolute;
-  top: 140px; /* 위쪽으로 10px 마진 */
-  left: 30px; /* 왼쪽 상단에 위치 */
+  top: 140px;
+  left: 30px;
 }
 
 .inner-box {
   width: 786px;
-  height: 571px;
-  margin: 35px auto 0; /* 위쪽으로 10px 마진 추가 */
+  margin: 35px auto 0;
   border-radius: 20px 20px 10px 10px;
   background: rgba(114, 158, 203, 0.5);
-  padding: 16px;
   box-sizing: border-box;
   position: relative;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
-
+.calender-center {
+  align-items: center;
+  margin-bottom: 2px;
+}
 .spring {
   position: absolute;
 }
