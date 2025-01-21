@@ -1,34 +1,44 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/24/solid";
+
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-// 현재 연도부터 2년 전까지의 연도 배열 생성
 const years = ref(Array.from({ length: 3 }, (_, i) => `${currentYear - i}년`));
-
-// 1월부터 12월까지의 월 배열 생성
 const months = ref(Array.from({ length: 12 }, (_, i) => `${i + 1}월`));
 
-// 선택된 연도와 월
 const selectedYear = ref(`${currentYear}년`);
 const selectedMonth = ref(`${currentMonth}월`);
 
+const emit = defineEmits(["updateDate"]);
+
 const selectYear = (year, close) => {
   selectedYear.value = year;
+  updateSelection();
   close();
 };
 
 const selectMonth = (month, close) => {
   selectedMonth.value = month;
+  updateSelection();
   close();
+};
+
+const updateSelection = () => {
+  const year = parseInt(selectedYear.value.replace("년", ""), 10);
+  const month = parseInt(selectedMonth.value.replace("월", ""), 10);
+
+  const selectedDateArray = [year, month];
+  emit("updateDate", selectedDateArray);
+
+  console.log("선택한 연도와 월 배열:", selectedDateArray);
 };
 </script>
 
 <template>
   <div class="flex space-x-4">
-    <!-- 연도 선택 드롭다운 -->
     <Menu as="div" class="relative inline-block">
       <div>
         <MenuButton
@@ -77,7 +87,7 @@ const selectMonth = (month, close) => {
       </transition>
     </Menu>
 
-    <!-- 월 선택 드롭다운 -->
+    <!-- 월 선택 -->
     <Menu as="div" class="relative inline-block text-left">
       <div>
         <MenuButton
@@ -127,6 +137,7 @@ const selectMonth = (month, close) => {
     </Menu>
   </div>
 </template>
+
 <style scoped>
 .no-scrollbar::-webkit-scrollbar {
   display: none;
