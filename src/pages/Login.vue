@@ -44,7 +44,7 @@ async function handleLogin() {
     }
 
     // 로그인 성공 후 사용자 정보를 Pinia에 설정
-    await authStore.setUser();
+    await authStore.setUser(data.user.id);
 
     alert("로그인 성공!");
     router.push("/");
