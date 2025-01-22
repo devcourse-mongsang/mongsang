@@ -8,12 +8,64 @@ import {
   mdiNotebookOutline,
   mdiContentCopy,
   mdiTrayArrowDown,
+  mdiMicrophoneOff,
 } from "@mdi/js";
 
 import { ref } from "vue";
 
 const value = ref("");
+
 const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능합니다"];
+
+const isListening = ref(false);
+let speechRecognition = null;
+
+const analysisResult = ref("");
+
+//음성 인식 시작
+const startListening = () => {
+  if (isListening.value) return; //중복 클릭 X
+
+  if (!("webkitSpeechRecognition" in window)) {
+    alert("⚠️음성 입력을 지원하지 않는 브라우저입니다.");
+    return;
+  }
+
+  speechRecognition = new webkitSpeechRecognition();
+  speechRecognition.lang = "ko-KR";
+  speechRecognition.continuous = true;
+  speechRecognition.interimResults = false;
+
+  speechRecognition.onresult = (event) => {
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        value.value += event.results[i][0].transcript;
+      }
+    }
+  };
+
+  speechRecognition.onerror = (event) => {
+    console.error("❌ 음성 인식 에러 발생:", event.error);
+    alert("음성 인식 중 에러가 발생했습니다!");
+    stopListening();
+  };
+
+  speechRecognition.onend = () => {
+    isListening.value = false;
+  };
+
+  speechRecognition.start();
+  isListening.value = true;
+};
+
+// 음성 입력 종료
+const stopListening = () => {
+  if (speechRecognition && isListening.value) {
+    speechRecognition.stop();
+    isListening.value = false;
+  }
+  console.log("📝 꿈일기 내용:", value.value);
+};
 </script>
 <template>
   <div class="flex h-full gap-x-[85px] overflow-hidden">
@@ -22,6 +74,7 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
       class="ml-[70px] fixed h-full xl:w-[720px] 2xl:w-[760px] 3xl:w-[800px] md:w-[680px] sm:w-[600px] w-[648px]"
     >
       <v-textarea
+        v-model="value"
         :model-value="value"
         :rules="rules"
         variant="solo"
@@ -36,7 +89,14 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
 
       <div class="flex justify-between">
         <div class="flex gap-x-[10px]">
-          <Button variant="regular" class="text-hc-pink" size="xs">
+          <!-- 음성인식 버튼-->
+          <Button
+            v-if="!isListening"
+            variant="regular"
+            class="text-hc-pink"
+            size="xs"
+            @click="startListening"
+          >
             <v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +108,28 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
               </svg>
             </v-icon>
           </Button>
-          <Button variant="regular" size="xs"
+
+          <Button
+            v-else
+            variant="regular"
+            class="text-hc-pink"
+            size="xs"
+            @click="stopListening"
+          >
+            <v-icon>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-6 h-6"
+              >
+                <path :d="mdiMicrophoneOff" />
+              </svg>
+            </v-icon>
+          </Button>
+
+          <!-- 분석 버튼 -->
+          <Button variant="regular" size="xs" @click="analyzeDream"
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -59,6 +140,8 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
                 <path :d="mdiEqualizer" />
               </svg> </v-icon
           ></Button>
+
+          <!-- AI 이미지 생성 버튼  -->
           <Button variant="regular" size="xs"
             ><v-icon>
               <svg
@@ -70,6 +153,8 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
                 <path :d="mdiPaletteOutline" />
               </svg> </v-icon
           ></Button>
+
+          <!-- ASMR 추천 버튼  -->
           <Button variant="regular" size="xs"
             ><v-icon>
               <svg
@@ -114,7 +199,7 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
           <h3 class="text-xl">
             {{
               analysisResult ||
-              "꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!"
+              "AI가 꿈을 분석하고 결과를 여기에 보여드릴게요!🌙"
             }}
           </h3>
         </div>
