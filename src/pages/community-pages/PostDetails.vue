@@ -249,20 +249,24 @@ register();
       <div>
         <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
         <!-- 댓글 입력창 -->
-        <div class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px]">
+        <div class="flex gap-[10px] items-center w-full xm:px-4 sm:px-[0px]">
           <img
             :src="authStore.profile.profile_url || imgPlaceholder"
             alt=""
             class="w-[45px] h-[45px] rounded-full"
           />
-          <Input
-            variant="custom"
-            size="md"
-            borderRadius="md"
-            placeholder="댓글을 입력해주세요."
-            class-name="w-full"
-          />
-          <Icon icon="material-symbols:send-rounded" width="24" height="24" />
+          <div class="flex items-center w-full gap-[11px]">
+            <div class="w-full">
+              <Input
+                variant="custom"
+                size="md"
+                borderRadius="md"
+                placeholder="댓글을 입력해주세요."
+                class-name="flex w-full"
+              />
+            </div>
+            <Icon icon="material-symbols:send-rounded" width="24" height="24" />
+          </div>
         </div>
         <!-- 댓글 목록 -->
         <div class="mt-[29px] xm:mx-4 sm:mx-[0px]">

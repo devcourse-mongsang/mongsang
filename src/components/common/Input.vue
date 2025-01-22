@@ -1,28 +1,53 @@
 <template>
-  <input
-    :class="[
-      'text-hc-gray bg-hc-white focus:outline-none flex items-center justify-center',
-      isProfilePage ? 'w-full' : '',
-      inputVar[variant],
-      isProfilePage ? profileInputSize[size] : inputSize[size],
-      inputBorderRadius[borderRadius],
-      className,
-    ]"
-    :value="modelValue"
-    @input="$emit('update:modelValue', $event.target.value)"
-    v-bind="otherProps"
-  />
+  <div class="relative">
+    <input
+      :class="[
+        'text-hc-gray bg-hc-white focus:outline-none flex items-center justify-center',
+        isProfilePage ? 'w-full' : '',
+        inputVar[variant],
+        isProfilePage ? profileInputSize[size] : inputSize[size],
+        inputBorderRadius[borderRadius],
+        className,
+      ]"
+      :type="currentType"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
+      v-bind="otherProps"
+    />
+    <button
+      v-if="type === 'passwordToggle'"
+      type="button"
+      class="absolute inset-y-0 right-3 flex items-center text-blue-500"
+      @click="togglePassword"
+    >
+      <Icon
+        :icon="isPasswordVisible ? 'tabler:eye-off' : 'tabler:eye'"
+        class="w-5 h-5"
+        style="color: #757575"
+      />
+    </button>
+  </div>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref, computed } from "vue";
+import { Icon } from "@iconify/vue";
 
 export default defineComponent({
   name: "Input",
+  components: {
+    Icon,
+  },
   props: {
     modelValue: {
       type: String,
-      default: "", // 기본값 설정
+      default: "",
+    },
+    type: {
+      type: String,
+      default: "text",
+      validator: (value) =>
+        ["text", "password", "passwordToggle", "email"].includes(value),
     },
     variant: {
       type: String,
@@ -48,6 +73,19 @@ export default defineComponent({
     },
   },
   setup(props, { attrs }) {
+    const isPasswordVisible = ref(false);
+
+    const togglePassword = () => {
+      isPasswordVisible.value = !isPasswordVisible.value;
+    };
+
+    const currentType = computed(() => {
+      if (props.type === "passwordToggle") {
+        return isPasswordVisible.value ? "text" : "password";
+      }
+      return props.type;
+    });
+
     const inputVar = {
       shadowed: "shadow-blue",
       custom: "",
@@ -80,6 +118,9 @@ export default defineComponent({
       profileInputSize,
       inputBorderRadius,
       otherProps: attrs,
+      isPasswordVisible,
+      togglePassword,
+      currentType,
     };
   },
 });
