@@ -1,7 +1,12 @@
 <script setup>
-import DropDown from "@/components/common/DropDown.vue";
+import { createPost } from "@/api/api-community/api";
+import { uploadImagesToSupabase } from "@/api/api-community/imgsApi";
+import DropDownNewPost from "@/components/common/DropDownNewPost.vue";
+import { useAuthStore } from "@/store/authStore";
+import { useDropDownStore } from "@/store/dropDownStore";
 import { Icon } from "@iconify/vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 const menuItems = [
   { title: "자유게시판" },
@@ -13,8 +18,38 @@ const menuItems = [
   { title: "길몽" },
   { title: "해몽" },
 ];
-
+const router = useRouter();
+const authStore = useAuthStore();
+const dropdownStore = useDropDownStore();
+const imageFiles = ref([]);
 const imageUrls = ref([]);
+const title = ref("");
+const content = ref("");
+const selectedCategory = ref(
+  getEnglishKeyword(dropdownStore.$state.currentCategory)
+);
+
+function getEnglishKeyword(koreanKeyword) {
+  const keywordMap = {
+    자유게시판: "free-board",
+    초현실몽: "surreal-dream",
+    예지몽: "prophetic-dream",
+    반복몽: "recurrent-dream",
+    자각몽: "lucid-dream",
+    악몽: "nightmare",
+    길몽: "good-dream",
+    해몽: "dream-interpretation",
+  };
+
+  return keywordMap[koreanKeyword] || null;
+}
+
+watch(
+  () => dropdownStore.currentCategory,
+  (newCategory) => {
+    selectedCategory.value = getEnglishKeyword(newCategory);
+  }
+);
 
 const addImages = (files) => {
   Array.from(files).forEach((file) => {
@@ -30,6 +65,7 @@ const handleInputChange = (event) => {
   const files = event.target.files;
   if (files) {
     addImages(files);
+    imageFiles.value = Array.from(files);
   }
 };
 
@@ -37,6 +73,7 @@ const handleDrop = (event) => {
   event.preventDefault();
   if (event.dataTransfer.files) {
     addImages(event.dataTransfer.files);
+    imageFiles.value = Array.from(event.dataTransfer.files);
   }
 };
 
@@ -46,15 +83,44 @@ const handleDragOver = (event) => {
 
 const removeImage = (index) => {
   imageUrls.value.splice(index, 1);
+  imageFiles.value.splice(index, 1);
+};
+
+const createNewPost = async () => {
+  try {
+    if (authStore.isLoggedIn && authStore.profile) {
+      const newPostData = {
+        title: title.value,
+        content: content.value,
+        author_id: authStore.profile.id,
+        category: selectedCategory.value,
+      };
+      const postResponse = await createPost(newPostData);
+      const postId = postResponse[0].id;
+
+      if (postId) {
+        const uploadedImageUrls = await uploadImagesToSupabase(
+          imageFiles.value,
+          postId
+        );
+        console.log("Uploaded image URLs:", uploadedImageUrls); // 업로드된 이미지 URL 로그 출력
+
+        router.push({ name: "communityBoard" });
+      }
+    }
+  } catch (error) {
+    alert("이미지 업로드에 실패하였습니다.");
+    console.error(error);
+  }
 };
 </script>
 
 <template>
   <div class="flex flex-col w-full gap-[10px] sm:mt-[-100px]">
     <div class="flex xm:px-4 sm:px-[0px]">
-      <DropDown
+      <DropDownNewPost
         :items="menuItems"
-        buttonText="자유게시판"
+        :buttonText="dropdownStore.currentCategory"
         class="text-xl text-hc-black"
       />
     </div>
@@ -67,23 +133,19 @@ const removeImage = (index) => {
           placeholder="제목 없음"
           type="text"
           class="w-full text-2xl outline-none"
+          v-model="title"
         />
         <textarea
-          placeholder="여기에 글을 작성해주세요
-
-욕설, 비방, 또는 타인을 불쾌하게 하는 내용은 작성하지 말아주세요
-커뮤니티 규칙에 따라 부적절한 게시글은 사전 통보 없이 삭제될 수 있습니다
-모두가 즐겁게 소통할 수 있도록 서로를 존중해주세요
-"
+          placeholder="여기에 글을 작성해주세요"
           name="포스팅 내용"
           id="newPostContent"
           class="w-full min-h-[462px] h-auto outline-none resize-none"
+          v-model="content"
         ></textarea>
       </div>
       <div class="m-[25px] flex flex-col gap-[10px]">
         <p class="pl-2 text-xl font-semibold">이미지 업로드</p>
 
-        <!-- 드래그 앤 드롭 영역 -->
         <div
           @drop="handleDrop"
           @dragover="handleDragOver"
@@ -111,7 +173,6 @@ const removeImage = (index) => {
           </label>
         </div>
 
-        <!-- 이미지 미리보기 -->
         <div v-if="imageUrls.length" class="flex flex-wrap gap-4 mt-4">
           <div
             v-for="(url, index) in imageUrls"
@@ -123,7 +184,6 @@ const removeImage = (index) => {
               alt="Preview"
               class="aspect-square w-full rounded-[20px] object-cover"
             />
-            <!-- 삭제 버튼 -->
             <button
               @click="removeImage(index)"
               class="absolute top-[10px] right-[10px] p-1 text-white bg-hc-gray/30 bg-opacity-50 rounded-full hover:scale-105 hover:bg-hc-gray"
@@ -143,9 +203,9 @@ const removeImage = (index) => {
     icon="$mdi-plus"
     class="fixed bottom-[50px] right-[70px] scale-[110%] z-30"
     color="#729ECB"
+    @click="createNewPost"
   >
     <Icon icon="ic:round-arrow-forward" width="24" height="24" />
-    <!-- <Icon icon="ic:round-check" width="24" height="24" /> -->
   </v-fab>
 </template>
 
