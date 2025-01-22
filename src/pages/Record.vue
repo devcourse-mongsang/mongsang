@@ -105,6 +105,20 @@ const analyzeDream = async () => {
     isAnalyzing.value = false;
   }
 };
+
+// 꿈 분석 복사
+const copyAnalysis = function () {
+  navigator.clipboard
+    .writeText(analysisResult.value)
+    .then(() => {
+      alert("분석 결과가 복사되었습니다! 📋");
+      console.log("분석 결과: ", analysisResult.value);
+    })
+    .catch(() => {
+      console.error("❌ 분석 결과 복사에 실패했습니다.", error);
+      alert("분석 결과 복사에 실패했습니다. 다시 시도해주세요!");
+    });
+};
 </script>
 <template>
   <div class="flex h-full gap-x-[85px] overflow-hidden">
@@ -243,7 +257,12 @@ const analyzeDream = async () => {
           </h3>
         </div>
 
-        <Button size="xs" variant="regular" class="absolute bottom-4 right-4">
+        <Button
+          size="xs"
+          variant="regular"
+          class="absolute bottom-4 right-4"
+          @click="copyAnalysis"
+        >
           <v-icon>
             <svg
               xmlns="http://www.w3.org/2000/svg"
