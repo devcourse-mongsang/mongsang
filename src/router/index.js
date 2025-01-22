@@ -43,6 +43,11 @@ const router = createRouter({
           component: () => import("../pages/community-pages/PostDetails.vue"),
         },
         {
+          path: "/:boardType/:postId/update-post",
+          name: "updatePost",
+          component: () => import("../pages/community-pages/UpdatePost.vue"),
+        },
+        {
           path: "/:boardType/create-post",
           name: "createPost",
           component: () => import("../pages/community-pages/CreatePost.vue"),
@@ -78,11 +83,11 @@ const router = createRouter({
           name: "diaryDetail",
           component: () => import("../pages/diary-pages/DiaryDetails.vue"),
         },
-        {
-          path: "/diary/:postId",
-          name: "diaryDetail",
-          component: () => import("../pages/Diary.vue"),
-        },
+        // {
+        //   path: "/diary/:postId",
+        //   name: "diaryDetail",
+        //   component: () => import("../pages/Diary.vue"),
+        // },
       ],
     },
     {

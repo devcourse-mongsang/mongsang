@@ -2,9 +2,12 @@ import supabase from "@/config/supabase";
 
 export const createPost = async (post) => {
   try {
-    const { data, error } = await supabase.from("community").insert(post).select();
+    const { data, error } = await supabase
+      .from("community")
+      .insert(post)
+      .select();
     if (error) throw new Error(error.message); // Error 메시지 처리
-    console.log(data)
+    console.log(data);
     return data;
   } catch (error) {
     console.error("게시물 생성 실패:", error.message); // 에러 로깅
@@ -32,7 +35,8 @@ export const updatePost = async (id, updates) => {
     const { data, error } = await supabase
       .from("community")
       .update(updates)
-      .eq("id", id);
+      .eq("id", id)
+      .select();
     if (error) throw new Error(error.message); // Error 메시지 처리
     return data;
   } catch (error) {

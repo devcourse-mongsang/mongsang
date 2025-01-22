@@ -9,6 +9,11 @@ import { useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
 
 import supabase from "@/config/supabase";
+import { getUserById } from "@/api/api-user/api";
+import {
+  deleteImagesFromFolder,
+  fetchImagesFromSupabase,
+} from "@/api/api-community/imgsApi";
 
 // 라우트 정보 및 상태 관리 변수
 const route = useRoute();
@@ -25,7 +30,9 @@ const boards = {
   "dream-interpretation": { title: "해몽" },
 };
 
-const currentBoard = ref(boards[selectedCategory.value] || { title: "게시판 없음" });
+const currentBoard = ref(
+  boards[selectedCategory.value] || { title: "게시판 없음" }
+);
 const posts = ref([]);
 const isLoading = ref(false); // 로딩 상태 변수
 const menuItems = [
@@ -34,12 +41,32 @@ const menuItems = [
   { title: "작성순" },
 ];
 
+// 작성자 정보 캐시
+const authorCache = ref({});
+const postImgs = ref({});
+
 // 게시글 데이터를 가져오는 함수
 const fetchPosts = async () => {
   isLoading.value = true; // 로딩 시작
   try {
-    const fetchedPosts = await getPostByCategory(selectedCategory.value, supabase);
+    const fetchedPosts = await getPostByCategory(
+      selectedCategory.value,
+      supabase
+    );
     posts.value = fetchedPosts || [];
+
+    // 각 게시물의 작성자 정보를 캐싱
+    for (let post of posts.value) {
+      if (!authorCache.value[post.author_id]) {
+        const user = await getUserById(post.author_id);
+        authorCache.value[post.author_id] = user[0] || {};
+      }
+      if (!postImgs.value[post.id]) {
+        const imgUrl = await fetchImagesFromSupabase(post.id);
+        postImgs.value[post.id] = imgUrl[0] || {};
+        console.log(postImgs.value[post.id]);
+      }
+    }
   } catch (error) {
     console.error("게시글을 불러오는 중 오류가 발생했습니다:", error);
     posts.value = [];
@@ -52,9 +79,11 @@ const fetchPosts = async () => {
 watch(
   () => route.params.boardType,
   async (newBoardType) => {
-    selectedCategory.value = newBoardType;
-    currentBoard.value = boards[newBoardType] || { title: "게시판 없음" };
-    await fetchPosts();
+    if (selectedCategory.value !== newBoardType) {
+      selectedCategory.value = newBoardType; // 값이 다를 때만 변경
+      currentBoard.value = boards[newBoardType] || { title: "게시판 없음" };
+      await fetchPosts();
+    }
   },
   { immediate: true }
 );
@@ -66,7 +95,9 @@ onMounted(fetchPosts);
 <template>
   <div>
     <!-- 헤더 -->
-    <div class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0">
+    <div
+      class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
+    >
       <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
       <DropDown :items="menuItems" buttonText="인기순" />
     </div>
@@ -91,11 +122,13 @@ onMounted(fetchPosts);
               <span class="flex items-center gap-[10px]">
                 <img
                   class="aspect-square xm:w-[30px] sm:w-[50px] rounded-full"
-                  :src="post.profile_img || imgPlaceholder"
+                  :src="
+                    authorCache[post.author_id]?.profile_url || imgPlaceholder
+                  "
                   alt="User profile image"
                 />
                 <p class="font-semibold lg:text-xl">
-                  {{ post.userName || "@anonymous" }}
+                  {{ authorCache[post.author_id]?.username || "@anonymous" }}
                 </p>
               </span>
               <span class="flex flex-col">
@@ -107,10 +140,13 @@ onMounted(fetchPosts);
                 </p>
               </span>
             </div>
-
             <img
               class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px]"
-              :src="post.img_url || imgPlaceholder"
+              :src="
+                Object.keys(postImgs[post.id] || {}).length === 0
+                  ? imgPlaceholder
+                  : postImgs[post.id]
+              "
               alt="Post image"
             />
           </div>

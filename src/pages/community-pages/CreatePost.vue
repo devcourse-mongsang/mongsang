@@ -99,6 +99,7 @@ const createNewPost = async () => {
       const postId = postResponse[0].id;
 
       if (postId) {
+        console.log(imageFiles.value);
         const uploadedImageUrls = await uploadImagesToSupabase(
           imageFiles.value,
           postId

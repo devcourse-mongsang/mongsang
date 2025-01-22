@@ -12,19 +12,22 @@ import { deletePost, getPostById } from "@/api/api-community/api";
 import { getUserById } from "@/api/api-user/api";
 import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
-import { fetchImagesFromSupabase } from "@/api/api-community/imgsApi";
+import {
+  fetchImagesFromSupabase,
+  deleteImagesFromFolder,
+} from "@/api/api-community/imgsApi";
 
 const authStore = useAuthStore();
 
-const user = {
-  id: "123e4567-e89b-12d3-a456-426614174001",
-  username: "dreamer02",
-  profile_bio: "마라탕 좋아",
-  profile_url: "",
-  created_at: "2025-01-17T09:00:00Z",
-  updated_at: "2025-01-17T09:30:00Z",
-  time_stamp: "2025-01-17T09:45:00Z",
-};
+// const user = {
+//   id: "123e4567-e89b-12d3-a456-426614174001",
+//   username: "dreamer02",
+//   profile_bio: "마라탕 좋아",
+//   profile_url: "",
+//   created_at: "2025-01-17T09:00:00Z",
+//   updated_at: "2025-01-17T09:30:00Z",
+//   time_stamp: "2025-01-17T09:45:00Z",
+// };
 
 const comments = [
   {
@@ -91,6 +94,7 @@ const fetchAuthor = async (userId) => {
     try {
       const fetchedUser = await getUserById(userId);
       author.value = fetchedUser[0] || {};
+      console.log(author.value);
     } catch (error) {
       console.error("Error fetching user:", error);
     }
@@ -101,6 +105,7 @@ const fetchDeletePost = async (postId) => {
   if (postId) {
     try {
       const res = await deletePost(postId);
+      await deleteImagesFromFolder(postId);
       console.log("포스트 삭제 성공!", res);
       router.push({ name: "communityBoard" });
     } catch (error) {
@@ -123,6 +128,8 @@ const fetchImg = async (postId) => {
 };
 
 postId.value = route.params.postId;
+
+const category = ref(route.params.boardType);
 
 watch(
   () => route.params.postId,
@@ -171,13 +178,15 @@ register();
       >
 
       <div class="flex gap-2" v-if="author.id === authStore.profile.id">
-        <Icon
-          icon="material-symbols:edit-square-outline-rounded"
-          class="cursor-pointer"
-          width="24"
-          height="24"
-          color="#757575"
-        />
+        <RouterLink :to="`/${category}/${post.id}/update-post`">
+          <Icon
+            icon="material-symbols:edit-square-outline-rounded"
+            class="cursor-pointer"
+            width="24"
+            height="24"
+            color="#757575"
+          />
+        </RouterLink>
         <Icon
           @click="fetchDeletePost(post.id)"
           icon="ic:round-delete"
@@ -207,7 +216,7 @@ register();
         >
           <div class="flex items-center aspect-square">
             <img
-              class="object-contain w-full"
+              class="object-contain w-full aspect-square"
               :src="postImg"
               alt="Post Image"
             />
@@ -258,7 +267,7 @@ register();
         <!-- 댓글 목록 -->
         <div class="mt-[29px] xm:mx-4 sm:mx-[0px]">
           <ul class="flex flex-col gap-[26px]">
-            <li
+            <!-- <li
               v-for="comment in comments"
               :key="comment.id"
               class="flex items-center justify-between"
@@ -277,7 +286,7 @@ register();
               <p class="right-0 text-hc-gray">
                 {{ dateConverter(comment.created_at) }}
               </p>
-            </li>
+            </li> -->
           </ul>
         </div>
       </div>

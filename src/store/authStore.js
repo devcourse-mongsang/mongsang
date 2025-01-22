@@ -40,7 +40,7 @@ export const useAuthStore = defineStore("auth", {
             .eq("id", userId)
             .single();
 
-          console.log("profileData", profileData);
+          console.log("now online - profileData: ", profileData);
           if (profileError) {
             console.warn(
               "유저 정보를 가져오는 데 실패했습니다:",
