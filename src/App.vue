@@ -1,7 +1,7 @@
 <script setup>
 import { useAuthStore } from "@/store/authStore";
 import { onMounted } from "vue";
-
+import Modal from "./components/common/Modal.vue";
 const authStore = useAuthStore();
 
 onMounted(() => {
@@ -11,4 +11,5 @@ onMounted(() => {
 
 <template>
   <RouterView />
+  <Modal />
 </template>
