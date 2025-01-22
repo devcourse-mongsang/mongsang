@@ -12,6 +12,7 @@ import {
 } from "@mdi/js";
 
 import { ref } from "vue";
+import { OpenAI } from "openai";
 
 const value = ref("");
 
@@ -21,6 +22,11 @@ const isListening = ref(false);
 let speechRecognition = null;
 
 const analysisResult = ref("");
+const isAnalyzing = ref(false);
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 //음성 인식 시작
 const startListening = () => {
@@ -65,6 +71,39 @@ const stopListening = () => {
     isListening.value = false;
   }
   console.log("📝 꿈일기 내용:", value.value);
+};
+
+//꿈 분석
+const analyzeDream = async () => {
+  if (!value.value.trim()) {
+    alert("꿈이 입력 되지 않았습니다 😢 꿈을 입력해주세요!");
+    return;
+  }
+
+  isAnalyzing.value = true; //로딩 상태
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      store: true,
+      messages: [
+        {
+          role: "user",
+          content: `이 꿈 내용을 분석하고 해석해줘. 대답에서 마크다운 문법(예: *, #, _)을 사용하지 말고, 순수한 텍스트로만 답변해줘. 대신 이모티콘을 넣어서 친근한 느낌을 줘.: "${value.value}"`,
+        },
+      ],
+
+      max_tokens: 1000,
+      temperature: 0.7,
+    });
+
+    analysisResult.value = response.choices[0].message.content;
+  } catch (error) {
+    console.error("❌Open AI API 호출 에러", error);
+    alert("꿈 분석 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+  } finally {
+    isAnalyzing.value = false;
+  }
 };
 </script>
 <template>
