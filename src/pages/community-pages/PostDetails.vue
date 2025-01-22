@@ -4,42 +4,30 @@ import dateConverter from "../../utils/dateConveter";
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
 
+import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { register } from "swiper/element/bundle";
 import { Icon } from "@iconify/vue";
+import { deletePost, getPostById } from "@/api/api-community/api";
+import { getUserById } from "@/api/api-user/api";
+import { useAuthStore } from "@/store/authStore";
+import router from "@/router";
+import {
+  fetchImagesFromSupabase,
+  deleteImagesFromFolder,
+} from "@/api/api-community/imgsApi";
 
-const post = {
-  id: "9b2d60f3-742a-4e1b-9f3e-8b3e21f1e700",
-  title: "오늘의 자유로운 이야기",
-  content: "오늘 날씨가 정말 좋네요. 다들 기분 좋은 하루 보내세요!",
-  author_id: "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
-  img_url:
-    "https://cdn.pixabay.com/photo/2023/12/22/12/08/beach-8463642_1280.jpg",
-  youtube_url: "",
-  category: "free-board",
-  created_at: "2025-01-18T11:57:00Z",
-  updated_at: "2025-01-18T11:57:00Z",
-};
+const authStore = useAuthStore();
 
-const author = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  username: "dreamer01",
-  profile_bio: "저는 꿈 해석 전문가입니다.",
-  profile_url:
-    "https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg",
-  created_at: "2025-01-18T12:00:00Z",
-  updated_at: "2025-01-18T12:30:00Z",
-  time_stamp: "2025-01-18T12:45:00Z",
-};
-
-const user = {
-  id: "123e4567-e89b-12d3-a456-426614174001",
-  username: "dreamer02",
-  profile_bio: "마라탕 좋아",
-  profile_url: "",
-  created_at: "2025-01-17T09:00:00Z",
-  updated_at: "2025-01-17T09:30:00Z",
-  time_stamp: "2025-01-17T09:45:00Z",
-};
+// const user = {
+//   id: "123e4567-e89b-12d3-a456-426614174001",
+//   username: "dreamer02",
+//   profile_bio: "마라탕 좋아",
+//   profile_url: "",
+//   created_at: "2025-01-17T09:00:00Z",
+//   updated_at: "2025-01-17T09:30:00Z",
+//   time_stamp: "2025-01-17T09:45:00Z",
+// };
 
 const comments = [
   {
@@ -84,135 +72,232 @@ const comments = [
   },
 ];
 
+const postId = ref("");
+const post = ref(null);
+const author = ref(null);
+const route = useRoute();
+const postImgs = ref({});
+
+const fetchPostItem = async (postId) => {
+  if (postId) {
+    try {
+      const fetchedPost = await getPostById(postId);
+      post.value = fetchedPost || {};
+    } catch (error) {
+      console.error("Error fetching post:", error);
+    }
+  }
+};
+
+const fetchAuthor = async (userId) => {
+  if (userId) {
+    try {
+      const fetchedUser = await getUserById(userId);
+      author.value = fetchedUser[0] || {};
+      console.log(author.value);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  }
+};
+
+const fetchDeletePost = async (postId) => {
+  if (postId) {
+    try {
+      const res = await deletePost(postId);
+      await deleteImagesFromFolder(postId);
+      console.log("포스트 삭제 성공!", res);
+      router.push({ name: "communityBoard" });
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  }
+};
+
+const fetchImg = async (postId) => {
+  if (postId) {
+    try {
+      const res = await fetchImagesFromSupabase(postId);
+      // Public URL만 추출하여 postImgs에 저장
+      postImgs.value = res;
+      console.log("Fetched image URLs:", postImgs.value);
+    } catch (error) {
+      console.error("Error fetching img:", error);
+    }
+  }
+};
+
+postId.value = route.params.postId;
+
+const category = ref(route.params.boardType);
+
+watch(
+  () => route.params.postId,
+  (newPostId) => {
+    postId.value = newPostId;
+    fetchPostItem(newPostId);
+  }
+);
+
+onMounted(async () => {
+  postId.value = route.params.postId; // 라우트 파라미터에서 postId 설정
+  if (postId.value) {
+    try {
+      await fetchPostItem(postId.value);
+      await fetchImg(postId.value);
+      if (post.value.author_id) {
+        await fetchAuthor(post.value.author_id);
+      }
+    } catch (error) {
+      console.error("Error during initial data fetch:", error);
+    }
+  }
+});
+
 register();
 </script>
 <template>
-  <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
-    <div class="flex items-center gap-[10px]">
-      <img
-        :src="author.profile_url || imgPlaceholder"
-        alt=""
-        class="w-[45px] h-[45px] rounded-full"
-      />
+  <div v-if="post">
+    <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
+      <div class="flex items-center gap-[10px]">
+        <img
+          :src="author.profile_url || imgPlaceholder"
+          alt="작성자 프로필 사진입니다."
+          class="w-[45px] h-[45px] rounded-full"
+        />
 
-      <p class="text-base font-semibold">@{{ author.username }}</p>
-    </div>
-    <Button
-      variant="regular"
-      size="md"
-      class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
-      >팔로잉</Button
-    >
-  </div>
-  <div>
-    <swiper-container
-      navigation="true"
-      class="mySwiper"
-      initial-slide="0"
-      pagination="true"
-      effect="Fade"
-      centered-slides="true"
-      slides-per-view="auto"
-      speed="450"
-    >
-      <swiper-slide class="bg-hc-white/50">
-        <div class="flex items-center aspect-square">
-          <img
-            class="object-contain w-full"
-            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
-          />
-        </div>
-      </swiper-slide>
-      <swiper-slide class="bg-hc-white/50">
-        <div class="flex items-center aspect-square">
-          <img
-            class="object-contain w-full"
-            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
-          />
-        </div>
-      </swiper-slide>
-      <swiper-slide class="bg-hc-white/50">
-        <div class="flex items-center aspect-square">
-          <img
-            class="object-contain w-full"
-            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
-          />
-        </div>
-      </swiper-slide>
-      <swiper-slide class="bg-hc-white/50">
-        <div class="flex items-center aspect-square">
-          <img
-            class="object-contain w-full"
-            src="https://cdn.pixabay.com/photo/2017/09/03/15/45/seagull-2710822_1280.jpg"
-          />
-        </div>
-      </swiper-slide>
-    </swiper-container>
-
-    <div class="mb-6">
-      <div class="mt-[45px] xm:px-4 sm:px-[0px]">
-        <div class="flex items-center justify-between">
-          <h1 class="font-semibold xm:text-xl sm:text-2xl">{{ post.title }}</h1>
-          <Icon
-            class="cursor-pointer"
-            icon="stash:heart-light"
-            width="35"
-            height="35"
-            style="color: #729ecb"
-          />
-        </div>
-        <p>{{ dateConverter(post.created_at) }}</p>
-        <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>
+        <p class="text-base font-semibold">@{{ author.username }}</p>
       </div>
-      <div class="px-4 pt-6 mb-10 sm:hidden">
-        {{ post.content }}
+
+      <Button
+        v-if="author.id !== authStore.profile.id"
+        variant="regular"
+        size="md"
+        class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+        >팔로잉</Button
+      >
+
+      <div class="flex gap-2" v-if="author.id === authStore.profile.id">
+        <RouterLink :to="`/${category}/${post.id}/update-post`">
+          <Icon
+            icon="material-symbols:edit-square-outline-rounded"
+            class="cursor-pointer"
+            width="24"
+            height="24"
+            color="#757575"
+          />
+        </RouterLink>
+        <Icon
+          @click="fetchDeletePost(post.id)"
+          icon="ic:round-delete"
+          class="cursor-pointer"
+          width="24"
+          height="24"
+          color="#ed4848"
+        />
       </div>
     </div>
 
     <div>
-      <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
-      <!-- 댓글 입력창 -->
-      <div class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px]">
-        <img
-          :src="user.profile_url || imgPlaceholder"
-          alt=""
-          class="w-[45px] h-[45px] rounded-full"
-        />
-        <Input
-          variant="custom"
-          size="md"
-          borderRadius="md"
-          placeholder="댓글을 입력해주세요."
-          class="w-full"
-        />
-        <Icon icon="material-symbols:send-rounded" width="24" height="24" />
+      <swiper-container
+        navigation="true"
+        class="mySwiper"
+        initial-slide="0"
+        pagination="true"
+        centered-slides="true"
+        slides-per-view="1"
+        speed="450"
+      >
+        <!-- Swiper 슬라이드: 이미지 렌더링 -->
+        <swiper-slide
+          v-for="(postImg, index) in postImgs"
+          :key="index"
+          class="bg-hc-white/50"
+        >
+          <div class="flex items-center aspect-square">
+            <img
+              class="object-contain w-full aspect-square"
+              :src="postImg"
+              alt="Post Image"
+            />
+          </div>
+        </swiper-slide>
+      </swiper-container>
+
+      <div class="mb-6">
+        <div class="mt-[45px] xm:px-4 sm:px-[0px]">
+          <div class="flex items-center justify-between">
+            <h1 class="font-semibold xm:text-xl sm:text-2xl">
+              {{ post.title }}
+            </h1>
+            <Icon
+              class="cursor-pointer"
+              icon="stash:heart-light"
+              width="35"
+              height="35"
+              style="color: #729ecb"
+            />
+          </div>
+          <p>{{ dateConverter(post.created_at) }}</p>
+          <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>
+        </div>
+        <div class="px-4 pt-6 mb-10 sm:hidden">
+          {{ post.content }}
+        </div>
       </div>
-      <!-- 댓글 목록 -->
-      <div class="mt-[29px] xm:mx-4 sm:mx-[0px]">
-        <ul class="flex flex-col gap-[26px]">
-          <li
-            v-for="comment in comments"
-            :key="comment.id"
-            class="flex items-center justify-between"
-          >
-            <div class="flex items-center gap-[10px]">
-              <img
-                :src="user.profile_url || imgPlaceholder"
-                alt=""
-                class="w-[50px] h-[50px] rounded-full"
+
+      <div>
+        <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
+        <!-- 댓글 입력창 -->
+        <div class="flex gap-[10px] items-center w-full xm:px-4 sm:px-[0px]">
+          <img
+            :src="authStore.profile.profile_url || imgPlaceholder"
+            alt=""
+            class="w-[45px] h-[45px] rounded-full"
+          />
+          <div class="flex items-center w-full gap-[11px]">
+            <div class="w-full">
+              <Input
+                variant="custom"
+                size="md"
+                borderRadius="md"
+                placeholder="댓글을 입력해주세요."
+                class-name="flex w-full"
               />
-              <div>
-                <p class="font-semibold">@{{ user.username }}</p>
-                <p>{{ comment.content }}</p>
-              </div>
             </div>
-            <p class="right-0 text-hc-gray">
-              {{ dateConverter(comment.created_at) }}
-            </p>
-          </li>
-        </ul>
+            <Icon icon="material-symbols:send-rounded" width="24" height="24" />
+          </div>
+        </div>
+        <!-- 댓글 목록 -->
+        <div class="mt-[29px] xm:mx-4 sm:mx-[0px]">
+          <ul class="flex flex-col gap-[26px]">
+            <!-- <li
+              v-for="comment in comments"
+              :key="comment.id"
+              class="flex items-center justify-between"
+            >
+              <div class="flex items-center gap-[10px]">
+                <img
+                  :src="user.profile_url || imgPlaceholder"
+                  alt=""
+                  class="w-[50px] h-[50px] rounded-full"
+                />
+                <div>
+                  <p class="font-semibold">@{{ user.username }}</p>
+                  <p>{{ comment.content }}</p>
+                </div>
+              </div>
+              <p class="right-0 text-hc-gray">
+                {{ dateConverter(comment.created_at) }}
+              </p>
+            </li> -->
+          </ul>
+        </div>
       </div>
     </div>
+  </div>
+  <div v-else>
+    <p>Loading...</p>
   </div>
 </template>
 <style scoped></style>

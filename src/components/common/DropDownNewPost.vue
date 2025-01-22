@@ -1,9 +1,10 @@
 <script setup>
 import { defineProps } from "vue";
 import { Icon } from "@iconify/vue";
+import { useDropDownStore } from "@/store/dropDownStore";
 
 // items와 buttonText를 props로 선언
-defineProps({
+defineProps({     
   items: {
     type: Array,
     required: true,
@@ -15,6 +16,12 @@ defineProps({
     default: "filter",
   },
 });
+
+const dropdownStore = useDropDownStore();
+
+const changeCategory = (category) => {
+  dropdownStore.setCategory(category);
+};
 </script>
 
 <template>
@@ -43,7 +50,7 @@ defineProps({
           :key="index"
           class="cursor-pointer"
         >
-          <v-list-item-title @click="() => console.log(`${item.title}`)">{{
+          <v-list-item-title @click="() => changeCategory(item.title)">{{
             item.title
           }}</v-list-item-title>
         </v-list-item>

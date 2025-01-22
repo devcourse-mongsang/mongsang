@@ -19,6 +19,7 @@
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
     "@supabase/supabase-js": "^2.47.16",
+    "@tanstack/vue-query": "^5.64.2",
     "axios": "^1.7.9",
     "pinia": "^2.3.0",
     "swiper": "^11.2.1",

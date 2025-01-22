@@ -43,6 +43,16 @@ const router = createRouter({
           name: "postDetail",
           component: () => import("../pages/community-pages/PostDetails.vue"),
         },
+        {
+          path: "/:boardType/:postId/update-post",
+          name: "updatePost",
+          component: () => import("../pages/community-pages/UpdatePost.vue"),
+        },
+        {
+          path: "/:boardType/create-post",
+          name: "createPost",
+          component: () => import("../pages/community-pages/CreatePost.vue"),
+        },
       ],
     },
     {
