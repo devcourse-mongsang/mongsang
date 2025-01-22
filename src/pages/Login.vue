@@ -7,11 +7,16 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import supabase from "@/config/supabase";
 import { useAuthStore } from "@/store/authStore";
+import { useModalStore } from "@/store/modalStore";
 
+const modalStore = useModalStore();
 const authStore = useAuthStore();
 const router = useRouter();
 const email = ref("");
 const password = ref("");
+
+// 로그인 오류 메시지 상태
+const loginError = ref("");
 
 function goBack() {
   router.back();
@@ -22,13 +27,13 @@ function goHome() {
 }
 
 function showError(message) {
-  alert(message);
+  loginError.value = message;
   console.error(message);
 }
 
 async function handleLogin() {
   if (!email.value || !password.value) {
-    alert("이메일과 비밀번호를 입력해주세요.");
+    loginError.value = "아이디 또는 비밀번호가 잘못 되었습니다.";
     return;
   }
 
@@ -39,50 +44,55 @@ async function handleLogin() {
     });
 
     if (error) {
-      showError("로그인에 실패했습니다: " + error.message);
+      showError("아이디 또는 비밀번호가 잘못 되었습니다.");
       return;
     }
 
     // 로그인 성공 후 사용자 정보를 Pinia에 설정
     await authStore.setUser(data.user.id);
 
-    alert("로그인 성공!");
-    router.push("/");
+    modalStore.addModal({
+      title: "성공",
+      content: "로그인에 성공했습니다!",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push("/");
+      },
+    });
   } catch (err) {
     console.error("로그인 중 오류 발생:", err.message);
-    showError("로그인 중 문제가 발생했습니다.");
+    showError("아이디 또는 비밀번호가 잘못 되었습니다.");
   }
 }
-
 async function loginWithProvider(provider) {
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: "/",
+        redirectTo: "http://localhost:5173/",
       },
     });
-    console.log(data, error);
+
     if (error) {
       showError(`${provider} 로그인 실패: ${error.message}`);
       return;
     }
 
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.getSession();
-
-    if (sessionError) {
-      showError("세션 정보 가져오기 실패: " + sessionError.message);
-      return;
-    }
-
-    if (sessionData?.session?.user) {
-      const user = sessionData.session.user;
-      console.log("로그인 성공, 사용자 정보:", user);
-      router.replace("/");
-    }
+    modalStore.addModal({
+      title: "성공",
+      content: `${provider} 로그인에 성공했습니다!`,
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        window.location.hash = "";
+        router.push("/"); // 메인 페이지로 이동
+      },
+    });
   } catch (err) {
-    showError("로그인 중 오류 발생: " + err.message);
+    showError(`${provider} 로그인 중 오류 발생: ${err.message}`);
   }
 }
 
@@ -145,7 +155,7 @@ function handleSocialLogin(platform) {
             >비밀번호</label
           >
           <Input
-            type="password"
+            type="passwordToggle"
             placeholder="비밀번호를 입력해주세요"
             variant="shadowed"
             size="sm"
@@ -153,6 +163,10 @@ function handleSocialLogin(platform) {
             v-model="password"
           />
         </div>
+        <!-- 로그인 오류 메시지 -->
+        <p v-if="loginError" class="text-red text-xm mb-5">
+          {{ loginError }}
+        </p>
         <Button variant="shadowed" size="lg">로그인하기</Button>
       </form>
       <div class="flex items-center justify-center space-x-4">
