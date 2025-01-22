@@ -28,6 +28,10 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+const emotion = ref("");
+const asmrVideo = ref(null);
+const isFetching = ref(false);
+
 //음성 인식 시작
 const startListening = () => {
   if (isListening.value) return; //중복 클릭 X
@@ -107,7 +111,7 @@ const analyzeDream = async () => {
 };
 
 // 꿈 분석 복사
-const copyAnalysis = function () {
+const copyAnalysis = () => {
   navigator.clipboard
     .writeText(analysisResult.value)
     .then(() => {
@@ -118,6 +122,95 @@ const copyAnalysis = function () {
       console.error("❌ 분석 결과 복사에 실패했습니다.", error);
       alert("분석 결과 복사에 실패했습니다. 다시 시도해주세요!");
     });
+};
+
+//꿈 감정 분석
+const analyzeEmotion = async (dreamAnalysis) => {
+  const prompt = `다음 꿈을 바탕으로 사용자가 어떤 감정을 느낄 것 같은지 주요 감정을 하나로 요약해줘. 감정 예시는 "슬픔", "기쁨", "두려움", "평온", "분노", "놀람" 중 하나로만 답해줘:
+  꿈 분석: "${dreamAnalysis}"`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      store: true,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    const emotion = response.choices[0].message.content;
+    console.log("분석된 감정:", emotion);
+    return emotion;
+  } catch (error) {
+    console.error("❌감정 분석 중 에러 발생", error);
+    throw error;
+  }
+};
+
+//분석된 감정 바탕으로 ASMR 키워드 설정
+const emotionToASMRKeyword = (emotion) => {
+  switch (emotion) {
+    case "슬픔":
+      return "슬플 때 듣는 asmr";
+    case "기쁨":
+      return "행복할 때 듣는 asmr";
+    case "두려움":
+      return "두려울 때, 불안할 때 듣는 asmr";
+    case "평온":
+      return "힐링 asmr";
+    case "분노":
+      return "화날 때 듣는 asmr";
+    case "놀람":
+      return "진정 asmr";
+    default:
+      return "힐링 asmr";
+  }
+};
+
+//유튜브 API 이용
+const fetchASMRVideos = async (emotion) => {
+  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+  const keyword = emotionToASMRKeyword(emotion);
+  const maxResults = 1;
+
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
+        keyword
+      )}&type=video&maxResults=${maxResults}&key=${apiKey}`
+    );
+    const data = await response.json();
+
+    if (data.items.length > 0) {
+      const item = data.items[0];
+      return {
+        title: item.snippet.title,
+        videoId: item.id.videoId,
+        thumbnail: item.snippet.thumbnails.high.url,
+      };
+    }
+    throw new Error("추천 ASMR 영상이 없습니다.");
+  } catch (error) {
+    console.error("❌ASMR 영상들을 가져오는 데 실패했습니다.", error);
+    throw error;
+  }
+};
+
+//ASMR 영상 추천
+const recommendASMR = async (dreamAnalysis) => {
+  try {
+    isFetching.value = true;
+    emotion.value = await analyzeEmotion(dreamAnalysis);
+    asmrVideo.value = await fetchASMRVideos(emotion.value);
+  } catch (error) {
+    console.error("❌ASMR 추천 중 에러 발생", error);
+    alert("ASMR 추천 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+  } finally {
+    isFetching.value = false;
+  }
 };
 </script>
 <template>
@@ -133,7 +226,7 @@ const copyAnalysis = function () {
         variant="solo"
         auto-grow
         no-resize
-        placeholder="꿈을 기록해주세요 (최대 1600자)"
+        placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
         rows="28"
         counter
         rounded
@@ -208,7 +301,7 @@ const copyAnalysis = function () {
           ></Button>
 
           <!-- ASMR 추천 버튼  -->
-          <Button variant="regular" size="xs"
+          <Button variant="regular" size="xs" @click="recommendASMR"
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -301,13 +394,24 @@ const copyAnalysis = function () {
       </div>
 
       <!-- 추천 asmr -->
-      <div class="mb-16">
+      <div class="mb-16 video-container">
         <p class="mb-[10px] font-semibold">추천 ASMR</p>
-        <img
-          src="/public/assets/imgs/youtube_thumbnail.png"
-          alt="유튜브 썸네일"
-          class="w-full"
-        />
+        <div class="relative w-full overflow-hidden rounded-3xl h-[400px]">
+          <iframe
+            v-if="asmrVideo"
+            class="w-full h-full"
+            :src="'https://www.youtube.com/embed/' + asmrVideo.videoId"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <img
+            v-else
+            src="/public/assets/imgs/img_placeholder.png"
+            alt="ASMR 비디오"
+            class="absolute w-full"
+          />
+        </div>
       </div>
     </div>
   </div>
