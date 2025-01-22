@@ -183,7 +183,7 @@ register();
           size="md"
           borderRadius="md"
           placeholder="댓글을 입력해주세요."
-          class-name="w-full"
+          class="w-full"
         />
         <Icon icon="material-symbols:send-rounded" width="24" height="24" />
       </div>
