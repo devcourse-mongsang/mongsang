@@ -66,6 +66,7 @@ const handleInputChange = (event) => {
   if (files) {
     addImages(files);
     imageFiles.value = Array.from(files);
+    console.log(imageFiles.value);
   }
 };
 

@@ -1,13 +1,16 @@
 import supabase from "@/config/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 export const uploadImagesToSupabase = async (files, postId) => {
   const bucketName = "MongSang_Img";
   const imageUrls = [];
   const uploadPromises = [];
 
+  console.log("files:", files);
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    const fileName = `community_img/${postId}/${Date.now()}`;
+    const fileName = `community_img/${postId}/${uuidv4()}`;
 
     const uploadPromise = supabase.storage
       .from(bucketName)

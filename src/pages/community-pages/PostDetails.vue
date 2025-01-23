@@ -130,7 +130,8 @@ const fetchImg = async (postId) => {
 
 postId.value = route.params.postId;
 
-const category = ref(route.params.boardType);
+const category = ref("");
+console.log(category);
 
 watch(
   () => route.params.postId,
@@ -142,6 +143,7 @@ watch(
 
 onMounted(async () => {
   postId.value = route.params.postId; // 라우트 파라미터에서 postId 설정
+  category.value = route.params.boardType;
   if (postId.value) {
     try {
       await fetchPostItem(postId.value);
@@ -159,7 +161,7 @@ const menuItems = computed(() => [
   {
     label: "Edit Post",
     icon: "material-symbols:edit-square-outline-rounded",
-    link: `/${category}/${post.value.id}/update-post`, // RouterLink 경로
+    link: `/${category.value}/${post.value.id}/update-post`, // RouterLink 경로
     color: "#757575",
   },
   {
