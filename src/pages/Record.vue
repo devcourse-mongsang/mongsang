@@ -8,12 +8,280 @@ import {
   mdiNotebookOutline,
   mdiContentCopy,
   mdiTrayArrowDown,
+  mdiMicrophoneOff,
 } from "@mdi/js";
 
 import { ref } from "vue";
+import { OpenAI } from "openai";
 
 const value = ref("");
+
 const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능합니다"];
+
+const isListening = ref(false);
+let speechRecognition = null;
+
+const analysisResult = ref("");
+const isAnalyzing = ref(false);
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
+
+const generatedImage = ref(null);
+const isGeneratingImage = ref(false);
+
+const emotion = ref("");
+const asmrVideo = ref(null);
+const isFetching = ref(false);
+
+//음성 인식 시작
+const startListening = () => {
+  if (isListening.value) return; //중복 클릭 X
+
+  if (!("webkitSpeechRecognition" in window)) {
+    alert("⚠️음성 입력을 지원하지 않는 브라우저입니다.");
+    return;
+  }
+
+  speechRecognition = new webkitSpeechRecognition();
+  speechRecognition.lang = "ko-KR";
+  speechRecognition.continuous = true;
+  speechRecognition.interimResults = false;
+
+  speechRecognition.onresult = (event) => {
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        value.value += event.results[i][0].transcript;
+      }
+    }
+  };
+
+  speechRecognition.onerror = (event) => {
+    console.error("❌ 음성 인식 에러 발생:", event.error);
+    alert("음성 인식 중 에러가 발생했습니다!");
+    stopListening();
+  };
+
+  speechRecognition.onend = () => {
+    isListening.value = false;
+  };
+
+  speechRecognition.start();
+  isListening.value = true;
+};
+
+// 음성 입력 종료
+const stopListening = () => {
+  if (speechRecognition && isListening.value) {
+    speechRecognition.stop();
+    isListening.value = false;
+  }
+  console.log("📝 꿈일기 내용:", value.value);
+};
+
+//꿈 분석
+const analyzeDream = async () => {
+  if (!value.value.trim()) {
+    alert("꿈이 입력 되지 않았습니다 😢 꿈을 입력해주세요!");
+    return;
+  }
+
+  isAnalyzing.value = true; //로딩 상태
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      store: true,
+      messages: [
+        {
+          role: "user",
+          content: `이 꿈 내용을 분석하고 해석해줘. 대답에서 마크다운 문법(예: *, #, _)을 사용하지 말고, 순수한 텍스트로만 답변해줘. 대신 이모티콘을 넣어서 친근한 느낌을 줘.: "${value.value}"`,
+        },
+      ],
+
+      max_tokens: 1000,
+      temperature: 0.7,
+    });
+
+    analysisResult.value = response.choices[0].message.content;
+  } catch (error) {
+    console.error("❌Open AI API 호출 에러", error);
+    alert("꿈 분석 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+  } finally {
+    isAnalyzing.value = false;
+  }
+};
+
+// 꿈 분석 복사
+const copyAnalysis = () => {
+  navigator.clipboard
+    .writeText(analysisResult.value)
+    .then(() => {
+      alert("분석 결과가 복사되었습니다! 📋");
+      console.log("분석 결과: ", analysisResult.value);
+    })
+    .catch(() => {
+      console.error("❌ 분석 결과 복사에 실패했습니다.", error);
+      alert("분석 결과 복사에 실패했습니다. 다시 시도해주세요!");
+    });
+};
+
+//이미지 생성
+const generateImage = async () => {
+  isGeneratingImage.value = true;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a creative assistant that generates detailed and visually descriptive prompts for image generation.",
+        },
+        {
+          role: "user",
+          content: `다음 꿈을 바탕으로 귀엽고 서정적인 일러스트를 생성할 수 있는 프롬프트를 만들어 줘. 카툰 스타일. 부드러운 톤. 꿈 내용 : "${value.value}" `,
+        },
+      ],
+
+      functions: [
+        {
+          name: "generate_image",
+          parameters: {
+            type: "object",
+            properties: {
+              prompt: { type: "string" },
+              size: {
+                type: "string",
+                enum: ["256x256", "512x512", "1024x1024"],
+              },
+            },
+            required: ["prompt", "size"],
+          },
+        },
+      ],
+      function_call: { name: "generate_image" },
+    });
+    //이미지 생성 요청
+    const functionCall = response.choices[0]?.message?.function_call;
+
+    if (!functionCall || !functionCall.arguments) {
+      throw new Error("프롬프트 생성 응답이 유효하지 않습니다.");
+    }
+
+    const { prompt, size } = JSON.parse(functionCall.arguments);
+
+    const imageResponse = await openai.images.generate({
+      prompt,
+      n: 1,
+      size,
+    });
+
+    if (imageResponse.data && imageResponse.data.length > 0) {
+      generatedImage.value = imageResponse.data[0].url;
+    } else {
+      throw new Error("이미지 생성에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("❌ 이미지 생성 에러 발생", error);
+    alert("이미지 생성 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+  } finally {
+    isGeneratingImage.value = false;
+  }
+};
+
+//이미지 다운로드
+
+//꿈 감정 분석
+const analyzeEmotion = async (dreamAnalysis) => {
+  const prompt = `다음 꿈을 바탕으로 사용자가 어떤 감정을 느낄 것 같은지 주요 감정을 하나로 요약해줘. 감정 예시는 "슬픔", "기쁨", "두려움", "평온", "분노", "놀람" 중 하나로만 답해줘:
+  꿈 분석: "${dreamAnalysis}"`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      store: true,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    const emotion = response.choices[0].message.content;
+    console.log("분석된 감정:", emotion);
+    return emotion;
+  } catch (error) {
+    console.error("❌감정 분석 중 에러 발생", error);
+    throw error;
+  }
+};
+
+//분석된 감정 바탕으로 ASMR 키워드 설정
+const emotionToASMRKeyword = (emotion) => {
+  switch (emotion) {
+    case "슬픔":
+      return "슬플 때 듣는 asmr";
+    case "기쁨":
+      return "행복할 때 듣는 asmr";
+    case "두려움":
+      return "두려울 때, 불안할 때 듣는 asmr";
+    case "평온":
+      return "힐링 asmr";
+    case "분노":
+      return "화날 때 듣는 asmr";
+    case "놀람":
+      return "진정 asmr";
+    default:
+      return "힐링 asmr";
+  }
+};
+
+//유튜브 API 이용
+const fetchASMRVideos = async (emotion) => {
+  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+  const keyword = emotionToASMRKeyword(emotion);
+  const maxResults = 1;
+
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
+        keyword
+      )}&type=video&maxResults=${maxResults}&key=${apiKey}`
+    );
+    const data = await response.json();
+
+    if (data.items.length > 0) {
+      const item = data.items[0];
+      return {
+        title: item.snippet.title,
+        videoId: item.id.videoId,
+        thumbnail: item.snippet.thumbnails.high.url,
+      };
+    }
+    throw new Error("추천 ASMR 영상이 없습니다.");
+  } catch (error) {
+    console.error("❌ASMR 영상들을 가져오는 데 실패했습니다.", error);
+    throw error;
+  }
+};
+
+//ASMR 영상 추천
+const recommendASMR = async (dreamAnalysis) => {
+  try {
+    isFetching.value = true;
+    emotion.value = await analyzeEmotion(dreamAnalysis);
+    asmrVideo.value = await fetchASMRVideos(emotion.value);
+  } catch (error) {
+    console.error("❌ASMR 추천 중 에러 발생", error);
+    alert("ASMR 추천 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+  } finally {
+    isFetching.value = false;
+  }
+};
 </script>
 <template>
   <div class="flex h-full gap-x-[85px] overflow-hidden">
@@ -22,12 +290,13 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
       class="ml-[70px] fixed h-full xl:w-[720px] 2xl:w-[760px] 3xl:w-[800px] md:w-[680px] sm:w-[600px] w-[648px]"
     >
       <v-textarea
+        v-model="value"
         :model-value="value"
         :rules="rules"
         variant="solo"
         auto-grow
         no-resize
-        placeholder="꿈을 기록해주세요 (최대 1600자)"
+        placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
         rows="28"
         counter
         rounded
@@ -36,7 +305,14 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
 
       <div class="flex justify-between">
         <div class="flex gap-x-[10px]">
-          <Button variant="regular" class="text-hc-pink" size="xs">
+          <!-- 음성인식 버튼-->
+          <Button
+            v-if="!isListening"
+            variant="regular"
+            class="text-hc-pink"
+            size="xs"
+            @click="startListening"
+          >
             <v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +324,28 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
               </svg>
             </v-icon>
           </Button>
-          <Button variant="regular" size="xs"
+
+          <Button
+            v-else
+            variant="regular"
+            class="text-hc-pink"
+            size="xs"
+            @click="stopListening"
+          >
+            <v-icon>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-6 h-6"
+              >
+                <path :d="mdiMicrophoneOff" />
+              </svg>
+            </v-icon>
+          </Button>
+
+          <!-- 분석 버튼 -->
+          <Button variant="regular" size="xs" @click="analyzeDream"
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +356,9 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
                 <path :d="mdiEqualizer" />
               </svg> </v-icon
           ></Button>
-          <Button variant="regular" size="xs"
+
+          <!-- AI 이미지 생성 버튼  -->
+          <Button variant="regular" size="xs" @click="generateImage"
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +369,9 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
                 <path :d="mdiPaletteOutline" />
               </svg> </v-icon
           ></Button>
-          <Button variant="regular" size="xs"
+
+          <!-- ASMR 추천 버튼  -->
+          <Button variant="regular" size="xs" @click="recommendASMR"
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -114,12 +415,17 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
           <h3 class="text-xl">
             {{
               analysisResult ||
-              "꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!꿈을 분석했어요!"
+              "AI가 꿈을 분석하고 결과를 여기에 보여드릴게요!🌙"
             }}
           </h3>
         </div>
 
-        <Button size="xs" variant="regular" class="absolute bottom-4 right-4">
+        <Button
+          size="xs"
+          variant="regular"
+          class="absolute bottom-4 right-4"
+          @click="copyAnalysis"
+        >
           <v-icon>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -138,6 +444,13 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
         <p class="mb-[10px] font-semibold">AI 그림 생성</p>
 
         <img
+          v-if="generatedImage"
+          :src="generatedImage"
+          alt="AI 생성 이미지"
+          class="w-full h-fit rounded-3xl"
+        />
+        <img
+          v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
           class="w-full h-fit rounded-3xl"
@@ -158,13 +471,24 @@ const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능
       </div>
 
       <!-- 추천 asmr -->
-      <div class="mb-16">
+      <div class="mb-16 video-container">
         <p class="mb-[10px] font-semibold">추천 ASMR</p>
-        <img
-          src="/public/assets/imgs/youtube_thumbnail.png"
-          alt="유튜브 썸네일"
-          class="w-full"
-        />
+        <div class="relative w-full overflow-hidden rounded-3xl h-[475px]">
+          <iframe
+            v-if="asmrVideo"
+            class="w-full h-full"
+            :src="'https://www.youtube.com/embed/' + asmrVideo.videoId"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <img
+            v-else
+            src="/public/assets/imgs/img_placeholder.png"
+            alt="ASMR 비디오"
+            class="absolute w-full"
+          />
+        </div>
       </div>
     </div>
   </div>

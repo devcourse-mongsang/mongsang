@@ -1,24 +1,198 @@
 <script setup>
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
-import { ref } from "vue";
+import { ref, watch, computed } from "vue";
+import { useAuthStore } from "@/store/authStore";
+import supabase from "@/config/supabase";
+import router from "@/router";
+import { useModalStore } from "@/store/modalStore";
 
-// 더미 데이터
+const modalStore = useModalStore();
+const authStore = useAuthStore();
+
+// 사용자 데이터
 const userData = ref({
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  username: "@Mala_love",
-  profile_bio: "저는 마라를 사랑합니다",
-  profile_url: "/assets/imgs/unknownUser.png",
+  username: authStore.profile.username,
+  profile_bio: authStore.profile.profile_bio,
+  profile_url: authStore.profile.profile_url,
   password: "",
   confirmPassword: "",
 });
+// 로그인 유형 확인 (이메일 로그인 여부)
+const isEmailLogin = computed(() => {
+  return authStore.user.app_metadata?.provider === "email";
+});
 
-const handleSave = () => {
-  console.log("프로필 저장:", userData.value);
+// 저장 버튼 활성화 조건
+const isSaveDisabled = computed(() => {
+  // 비밀번호 또는 비밀번호 확인 입력값이 존재하는 경우
+  if (userData.value.password || userData.value.confirmPassword) {
+    // 비밀번호와 확인 비밀번호가 다르거나 에러가 있으면 비활성화
+    return (
+      passwordError.value ||
+      confirmPasswordError.value ||
+      userData.value.password !== userData.value.confirmPassword
+    );
+  }
+  // 비밀번호 입력값이 없으면 활성화
+  return false;
+});
+
+// 원본 데이터 (비교용)
+const originalData = ref({ ...userData.value });
+const selectedFile = ref(null); // 새로 선택된 파일
+const previewImage = ref(userData.value.profile_url); // 미리보기 이미지
+const passwordError = ref("");
+const confirmPasswordError = ref("");
+const isUpdating = ref(false); // 로딩 상태 관리
+
+const isValidPassword = (password) => {
+  const passwordRegExp =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+  return passwordRegExp.test(password);
 };
 
-const handleImageChange = () => {
-  alert("사진 변경");
+// 비밀번호 입력값을 실시간으로 감지
+watch(
+  () => userData.value.password,
+  (newPassword) => {
+    // 입력값이 없으면 에러 메시지를 제거
+    if (!newPassword) {
+      passwordError.value = ""; // 에러 메시지를 빈 문자열로 설정
+      return;
+    }
+
+    // 비밀번호 유효성 검사
+    if (!isValidPassword(newPassword)) {
+      passwordError.value =
+        "비밀번호는 8~16자로, 특수문자와 숫자를 최소 1개씩 포함해야 합니다.";
+      return;
+    }
+
+    // 유효성 검사를 통과하면 에러 메시지를 제거
+    passwordError.value = "";
+  }
+);
+
+// 비밀번호 확인 입력값을 실시간으로 감지
+watch(
+  () => userData.value.confirmPassword,
+  (newPasswordConfirm) => {
+    // 입력값이 없으면 에러 메시지를 제거
+    if (!newPasswordConfirm) {
+      confirmPasswordError.value = ""; // 에러 메시지를 빈 문자열로 설정
+      return;
+    }
+
+    // 입력값이 비밀번호와 일치하지 않을 경우
+    if (newPasswordConfirm !== userData.value.password) {
+      confirmPasswordError.value = "비밀번호가 일치하지 않습니다.";
+      return;
+    }
+
+    // 유효성 검사를 통과하면 에러 메시지를 제거
+    confirmPasswordError.value = "";
+  }
+);
+
+// 사진 변경 처리 (미리보기)
+const handleImageChange = (event) => {
+  const file = event.target.files[0];
+  if (!file) {
+    alert("이미지를 선택해주세요!");
+    return;
+  }
+  selectedFile.value = file; // 선택된 파일 저장
+
+  // 미리보기 이미지 생성
+  const reader = new FileReader();
+  reader.onload = () => {
+    previewImage.value = reader.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+// 파일 이름을 안전하게 변환하는 함수
+const sanitizeFileName = (fileName) => {
+  return fileName.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+};
+
+// 프로필 저장 로직
+const handleSave = async () => {
+  if (isSaveDisabled.value) {
+    alert("비밀번호를 올바르게 입력해주세요.");
+    return;
+  }
+
+  isUpdating.value = true;
+
+  try {
+    let newProfileUrl = userData.value.profile_url;
+
+    if (selectedFile.value) {
+      const sanitizedFileName = sanitizeFileName(selectedFile.value.name);
+      const fileName = `user_Profile/${
+        authStore.profile.id
+      }/${Date.now()}_${sanitizedFileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("MongSang_Img")
+        .upload(fileName, selectedFile.value);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("MongSang_Img")
+        .getPublicUrl(fileName);
+
+      newProfileUrl = urlData.publicUrl;
+    }
+
+    // 비밀번호 변경은 이메일 로그인한 사용자만 처리
+    if (isEmailLogin.value && userData.value.password) {
+      const { error: passwordError } = await supabase.auth.updateUser({
+        password: userData.value.password,
+      });
+      if (passwordError) throw passwordError;
+    }
+
+    const updates = {};
+    if (userData.value.profile_bio !== originalData.value.profile_bio) {
+      updates.profile_bio = userData.value.profile_bio;
+    }
+    if (newProfileUrl !== originalData.value.profile_url) {
+      updates.profile_url = newProfileUrl;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", authStore.profile.id);
+
+      if (profileError) throw profileError;
+    }
+
+    await authStore.setUser(authStore.user.id);
+  } catch (err) {
+    alert(`저장 중 오류가 발생했습니다: ${err.message}`);
+  } finally {
+    isUpdating.value = false;
+  }
+};
+
+const openConfirmationModal = () => {
+  modalStore.addModal({
+    title: "저장 확인",
+    content: "저장하시겠습니까?",
+    isOneBtn: false, // 취소/확인 버튼 추가
+    btnText: "확인",
+    onClick: () => {
+      modalStore.modals = []; // 모든 모달 닫기
+      handleSave(); // 저장 로직 실행
+      router.push("/mypage/profile");
+    },
+  });
 };
 </script>
 
@@ -48,29 +222,41 @@ const handleImageChange = () => {
             >
               <!-- 프로필 이미지 -->
               <img
-                :src="userData.profile_url"
+                :src="previewImage"
                 class="w-[70px] h-[70px] md:w-[150px] md:h-[150px] rounded-full object-cover"
                 alt="프로필 이미지"
               />
-              <!-- 아이디와 버튼 -->
+              <!-- 이미지 업로드 -->
               <div class="text-center md:text-left">
-                <p class="text-lg md:text-3xl lg:text-4xl font-semibold">
-                  {{ userData.username }}
+                <p class="text-lg md:text-3xl lg:text-4xl font-semibold mb-3">
+                  @{{ userData.username }}
                 </p>
-                <p
-                  class="text-sm md:text-2xl font-semibold text-hc-blue cursor-pointer underline mt-2 md:mt-3"
-                  @click="handleImageChange"
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  id="fileInput"
+                  @change="handleImageChange"
+                />
+                <label
+                  for="fileInput"
+                  class="text-sm md:text-2xl font-semibold text-hc-blue cursor-pointer underline mt-3 md:mt-3"
                 >
                   사진 변경
-                </p>
+                </label>
               </div>
             </div>
             <!-- 저장 버튼 -->
             <Button
               variant="custom"
               size="xl"
-              class="bg-hc-blue text-hc-white md:w-32 md:h-128 text-sm md:text-base rounded-[70px] shadow-blue"
-              @click="handleSave"
+              :class="[
+                'md:w-32 md:h-128 text-sm md:text-base rounded-[70px] shadow-blue',
+                isSaveDisabled
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-hc-blue text-hc-white',
+              ]"
+              @click="openConfirmationModal"
             >
               저장
             </Button>
@@ -91,6 +277,7 @@ const handleImageChange = () => {
               class="w-full h-[50px] md:h-[63px] rounded-[70px] bg-hc-white/80 shadow-blue"
             >
               <Input
+                v-model="userData.profile_bio"
                 type="text"
                 placeholder="자기소개를 입력해주세요"
                 size="lg"
@@ -102,7 +289,7 @@ const handleImageChange = () => {
           </div>
 
           <!-- 비밀번호 변경 -->
-          <div>
+          <div v-if="isEmailLogin">
             <p class="text-xl md:text-2xl font-semibold text-hc-blue mb-4">
               비밀번호 변경
             </p>
@@ -111,7 +298,7 @@ const handleImageChange = () => {
             >
               <Input
                 v-model="userData.password"
-                type="password"
+                type="passwordToggle"
                 placeholder="8-16자 (특문, 숫자 각 1개 이상 포함)"
                 size="lg"
                 borderRadius="lg"
@@ -119,10 +306,13 @@ const handleImageChange = () => {
                 :isProfilePage="true"
               />
             </div>
+            <p v-if="passwordError" class="text-red mt-4 text-xs ml-5">
+              {{ passwordError }}
+            </p>
           </div>
 
           <!-- 비밀번호 확인 -->
-          <div>
+          <div v-if="isEmailLogin">
             <p class="text-xl md:text-2xl font-semibold text-hc-blue mb-4">
               비밀번호 확인
             </p>
@@ -131,7 +321,7 @@ const handleImageChange = () => {
             >
               <Input
                 v-model="userData.confirmPassword"
-                type="password"
+                type="passwordToggle"
                 placeholder="비밀번호를 입력해주세요"
                 size="lg"
                 borderRadius="lg"
@@ -139,6 +329,9 @@ const handleImageChange = () => {
                 :isProfilePage="true"
               />
             </div>
+            <p v-if="confirmPasswordError" class="text-red mt-4 text-xs ml-5">
+              {{ confirmPasswordError }}
+            </p>
           </div>
         </div>
       </div>
