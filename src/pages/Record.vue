@@ -28,6 +28,9 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+const generatedImage = ref(null);
+const isGeneratingImage = ref(false);
+
 const emotion = ref("");
 const asmrVideo = ref(null);
 const isFetching = ref(false);
@@ -123,6 +126,73 @@ const copyAnalysis = () => {
       alert("분석 결과 복사에 실패했습니다. 다시 시도해주세요!");
     });
 };
+
+//이미지 생성
+const generateImage = async () => {
+  isGeneratingImage.value = true;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a creative assistant that generates detailed and visually descriptive prompts for image generation.",
+        },
+        {
+          role: "user",
+          content: `다음 꿈을 바탕으로 귀엽고 서정적인 일러스트를 생성할 수 있는 프롬프트를 만들어 줘. 카툰 스타일. 부드러운 톤. 꿈 내용 : "${value.value}" `,
+        },
+      ],
+
+      functions: [
+        {
+          name: "generate_image",
+          parameters: {
+            type: "object",
+            properties: {
+              prompt: { type: "string" },
+              size: {
+                type: "string",
+                enum: ["256x256", "512x512", "1024x1024"],
+              },
+            },
+            required: ["prompt", "size"],
+          },
+        },
+      ],
+      function_call: { name: "generate_image" },
+    });
+    //이미지 생성 요청
+    const functionCall = response.choices[0]?.message?.function_call;
+
+    if (!functionCall || !functionCall.arguments) {
+      throw new Error("프롬프트 생성 응답이 유효하지 않습니다.");
+    }
+
+    const { prompt, size } = JSON.parse(functionCall.arguments);
+
+    const imageResponse = await openai.images.generate({
+      prompt,
+      n: 1,
+      size,
+    });
+
+    if (imageResponse.data && imageResponse.data.length > 0) {
+      generatedImage.value = imageResponse.data[0].url;
+    } else {
+      throw new Error("이미지 생성에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("❌ 이미지 생성 에러 발생", error);
+    alert("이미지 생성 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+  } finally {
+    isGeneratingImage.value = false;
+  }
+};
+
+//이미지 다운로드
 
 //꿈 감정 분석
 const analyzeEmotion = async (dreamAnalysis) => {
@@ -288,7 +358,7 @@ const recommendASMR = async (dreamAnalysis) => {
           ></Button>
 
           <!-- AI 이미지 생성 버튼  -->
-          <Button variant="regular" size="xs"
+          <Button variant="regular" size="xs" @click="generateImage"
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -374,6 +444,13 @@ const recommendASMR = async (dreamAnalysis) => {
         <p class="mb-[10px] font-semibold">AI 그림 생성</p>
 
         <img
+          v-if="generatedImage"
+          :src="generatedImage"
+          alt="AI 생성 이미지"
+          class="w-full h-fit rounded-3xl"
+        />
+        <img
+          v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
           class="w-full h-fit rounded-3xl"
@@ -396,7 +473,7 @@ const recommendASMR = async (dreamAnalysis) => {
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
         <p class="mb-[10px] font-semibold">추천 ASMR</p>
-        <div class="relative w-full overflow-hidden rounded-3xl h-[400px]">
+        <div class="relative w-full overflow-hidden rounded-3xl h-[475px]">
           <iframe
             v-if="asmrVideo"
             class="w-full h-full"
