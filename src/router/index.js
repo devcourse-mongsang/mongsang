@@ -70,7 +70,7 @@ const router = createRouter({
         },
         {
           path: "/diary/:postId",
-          name: "diaryDetail",
+          name: "diary",
           component: () => import("../pages/diary-pages/Diary.vue"),
         },
         {
