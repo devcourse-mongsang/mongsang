@@ -10,10 +10,7 @@ import { Icon } from "@iconify/vue";
 
 import supabase from "@/config/supabase";
 import { getUserById } from "@/api/api-user/api";
-import {
-  deleteImagesFromFolder,
-  fetchImagesFromSupabase,
-} from "@/api/api-community/imgsApi";
+import { fetchImagesFromSupabase } from "@/api/api-community/imgsApi";
 
 // 라우트 정보 및 상태 관리 변수
 const route = useRoute();
@@ -64,7 +61,6 @@ const fetchPosts = async () => {
       if (!postImgs.value[post.id]) {
         const imgUrl = await fetchImagesFromSupabase(post.id);
         postImgs.value[post.id] = imgUrl[0] || {};
-        console.log(postImgs.value[post.id]);
       }
     }
   } catch (error) {
