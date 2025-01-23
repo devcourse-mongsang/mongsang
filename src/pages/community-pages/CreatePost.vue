@@ -198,7 +198,6 @@ const createNewPost = async () => {
             :key="index"
             class="relative w-[150px]"
           >
-          <p class="bg-red">{{ url }}</p>
             <img
               :src="url"
               alt="Preview"
