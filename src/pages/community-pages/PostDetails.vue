@@ -4,7 +4,7 @@ import dateConverter from "../../utils/dateConveter";
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
 
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { register } from "swiper/element/bundle";
 import { Icon } from "@iconify/vue";
@@ -16,6 +16,7 @@ import {
   fetchImagesFromSupabase,
   deleteImagesFromFolder,
 } from "@/api/api-community/imgsApi";
+import MeatballsMenu from "@/components/common/MeatballsMenu.vue";
 
 const authStore = useAuthStore();
 
@@ -154,6 +155,21 @@ onMounted(async () => {
   }
 });
 
+const menuItems = computed(() => [
+  {
+    label: "Edit Post",
+    icon: "material-symbols:edit-square-outline-rounded",
+    link: `/${category}/${post.value.id}/update-post`, // RouterLink 경로
+    color: "#757575",
+  },
+  {
+    label: "Delete Post",
+    icon: "ic:round-delete",
+    action: () => fetchDeletePost(post.value.id), // 클릭 시 함수 호출
+    color: "#ed4848",
+  },
+]);
+
 register();
 </script>
 <template>
@@ -177,24 +193,8 @@ register();
         >팔로잉</Button
       >
 
-      <div class="flex gap-2" v-if="author.id === authStore.profile.id">
-        <RouterLink :to="`/${category}/${post.id}/update-post`">
-          <Icon
-            icon="material-symbols:edit-square-outline-rounded"
-            class="cursor-pointer"
-            width="24"
-            height="24"
-            color="#757575"
-          />
-        </RouterLink>
-        <Icon
-          @click="fetchDeletePost(post.id)"
-          icon="ic:round-delete"
-          class="cursor-pointer"
-          width="24"
-          height="24"
-          color="#ed4848"
-        />
+      <div v-if="author.id === authStore.profile.id">
+        <MeatballsMenu :menuItems="menuItems" />
       </div>
     </div>
 
