@@ -51,21 +51,40 @@ watch(
   }
 );
 
+const MAX_IMAGE_COUNT = 5; // 최대 이미지 개수
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB를 바이트로 변환
+
 const addImages = (files) => {
+  // 이미지 개수 제한 체크
+  const newFileCount = imageFiles.value.length + files.length;
+  if (newFileCount > MAX_IMAGE_COUNT) {
+    alert(`최대 ${MAX_IMAGE_COUNT}개의 이미지만 업로드할 수 있습니다.`);
+    return;
+  }
+
+  // 이미지 파일 크기 제한 체크
   Array.from(files).forEach((file) => {
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert(`${file.name} 파일의 크기가 10MB를 초과합니다.`);
+      return;
+    }
+
+    // 파일을 미리 읽어서 이미지 URL을 생성하고, 이미지 파일을 배열에 추가
     const reader = new FileReader();
     reader.onload = () => {
       imageUrls.value.push(reader.result);
     };
     reader.readAsDataURL(file);
   });
+
+  // 이미지 파일 목록에 새로 추가된 파일을 합침
+  imageFiles.value = [...imageFiles.value, ...Array.from(files)];
 };
 
 const handleInputChange = (event) => {
   const files = event.target.files;
   if (files) {
     addImages(files);
-    imageFiles.value = Array.from(files);
   }
 };
 
@@ -73,7 +92,6 @@ const handleDrop = (event) => {
   event.preventDefault();
   if (event.dataTransfer.files) {
     addImages(event.dataTransfer.files);
-    imageFiles.value = Array.from(event.dataTransfer.files);
   }
 };
 
@@ -99,7 +117,7 @@ const createNewPost = async () => {
       const postId = postResponse[0].id;
 
       if (postId) {
-        console.log(imageFiles.value);
+        console.log("이미지 리스트", imageFiles.value);
         const uploadedImageUrls = await uploadImagesToSupabase(
           imageFiles.value,
           postId
@@ -180,6 +198,7 @@ const createNewPost = async () => {
             :key="index"
             class="relative w-[150px]"
           >
+          <p class="bg-red">{{ url }}</p>
             <img
               :src="url"
               alt="Preview"

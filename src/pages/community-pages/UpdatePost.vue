@@ -15,11 +15,14 @@ const isLoading = ref(false);
 
 const fetchPostData = async (id) => {
   if (!id) return;
+
   isLoading.value = true;
   try {
+    // 게시글 데이터 로드
     const fetchedPost = await getPostById(id);
     post.value = fetchedPost || {};
 
+    // 이미지 데이터 로드
     const fetchedImages = await fetchImagesFromSupabase(id);
     imageUrls.value = fetchedImages;
   } catch (error) {
@@ -125,6 +128,7 @@ const fetchUpdatedPost = async () => {
   }
 };
 
+// 라우트 변경 감지 및 처리
 watch(
   () => route.params.postId,
   (newId, oldId) => {
@@ -135,6 +139,7 @@ watch(
   }
 );
 
+// 초기 데이터 로드
 onMounted(() => {
   fetchPostData(postId.value);
 });
@@ -142,6 +147,7 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col w-full gap-[10px] sm:mt-[-100px]">
+
     <div v-if="isLoading" class="flex items-center justify-center h-40">
       <div class="loader"></div>
       <p class="ml-2 font-semibold text-gray-500">

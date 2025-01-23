@@ -1,4 +1,5 @@
 import supabase from "@/config/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 export const uploadImagesToSupabase = async (files, postId) => {
   const bucketName = "MongSang_Img";
@@ -7,7 +8,7 @@ export const uploadImagesToSupabase = async (files, postId) => {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    const fileName = `community_img/${postId}/${Date.now()}`;
+    const fileName = `community_img/${postId}/${uuidv4()}`;
 
     const uploadPromise = supabase.storage
       .from(bucketName)
@@ -26,7 +27,7 @@ export const uploadImagesToSupabase = async (files, postId) => {
           console.error(`이미지 URL 조회 실패: ${urlError.message}`);
           return null;
         }
-
+        console.log("결과", data);
         return publicURL;
       });
 
