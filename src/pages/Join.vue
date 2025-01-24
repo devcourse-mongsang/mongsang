@@ -34,6 +34,8 @@ const emailError = ref("");
 const usernameError = ref("");
 const passwordError = ref("");
 const confirmPasswordError = ref("");
+const usernameAvailable = ref(false);
+const emailAvailable = ref(false);
 
 // 비밀번호와 비밀번호 확인 입력값을 실시간으로 감지
 watch(
@@ -66,12 +68,14 @@ const checkEmail = async () => {
 
   if (!email) {
     emailError.value = "이메일을 입력해주세요.";
+    emailAvailable.value = false; // 사용 불가능 상태
     return;
   }
 
   const emailRegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegExp.test(email)) {
     emailError.value = "올바른 이메일 형식이 아닙니다.";
+    emailAvailable.value = false; // 사용 불가능 상태
     return;
   }
 
@@ -84,12 +88,15 @@ const checkEmail = async () => {
 
     if (data && data.length > 0) {
       emailError.value = "이미 사용 중인 이메일입니다.";
+      emailAvailable.value = false; // 사용 불가능 상태
     } else {
       emailError.value = "";
+      emailAvailable.value = true; // 사용 가능 상태
     }
   } catch (error) {
     console.error("이메일 확인 오류:", error.message);
     emailError.value = "이메일 확인 중 오류가 발생했습니다.";
+    emailAvailable.value = false; // 사용 불가능 상태
   }
 };
 
@@ -98,6 +105,7 @@ const checkUsername = async () => {
 
   if (!username.trim() || !/^[a-zA-Z0-9]{4,12}$/.test(username)) {
     usernameError.value = "아이디는 4~12자 사이여야 합니다.";
+    usernameAvailable.value = false; // 사용 불가능 상태
     return;
   }
 
@@ -110,12 +118,15 @@ const checkUsername = async () => {
 
     if (data) {
       usernameError.value = "이미 사용 중인 아이디입니다.";
+      usernameAvailable.value = false; // 사용 불가능 상태
     } else {
       usernameError.value = "";
+      usernameAvailable.value = true; // 사용 가능 상태
     }
   } catch (error) {
     console.error("아이디 확인 오류:", error.message);
     usernameError.value = "아이디 확인 중 오류가 발생했습니다.";
+    usernameAvailable.value = false; // 사용 불가능 상태
   }
 };
 
@@ -183,8 +194,8 @@ const register = async () => {
       await supabase.auth.signOut();
 
       modalStore.addModal({
-        title: "성공",
-        content: "회원가입 성공! 이제 로그인하세요.",
+        title: "회원가입 성공!",
+        content: "이제 로그인하세요.",
         btnText: "확인",
         isOneBtn: true,
         onClick: () => {
@@ -220,7 +231,7 @@ const register = async () => {
     </div>
 
     <div
-      class="rounded-xl shadow-blue w-[641px] flex flex-col items-center h-[766px] justify-center"
+      class="rounded-xl shadow-blue w-[641px] flex flex-col items-center h-[790px] justify-center"
       style="
         border-radius: 20px;
         border: 7px solid rgba(255, 255, 255, 0.5);
@@ -256,6 +267,9 @@ const register = async () => {
           <p v-if="emailError" class="text-red mt-2 text-xs ml-10">
             {{ emailError }}
           </p>
+          <p v-else-if="emailAvailable" class="text-green text-xs ml-10 mt-2">
+            사용가능한 이메일입니다.
+          </p>
         </div>
 
         <div>
@@ -283,7 +297,14 @@ const register = async () => {
           <p v-if="usernameError" class="text-red mt-2 text-xs ml-10">
             {{ usernameError }}
           </p>
+          <p
+            v-else-if="usernameAvailable"
+            class="text-green text-xs ml-10 mt-2"
+          >
+            사용가능한 아이디입니다.
+          </p>
         </div>
+
         <div>
           <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
             >자기소개</label
