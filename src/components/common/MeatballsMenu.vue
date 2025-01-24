@@ -31,7 +31,6 @@ onUnmounted(() => {
     class="relative inline-block dropdown-container"
     @click.stop="toggleMenu"
   >
-    <!-- Meatballs Icon -->
     <div class="flex gap-1 cursor-pointer">
       <span class="w-1.5 h-1.5 bg-hc-gray rounded-full"></span>
       <span class="w-1.5 h-1.5 bg-hc-gray rounded-full"></span>
