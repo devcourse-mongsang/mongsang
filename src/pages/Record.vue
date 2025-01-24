@@ -10,25 +10,22 @@ import {
   mdiTrayArrowDown,
   mdiMicrophoneOff,
 } from "@mdi/js";
-
 import { ref } from "vue";
 import { OpenAI } from "openai";
-
-const value = ref("");
+import { useDiaryStore } from "@/store/diaryStore";
+const diaryStore = useDiaryStore();
 
 const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능합니다"];
 
 const isListening = ref(false);
 let speechRecognition = null;
 
-const analysisResult = ref("");
 const isAnalyzing = ref(false);
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-const generatedImage = ref(null);
 const isGeneratingImage = ref(false);
 
 const emotion = ref("");
@@ -52,7 +49,9 @@ const startListening = () => {
   speechRecognition.onresult = (event) => {
     for (let i = event.resultIndex; i < event.results.length; i++) {
       if (event.results[i].isFinal) {
-        value.value += event.results[i][0].transcript;
+        diaryStore.setContent(
+          diaryStore.content + event.results[i][0].transcript
+        );
       }
     }
   };
@@ -77,17 +76,17 @@ const stopListening = () => {
     speechRecognition.stop();
     isListening.value = false;
   }
-  console.log("📝 꿈일기 내용:", value.value);
+  console.log("📝 음성 인식 내용:", diaryStore.content);
 };
 
 //꿈 분석
 const analyzeDream = async () => {
-  if (!value.value.trim()) {
+  if (!diaryStore.content.trim()) {
     alert("꿈이 입력 되지 않았습니다 😢 꿈을 입력해주세요!");
     return;
   }
 
-  isAnalyzing.value = true; //로딩 상태
+  isAnalyzing.value = true;
 
   try {
     const response = await openai.chat.completions.create({
@@ -96,7 +95,7 @@ const analyzeDream = async () => {
       messages: [
         {
           role: "user",
-          content: `이 꿈 내용을 분석하고 해석해줘. 대답에서 마크다운 문법(예: *, #, _)을 사용하지 말고, 순수한 텍스트로만 답변해줘. 대신 이모티콘을 넣어서 친근한 느낌을 줘.: "${value.value}"`,
+          content: `이 꿈 내용을 분석하고 해석해줘. 대답에서 마크다운 문법(예: *, #, _)을 사용하지 말고, 순수한 텍스트로만 답변해줘. 대신 이모티콘을 넣어서 친근한 느낌을 줘.: "${diaryStore.content}"`,
         },
       ],
 
@@ -104,7 +103,7 @@ const analyzeDream = async () => {
       temperature: 0.7,
     });
 
-    analysisResult.value = response.choices[0].message.content;
+    diaryStore.setDreamAnalysis(response.choices[0].message.content);
   } catch (error) {
     console.error("❌Open AI API 호출 에러", error);
     alert("꿈 분석 중 에러가 발생했습니다 😢 다시 시도해주세요!");
@@ -116,10 +115,10 @@ const analyzeDream = async () => {
 // 꿈 분석 복사
 const copyAnalysis = () => {
   navigator.clipboard
-    .writeText(analysisResult.value)
+    .writeText(diaryStore.dreamAnalysis)
     .then(() => {
       alert("분석 결과가 복사되었습니다! 📋");
-      console.log("분석 결과: ", analysisResult.value);
+      console.log("분석 결과: ", diaryStore.dreamAnalysis);
     })
     .catch(() => {
       console.error("❌ 분석 결과 복사에 실패했습니다.", error);
@@ -142,7 +141,7 @@ const generateImage = async () => {
         },
         {
           role: "user",
-          content: `다음 꿈을 바탕으로 귀엽고 서정적인 일러스트를 생성할 수 있는 프롬프트를 만들어 줘. 카툰 스타일. 부드러운 톤. 꿈 내용 : "${value.value}" `,
+          content: `다음 꿈을 바탕으로 귀엽고 서정적인 일러스트를 생성할 수 있는 프롬프트를 만들어 줘. 카툰 스타일. 부드러운 톤. 꿈 내용 : "${diaryStore.content}" `,
         },
       ],
 
@@ -180,7 +179,7 @@ const generateImage = async () => {
     });
 
     if (imageResponse.data && imageResponse.data.length > 0) {
-      generatedImage.value = imageResponse.data[0].url;
+      diaryStore.setImgUrl(imageResponse.data[0].url);
     } else {
       throw new Error("이미지 생성에 실패했습니다.");
     }
@@ -195,9 +194,9 @@ const generateImage = async () => {
 //이미지 다운로드
 
 //꿈 감정 분석
-const analyzeEmotion = async (dreamAnalysis) => {
+const analyzeEmotion = async () => {
   const prompt = `다음 꿈을 바탕으로 사용자가 어떤 감정을 느낄 것 같은지 주요 감정을 하나로 요약해줘. 감정 예시는 "슬픔", "기쁨", "두려움", "평온", "분노", "놀람" 중 하나로만 답해줘:
-  꿈 분석: "${dreamAnalysis}"`;
+  꿈 감정 분석: "${diaryStore.content}"`;
 
   try {
     const response = await openai.chat.completions.create({
@@ -275,6 +274,13 @@ const recommendASMR = async (dreamAnalysis) => {
     isFetching.value = true;
     emotion.value = await analyzeEmotion(dreamAnalysis);
     asmrVideo.value = await fetchASMRVideos(emotion.value);
+
+    if (asmrVideo.value && asmrVideo.value.videoId) {
+      const youtubeUrl = `https://www.youtube.com/embed/${asmrVideo.value.videoId}`;
+      diaryStore.setYoutubeUrl(youtubeUrl);
+    } else {
+      console.warn("추천 ASMR 영상을 찾을 수 없습니다.");
+    }
   } catch (error) {
     console.error("❌ASMR 추천 중 에러 발생", error);
     alert("ASMR 추천 중 에러가 발생했습니다 😢 다시 시도해주세요!");
@@ -290,8 +296,7 @@ const recommendASMR = async (dreamAnalysis) => {
       class="ml-[70px] fixed h-full xl:w-[720px] 2xl:w-[760px] 3xl:w-[800px] md:w-[680px] sm:w-[600px] w-[648px]"
     >
       <v-textarea
-        v-model="value"
-        :model-value="value"
+        v-model="diaryStore.content"
         :rules="rules"
         variant="solo"
         auto-grow
@@ -383,17 +388,19 @@ const recommendASMR = async (dreamAnalysis) => {
               </svg> </v-icon
           ></Button>
         </div>
-        <Button variant="filled" size="xs"
-          ><v-icon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-6 h-6"
-            >
-              <path :d="mdiNotebookOutline" />
-            </svg> </v-icon
-        ></Button>
+        <RouterLink to="/diary/write">
+          <Button variant="filled" size="xs"
+            ><v-icon>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-6 h-6"
+              >
+                <path :d="mdiNotebookOutline" />
+              </svg> </v-icon
+          ></Button>
+        </RouterLink>
       </div>
     </div>
 
@@ -414,7 +421,7 @@ const recommendASMR = async (dreamAnalysis) => {
         <div class="w-full analysis">
           <h3 class="text-xl">
             {{
-              analysisResult ||
+              diaryStore.dreamAnalysis ||
               "AI가 꿈을 분석하고 결과를 여기에 보여드릴게요!🌙"
             }}
           </h3>
@@ -444,8 +451,8 @@ const recommendASMR = async (dreamAnalysis) => {
         <p class="mb-[10px] font-semibold">AI 그림 생성</p>
 
         <img
-          v-if="generatedImage"
-          :src="generatedImage"
+          v-if="diaryStore.imgUrl"
+          :src="diaryStore.imgUrl"
           alt="AI 생성 이미지"
           class="w-full h-fit rounded-3xl"
         />
@@ -477,7 +484,7 @@ const recommendASMR = async (dreamAnalysis) => {
           <iframe
             v-if="asmrVideo"
             class="w-full h-full"
-            :src="'https://www.youtube.com/embed/' + asmrVideo.videoId"
+            :src="diaryStore.youtubeUrl"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
