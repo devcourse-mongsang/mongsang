@@ -8,15 +8,12 @@ import {
   uploadImagesToSupabase,
 } from "@/api/api-community/imgsApi";
 import { Icon } from "@iconify/vue";
-import supabase from "@/config/supabase";
 import DragDropImg from "@/components/community/DragDropImg.vue";
 import { useAuthStore } from "@/store/authStore";
 
 const router = useRouter();
 const route = useRoute();
-
 const authStore = useAuthStore();
-
 const postId = ref(route.params.postId); // path에서 뽑아낸 게시글의 고유 ID
 const postData = ref({}); // postId를 가지고 수퍼베이스에 요청을 보내 얻어낸 기존 게시글 데이터
 const imageUrls = ref([]); // postId를 가지고 수퍼베이스 스토리지에서 가져온 기존 이미지 배열
@@ -63,8 +60,6 @@ const handleInputChange = (event) => {
   }
 };
 
-const resetStorage = async () => {};
-
 const fetchUpdatedImage = async (postId) => {
   if (!imageFiles) return;
   if (postId) {
@@ -101,76 +96,6 @@ const fetchUpdatedData = async (title, content, author_id, category) => {
     console.error(error);
   }
 };
-
-// const fetchPostData = async (id) => {
-//   if (!id) return;
-//   isLoading.value = true;
-//   try {
-//     const fetchedPost = await getPostById(id);
-//     post.value = fetchedPost || {};
-
-//     const fetchedImages = await fetchImagesFromSupabase(id);
-//     imageUrls.value = fetchedImages;
-//   } catch (error) {
-//     console.error("Error fetching post or images:", error);
-//     alert("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해주세요.");
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
-
-// const syncImgWithSupabase = async (file) => {
-//   const filePath = `community_img/${postId.value}/${Date.now()}`;
-//   try {
-//     const { error } = await supabase.storage
-//       .from("MongSang_Img")
-//       .upload(filePath, file);
-//     if (error) throw error;
-
-//     console.log(filePath);
-
-//     const { publicURL, error: urlError } = supabase.storage
-//       .from("MongSang_Img")
-//       .getPublicUrl(filePath);
-//     if (urlError) throw urlError;
-
-//     console.log(publicURL);
-//     // imageUrls.value.push(publicURL);
-//   } catch (error) {
-//     console.error("Error syncing image with Supabase:", error);
-//     alert("이미지 업로드 중 오류가 발생했습니다. 다시 시도해주세요.");
-//   }
-// };
-
-// const deleteImageFromSupabase = async (url, index) => {
-//   const filePath = url.split(
-//     `/storage/v1/object/public/MongSang_Img/community_img/${postId.value}/`
-//   )[1];
-//   if (!filePath) return;
-
-//   try {
-//     const { error } = await supabase.storage
-//       .from("MongSang_Img")
-//       .remove([`community_img/${postId.value}/${filePath}`]);
-//     if (error) throw error;
-
-//     imageUrls.value.splice(index, 1);
-//   } catch (error) {
-//     console.error("Error deleting image from Supabase:", error);
-//     alert("이미지 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-//   }
-// };
-
-// const addImages = (files) => {
-//   Array.from(files).forEach((file) => {
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       imageUrls.value.push(reader.result);
-//     };
-//     reader.readAsDataURL(file);
-//   });
-// };
-
 watch(
   () => route.params.postId,
   (newId, oldId) => {
@@ -225,34 +150,6 @@ onMounted(() => {
             :imageUrls="imageUrls"
             :addImages="addImages"
           />
-          <!--           <p class="pl-2 text-xl font-semibold">이미지 업로드</p>
-          <div
-            @drop="handleDrop"
-            @dragover="handleDragOver"
-            class="flex flex-col w-auto sm:h-[200px] border-dashed rounded-lg sm:items-center sm:justify-center sm:w-full border-2 border-hc-gray/50 hover:border-hc-gray bg-gray-50"
-          >
-            <p class="hidden text-center text-hc-gray sm:flex">
-              이미지를 드래그 앤 드롭하거나 클릭하세요
-            </p>
-            <input
-              id="fileInput"
-              type="file"
-              class="hidden"
-              @change="handleInputChange"
-              multiple
-            />
-            <label
-              for="fileInput"
-              class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px]"
-            >
-              <div
-                class="px-4 py-2 text-center text-white bg-blue-500 rounded hover:bg-blue-600"
-              >
-                파일 선택
-              </div>
-            </label>
-          </div> -->
-
           <div class="flex flex-wrap gap-4 mt-4" v-if="imageUrls.length">
             <div
               v-for="(url, index) in imageUrls"
@@ -264,16 +161,6 @@ onMounted(() => {
                 alt="Preview"
                 class="aspect-square w-full rounded-[20px] object-cover"
               />
-              <!-- <button
-                @click="deleteImageFromSupabase(url, index)"
-                class="absolute top-[10px] right-[10px] p-1 text-white bg-hc-gray/30 bg-opacity-50 rounded-full hover:scale-105 hover:bg-hc-gray"
-              >
-                <Icon
-                  icon="material-symbols-light:delete-forever-rounded"
-                  width="16"
-                  height="16"
-                />
-              </button> -->
               <button
                 @click="onImgPreviewDeleted(url, index)"
                 class="absolute top-[10px] right-[10px] p-1 text-white bg-hc-gray/30 bg-opacity-50 rounded-full hover:scale-105 hover:bg-hc-gray"

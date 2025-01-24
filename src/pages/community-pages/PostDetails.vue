@@ -2,7 +2,6 @@
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import dateConverter from "../../utils/dateConveter";
 import Button from "@/components/common/Button.vue";
-import Input from "@/components/common/Input.vue";
 
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -17,109 +16,105 @@ import {
   deleteImagesFromFolder,
 } from "@/api/api-community/imgsApi";
 import MeatballsMenu from "@/components/common/MeatballsMenu.vue";
+import { useLoadingStore } from "@/store/loadingStore";
 
 const authStore = useAuthStore();
 
 const postId = ref("");
 const post = ref(null);
 const author = ref(null);
-const route = useRoute();
 const postImgs = ref({});
+const category = ref("");
+const route = useRoute();
+
+const loadingStore = useLoadingStore();
+const isLoading = computed(() => loadingStore.isLoading); // 로딩 상태 참조
 
 const fetchPostItem = async (postId) => {
   if (postId) {
-    try {
-      const fetchedPost = await getPostById(postId);
-      post.value = fetchedPost || {};
-    } catch (error) {
-      console.error("Error fetching post:", error);
-    }
+    const fetchedPost = await getPostById(postId);
+    post.value = fetchedPost || {};
   }
 };
 
 const fetchAuthor = async (userId) => {
   if (userId) {
-    try {
-      const fetchedUser = await getUserById(userId);
-      author.value = fetchedUser[0] || {};
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
+    const fetchedUser = await getUserById(userId);
+    author.value = fetchedUser[0] || {};
   }
 };
 
 const fetchDeletePost = async (postId) => {
   if (postId) {
-    try {
-      const res = await deletePost(postId);
-      await deleteImagesFromFolder(postId);
-      console.log("포스트 삭제 성공!", res);
-      router.push({ name: "communityBoard" });
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
+    await deletePost(postId);
+    await deleteImagesFromFolder(postId);
+    router.push({ name: "communityBoard" });
   }
 };
 
 const fetchImg = async (postId) => {
   if (postId) {
+    const res = await fetchImagesFromSupabase(postId);
+    postImgs.value = res;
+  }
+};
+
+const fetchAllData = async () => {
+  if (postId.value) {
     try {
-      const res = await fetchImagesFromSupabase(postId);
-      // Public URL만 추출하여 postImgs에 저장
-      postImgs.value = res;
+      loadingStore.startLoading(); // 로딩 시작
+      // 데이터 병렬 로드
+      await Promise.all([fetchPostItem(postId.value), fetchImg(postId.value)]);
+      // 게시글 작성자 정보가 있다면 추가로 로드
+      if (post.value.author_id) {
+        await fetchAuthor(post.value.author_id);
+      }
     } catch (error) {
-      console.error("Error fetching img:", error);
+      console.error("Error during data fetch:", error);
+    } finally {
+      loadingStore.stopLoading(); // 로딩 종료
     }
   }
 };
 
 postId.value = route.params.postId;
 
-const category = ref("");
-
+// 라우트 파라미터 변경 시 데이터 다시 로드
 watch(
   () => route.params.postId,
   (newPostId) => {
     postId.value = newPostId;
-    fetchPostItem(newPostId);
+    fetchAllData();
   }
 );
 
-onMounted(async () => {
+onMounted(() => {
   postId.value = route.params.postId; // 라우트 파라미터에서 postId 설정
   category.value = route.params.boardType;
-  if (postId.value) {
-    try {
-      await fetchPostItem(postId.value);
-      await fetchImg(postId.value);
-      if (post.value.author_id) {
-        await fetchAuthor(post.value.author_id);
-      }
-    } catch (error) {
-      console.error("Error during initial data fetch:", error);
-    }
-  }
+  fetchAllData(); // 초기 데이터 로드
 });
 
 const menuItems = computed(() => [
   {
     label: "Edit Post",
     icon: "material-symbols:edit-square-outline-rounded",
-    link: `/${category.value}/${post.value.id}/update-post`, // RouterLink 경로
+    link: `/${category.value}/${post.value.id}/update-post`,
     color: "#757575",
   },
   {
     label: "Delete Post",
     icon: "ic:round-delete",
-    action: () => fetchDeletePost(post.value.id), // 클릭 시 함수 호출
+    action: () => fetchDeletePost(post.value.id),
     color: "#ed4848",
   },
 ]);
 
 register();
 </script>
+
 <template>
-  <div v-if="post">
+  <div v-if="!isLoading && post">
+    <!-- 콘텐츠 렌더링 -->
     <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
       <div class="flex items-center gap-[10px]">
         <img
@@ -127,24 +122,24 @@ register();
           alt="작성자 프로필 사진입니다."
           class="w-[45px] h-[45px] rounded-full"
         />
-
         <p class="text-base font-semibold">@{{ author?.username }}</p>
       </div>
-
       <Button
         v-if="author?.id !== authStore.profile.id"
         variant="regular"
         size="md"
         class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
-        >팔로잉</Button
       >
-
+        팔로잉
+      </Button>
       <div v-if="author?.id === authStore.profile.id">
         <MeatballsMenu :menuItems="menuItems" />
       </div>
     </div>
 
+    <!-- 나머지 콘텐츠 -->
     <div>
+      <!-- Swiper 슬라이드 -->
       <swiper-container
         navigation="true"
         class="mySwiper"
@@ -154,7 +149,6 @@ register();
         slides-per-view="1"
         speed="450"
       >
-        <!-- Swiper 슬라이드: 이미지 렌더링 -->
         <swiper-slide
           v-for="(postImg, index) in postImgs"
           :key="index"
@@ -170,6 +164,7 @@ register();
         </swiper-slide>
       </swiper-container>
 
+      <!-- 콘텐츠 렌더링 -->
       <div class="mb-6">
         <div class="mt-[45px] xm:px-4 sm:px-[0px]">
           <div class="flex items-center justify-between">
@@ -191,38 +186,6 @@ register();
           {{ post.content }}
         </div>
       </div>
-
-      <div>
-        <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
-        <!-- 댓글 입력창 -->
-        <div class="flex gap-[10px] items-center w-full xm:px-4 sm:px-[0px]">
-          <img
-            :src="authStore.profile.profile_url || imgPlaceholder"
-            alt=""
-            class="w-[45px] h-[45px] rounded-full"
-          />
-          <div class="flex items-center w-full gap-[11px]">
-            <div class="w-full">
-              <Input
-                variant="custom"
-                size="md"
-                borderRadius="md"
-                placeholder="댓글을 입력해주세요."
-                class-name="flex w-full"
-              />
-            </div>
-            <Icon icon="material-symbols:send-rounded" width="24" height="24" />
-          </div>
-        </div>
-        <!-- 댓글 목록 -->
-        <div class="mt-[29px] xm:mx-4 sm:mx-[0px]">
-          <ul class="flex flex-col gap-[26px]"></ul>
-        </div>
-      </div>
     </div>
   </div>
-  <div v-else>
-    <p>Loading...</p>
-  </div>
 </template>
-<style scoped></style>

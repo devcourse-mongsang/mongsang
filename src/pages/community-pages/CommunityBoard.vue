@@ -4,15 +4,16 @@ import { getPostByCategory } from "@/api/api-community/api";
 import DropDown from "../../components/common/DropDown.vue";
 import dateConverter from "@/utils/dateConveter";
 
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
 
 import supabase from "@/config/supabase";
 import { getUserById } from "@/api/api-user/api";
 import { fetchImagesFromSupabase } from "@/api/api-community/imgsApi";
+import { useLoadingStore } from "@/store/loadingStore";
+import SkeletonUi from "@/components/community/SkeletonUi.vue";
 
-// 라우트 정보 및 상태 관리 변수
 const route = useRoute();
 const selectedCategory = ref(route.params.boardType);
 
@@ -31,20 +32,20 @@ const currentBoard = ref(
   boards[selectedCategory.value] || { title: "게시판 없음" }
 );
 const posts = ref([]);
-const isLoading = ref(false); // 로딩 상태 변수
 const menuItems = [
   { title: "인기순" },
   { title: "최신순" },
   { title: "작성순" },
 ];
 
-// 작성자 정보 캐시
 const authorCache = ref({});
 const postImgs = ref({});
 
-// 게시글 데이터를 가져오는 함수
+const loadingStore = useLoadingStore();
+const isLoading = computed(() => loadingStore.isLoading);
+
 const fetchPosts = async () => {
-  isLoading.value = true; // 로딩 시작
+  loadingStore.startLoading();
   try {
     const fetchedPosts = await getPostByCategory(
       selectedCategory.value,
@@ -52,7 +53,6 @@ const fetchPosts = async () => {
     );
     posts.value = fetchedPosts || [];
 
-    // 각 게시물의 작성자 정보를 캐싱
     for (let post of posts.value) {
       if (!authorCache.value[post.author_id]) {
         const user = await getUserById(post.author_id);
@@ -67,16 +67,15 @@ const fetchPosts = async () => {
     console.error("게시글을 불러오는 중 오류가 발생했습니다:", error);
     posts.value = [];
   } finally {
-    isLoading.value = false; // 로딩 종료
+    loadingStore.stopLoading();
   }
 };
 
-// 라우트 변경 감지 및 처리
 watch(
   () => route.params.boardType,
   async (newBoardType) => {
     if (selectedCategory.value !== newBoardType) {
-      selectedCategory.value = newBoardType; // 값이 다를 때만 변경
+      selectedCategory.value = newBoardType;
       currentBoard.value = boards[newBoardType] || { title: "게시판 없음" };
       await fetchPosts();
     }
@@ -84,7 +83,6 @@ watch(
   { immediate: true }
 );
 
-// 컴포넌트 마운트 시 초기 데이터 로드
 onMounted(fetchPosts);
 </script>
 
@@ -106,7 +104,7 @@ onMounted(fetchPosts);
 
     <!-- 로딩 상태 -->
     <div v-if="isLoading" class="flex items-center justify-center h-40">
-      <p class="text-lg font-semibold text-gray-500">게시글을 불러오는 중...</p>
+      <SkeletonUi />
     </div>
 
     <!-- 게시글 리스트 -->
