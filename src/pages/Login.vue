@@ -80,17 +80,8 @@ async function loginWithProvider(provider) {
       return;
     }
 
-    modalStore.addModal({
-      title: "성공",
-      content: `${provider} 로그인에 성공했습니다!`,
-      btnText: "확인",
-      isOneBtn: true,
-      onClick: () => {
-        modalStore.modals = []; // 모든 모달 닫기
-        window.location.hash = "";
-        router.push("/"); // 메인 페이지로 이동
-      },
-    });
+    window.location.hash = "";
+    router.push("/"); // 메인 페이지로 이동
   } catch (err) {
     showError(`${provider} 로그인 중 오류 발생: ${err.message}`);
   }

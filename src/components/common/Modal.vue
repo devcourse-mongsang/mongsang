@@ -8,11 +8,11 @@
       class="w-full max-w-[425px] h-[230px] bg-white rounded-[20px] p-6 flex flex-col items-center justify-center shadow-lg"
     >
       <!-- 제목 -->
-      <div class="text-lg font-bold text-center mb-2 text-black">
+      <div class="text-[24px] font-bold text-center mb-2 text-black">
         {{ modal.title }}
       </div>
       <!-- 내용 -->
-      <div class="text-lg text-center mb-6">
+      <div class="text-[20px] text-center mb-6">
         {{ modal.content }}
       </div>
       <!-- 버튼 -->
