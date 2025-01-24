@@ -11,21 +11,23 @@ import { deletePost, getPostById } from "@/api/api-community/api";
 import { getUserById } from "@/api/api-user/api";
 import { useAuthStore } from "@/store/authStore";
 import router from "@/router";
+
 import {
   fetchImagesFromSupabase,
   deleteImagesFromFolder,
 } from "@/api/api-community/imgsApi";
 import MeatballsMenu from "@/components/common/MeatballsMenu.vue";
 import { useLoadingStore } from "@/store/loadingStore";
+import Comment from "./Comment.vue";
 
 const authStore = useAuthStore();
+const route = useRoute();
 
 const postId = ref("");
 const post = ref(null);
 const author = ref(null);
 const postImgs = ref({});
 const category = ref("");
-const route = useRoute();
 
 const loadingStore = useLoadingStore();
 const isLoading = computed(() => loadingStore.isLoading); // 로딩 상태 참조
@@ -62,24 +64,21 @@ const fetchImg = async (postId) => {
 const fetchAllData = async () => {
   if (postId.value) {
     try {
-      loadingStore.startLoading(); // 로딩 시작
-      // 데이터 병렬 로드
+      loadingStore.startLoading();
       await Promise.all([fetchPostItem(postId.value), fetchImg(postId.value)]);
-      // 게시글 작성자 정보가 있다면 추가로 로드
       if (post.value.author_id) {
         await fetchAuthor(post.value.author_id);
       }
     } catch (error) {
       console.error("Error during data fetch:", error);
     } finally {
-      loadingStore.stopLoading(); // 로딩 종료
+      loadingStore.stopLoading();
     }
   }
 };
 
 postId.value = route.params.postId;
 
-// 라우트 파라미터 변경 시 데이터 다시 로드
 watch(
   () => route.params.postId,
   (newPostId) => {
@@ -103,7 +102,7 @@ const menuItems = computed(() => [
   },
   {
     label: "Delete Post",
-    icon: "ic:round-delete",
+    icon: "mdi:delete",
     action: () => fetchDeletePost(post.value.id),
     color: "#ed4848",
   },
@@ -114,15 +113,14 @@ register();
 
 <template>
   <div v-if="!isLoading && post">
-    <!-- 콘텐츠 렌더링 -->
     <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
       <div class="flex items-center gap-[10px]">
         <img
           :src="author?.profile_url || imgPlaceholder"
           alt="작성자 프로필 사진입니다."
-          class="w-[45px] h-[45px] rounded-full"
+          class="w-[40px] h-[40px] rounded-full"
         />
-        <p class="text-base font-semibold">@{{ author?.username }}</p>
+        <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
       </div>
       <Button
         v-if="author?.id !== authStore.profile.id"
@@ -136,10 +134,7 @@ register();
         <MeatballsMenu :menuItems="menuItems" />
       </div>
     </div>
-
-    <!-- 나머지 콘텐츠 -->
     <div>
-      <!-- Swiper 슬라이드 -->
       <swiper-container
         navigation="true"
         class="mySwiper"
@@ -163,8 +158,6 @@ register();
           </div>
         </swiper-slide>
       </swiper-container>
-
-      <!-- 콘텐츠 렌더링 -->
       <div class="mb-6">
         <div class="mt-[45px] xm:px-4 sm:px-[0px]">
           <div class="flex items-center justify-between">
@@ -185,6 +178,11 @@ register();
         <div class="px-4 pt-6 mb-10 sm:hidden">
           {{ post.content }}
         </div>
+      </div>
+      <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
+
+      <div class="flex flex-col">
+        <Comment :postId="postId" />
       </div>
     </div>
   </div>
