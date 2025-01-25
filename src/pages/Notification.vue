@@ -62,8 +62,8 @@ async function navigateToPost(notification) {
 
 // 프로필로 이동
 function navigateToProfile(notification) {
-  const userId = notification.sender_id;
-  router.push({ name: "userProfile", params: { userId } });
+  const id = notification.sender_id;
+  router.push({ name: "userProfile", params: { id } });
 }
 
 // 알림 클릭 핸들러
