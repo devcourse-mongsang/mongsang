@@ -516,4 +516,9 @@ const recommendASMR = async (dreamAnalysis) => {
     </div>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+.v-tooltip > ::v-deep(.v-overlay__content) {
+  background: #757575;
+  color: white;
+}
+</style>
