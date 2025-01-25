@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted, computed } from "vue";
 import { useSidebarStore } from "../../store/sidebar"; // Pinia store import
 import DropDownCommunity from "./DropDownCommunity.vue";
 import { Icon } from "@iconify/vue";
@@ -12,12 +13,28 @@ const authStore = useAuthStore();
 const sidebarStore = useSidebarStore(); // Pinia store 초기화
 const router = useRouter();
 
+const showNotifications = ref(false);
+
 async function handleLogout() {
   const success = await authStore.logout();
   if (success) {
     alert("로그아웃 성공!");
     router.push("/");
   }
+}
+
+const currentUserId = computed(() => authStore.user?.id);
+
+onMounted(async () => {
+  while (!currentUserId.value) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  console.log("Current User ID:", currentUserId.value);
+  await notificationsStore.fetchNotifications(currentUserId.value);
+});
+
+function handleCloseNotification(notificationId) {
+  notificationsStore.markNotificationAsRead(notificationId);
 }
 </script>
 
@@ -63,18 +80,12 @@ async function handleLogout() {
           </div>
           <div class="flex gap-[10px]">
             <Icon
-              id="noti-icon"
-              icon="material-symbols:notifications-outline"
-              width="1.5rem"
-              height="1.5rem"
-              style="color: #ffffff"
-            />
-            <Icon
               id="weather-icon"
               icon="material-symbols:wb-sunny-rounded"
               width="1.5rem"
               height="1.5rem"
               style="color: #ffffff"
+              class="cursor-pointer"
             />
           </div>
         </div>
@@ -84,26 +95,31 @@ async function handleLogout() {
     </div>
 
     <div
-      class="mt-[1rem] bg-[rgba(255,255,255,0.5)] rounded-[1.25rem] text-[0.85rem] text-[#000] px-[0.9375rem] pt-[0.9375rem] sm:flex sm:flex-col gap-[0.3125rem] hidden"
+      v-if="showNotifications && notificationsStore.notifications.length"
+      class="mt-[1rem] bg-[rgba(255,255,255,0.5)] rounded-[1.25rem] text-[0.85rem] text-[#000] px-[0.9375rem] pt-[0.9375rem] sm:flex sm:flex-col gap-[0.3125rem] max-h-[11rem] overflow-y-auto no-scrollbar"
     >
-      <p>
-        <span class="font-semibold">@tiffanyhansy</span> 님이 회원님을 팔로우
-        했습니다.
-      </p>
+      <template
+        v-for="notification in notificationsStore.notifications"
+        :key="notification.id"
+      >
+        <p v-if="notification.type === 'follow'">
+          <span class="font-semibold">@{{ notification.sender.username }}</span>
+          님이 회원님을 팔로우 했습니다.
+        </p>
+        <p v-else-if="notification.type === 'like'">
+          <span class="font-semibold">@{{ notification.sender.username }}</span
+          >님이 회원의 게시글에 좋아요를 눌렀습니다.
+        </p>
+        <p v-else-if="notification.type === 'comment'">
+          <span class="font-semibold">@{{ notification.sender.username }}</span
+          >님이 회원의 게시글에 댓글을 남겼습니다.
+        </p>
+        <img :src="sidebarHr" alt="구분선 이미지" />
+      </template>
 
-      <img :src="sidebarHr" alt="구분선 이미지" />
-      <p>
-        <span class="font-semibold">@Sooya</span>님이 회원의 게시글에 좋아요를
-        눌렀습니다.
-      </p>
-      <img :src="sidebarHr" alt="구분선 이미지" />
-      <p>
-        <span class="font-semibold">@malaChild</span>님이 회원의 게시글에
-        좋아요를 눌렀습니다.
-      </p>
-      <img :src="sidebarHr" alt="구분선 이미지" />
       <button
         class="underline text-[#757575] text-center mb-[0.5625rem] cursor-pointer"
+        @click="showNotifications = false"
       >
         닫기
       </button>
@@ -137,3 +153,12 @@ async function handleLogout() {
     <DropDownCommunity />
   </div>
 </template>
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* for Internet Explorer and Edge */
+  scrollbar-width: none; /* for Firefox */
+}
+</style>
