@@ -47,16 +47,33 @@ const route = useRoute();
       </label>
     </div>
 
-    <!-- 홈 바로가기 -->
-    <div id="home-icon">
-      <router-link to="/" class="bg-transparent cursor-pointer">
-        <Icon
-          icon="material-symbols:home-outline-rounded"
-          width="32"
-          height="32"
-          style="color: #729ecb"
-        />
-      </router-link>
+    <!-- 알림 아이콘과 홈 바로가기 -->
+    <div class="flex items-center space-x-4">
+      <!-- 알림 바로가기 -->
+      <div id="noti-icon">
+        <router-link to="/notification" class="bg-transparent cursor-pointer">
+          <Icon
+            id="noti-icon"
+            icon="material-symbols:notifications-outline"
+            width="29"
+            height="29"
+            style="color: #729ecb"
+            class="cursor-pointer"
+          />
+        </router-link>
+      </div>
+
+      <!-- 홈 바로가기 -->
+      <div id="home-icon">
+        <router-link to="/" class="bg-transparent cursor-pointer">
+          <Icon
+            icon="material-symbols:home-outline-rounded"
+            width="32"
+            height="32"
+            style="color: #729ecb"
+          />
+        </router-link>
+      </div>
     </div>
   </nav>
 </template>
