@@ -512,7 +512,7 @@ const recommendASMR = async (dreamAnalysis) => {
           ></iframe>
           <img
             v-else
-            src="/public/assets/imgs/img_placeholder.png"
+            src="/public/assets/imgs/youtube_placeholder.png"
             alt="ASMR 비디오"
             class="absolute top-0 left-0 w-full h-full"
           />
