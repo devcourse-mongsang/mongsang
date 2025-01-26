@@ -1,15 +1,53 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
+import { useAuthStore } from "@/store/authStore";
+import { getDiaryById } from "@/api/api-diary/api";
 
-const diaryData = ref({
-  date: "2025년 / 01월 / 20일",
-  username: "@Mala_love",
-  title: "나는 오늘도 마라탕을 먹으면서 버블티를 마시는 꿈을 꾼다",
-  content:
-    "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.",
-  dreamAnalysis:
-    "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.",
+const route = useRoute();
+const diaryId = route.params.id;
+
+const diaryData = ref(null);
+const authStore = useAuthStore();
+
+onMounted(async () => {
+  try {
+    const diaryResponse = await getDiaryById(diaryId);
+    if (!diaryResponse) {
+      console.error("다이어리 데이터 불러오기 실패");
+      return;
+    }
+
+    await authStore.restoreSession();
+
+    diaryData.value = {
+      date: diaryResponse.created_at,
+      username: authStore.profile?.username || "unknown user",
+      title: diaryResponse.title,
+      content: diaryResponse.content,
+      condition: diaryResponse.condition,
+      weather: diaryResponse.weather,
+      dreamAnalysis: diaryResponse.dream_analysis,
+      imgUrl: diaryResponse.img_url,
+      youtubeUrl: diaryResponse.youtube_url,
+    };
+
+    console.log("diaryData:", diaryData.value);
+  } catch (error) {
+    console.error("데이터 로딩 에러:", error);
+  }
+});
+
+const formattedDate = computed(() => {
+  if (!diaryData.value?.date) return "";
+
+  const date = new Date(diaryData.value.date);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}년 / ${month}월 / ${day}일`;
 });
 
 // 모달 상태 관리
@@ -22,7 +60,7 @@ const toggleModal = () => {
 </script>
 
 <template>
-  <div class="max-w-[715px] mx-auto">
+  <div v-if="diaryData" class="max-w-[715px] mx-auto">
     <!-- Header Section -->
     <div class="mb-8 xm:px-4 sm:px-[0px]">
       <div class="relative w-[232px] h-[205.68px] mx-auto">
@@ -40,20 +78,16 @@ const toggleModal = () => {
       </div>
 
       <div class="flex items-center gap-8">
-        <p class="text-xl">{{ diaryData.date }}</p>
+        <p class="text-xl">{{ formattedDate }}</p>
 
-        <!-- ml-auto 추가하여 나머지 요소들을 오른쪽으로 밀기 -->
         <div class="flex items-center gap-2 justify-end ml-auto">
           <p class="text-xl xm:hidden sm:block">오늘의 기분</p>
-          <Icon
-            icon="mdi:emoticon-happy-outline"
-            class="w-6 h-6 text-hc-blue"
-          />
+          <Icon :icon="diaryData.condition" class="w-6 h-6 text-hc-blue" />
         </div>
 
         <div class="flex items-center gap-2 justify-end">
           <p class="text-xl xm:hidden sm:block">오늘의 날씨</p>
-          <Icon icon="mdi:snowflake" class="w-6 h-6 text-hc-blue" />
+          <Icon :icon="diaryData.weather" class="w-6 h-6 text-hc-blue" />
         </div>
 
         <!-- 더보기 버튼과 모달 -->
@@ -76,9 +110,7 @@ const toggleModal = () => {
               >
                 게시글 수정
               </button>
-
               <hr class="border-hc-blue border-1 mb-3" />
-
               <button
                 class="w-full text-base text-center text-hc-coral hover:opacity-70"
               >
@@ -92,9 +124,9 @@ const toggleModal = () => {
 
     <!-- 일기장 이미지 -->
     <img
-      src="/assets/imgs/img_placeholder.png"
+      :src="diaryData.imgUrl || '/assets/imgs/img_placeholder.png'"
       alt="Dream"
-      class="w-full h-[710px] rounded-[0px] object-cover mb-8 xm:h-auto sm:rounded-[20px]"
+      class="w-full rounded-[0px] object-cover mb-8 xm:h-auto sm:rounded-[20px]"
     />
 
     <!-- 꿈 일기 제목과 내용 -->
@@ -104,7 +136,6 @@ const toggleModal = () => {
     <p class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px]">
       {{ diaryData.content }}
     </p>
-
     <!-- 구분선 -->
     <hr class="border-hc-blue my-8" />
 
@@ -128,15 +159,16 @@ const toggleModal = () => {
       ASMR
     </h3>
     <div
-      class="w-full h-[508px] rounded-[20px] bg-black overflow-hidden xm:h-auto"
+      v-if="diaryData.youtubeUrl"
+      class="w-full rounded-[20px] overflow-hidden xm:h-auto"
     >
-      <img
-        src="/assets/imgs/asmr.png"
-        alt="ASMR"
-        class="w-full h-full object-cover"
-      />
+      <iframe
+        :src="diaryData.youtubeUrl"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        class="w-full aspect-video"
+      ></iframe>
     </div>
   </div>
 </template>
-
-<style scoped></style>
