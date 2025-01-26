@@ -292,24 +292,22 @@ const recommendASMR = async (dreamAnalysis) => {
 <template>
   <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
-    <div class="md:ml-[70px] h-full md:w-[760px] md:fixed">
-      <v-textarea
+    <div
+      class="md:ml-[70px] h-full md:fixed md:w-[640px] lg:w-[680px] xl:w-[720px] 2xl:w-[760px] 3xl:w-[780px]"
+    >
+      <textarea
         v-model="diaryStore.content"
         :rules="rules"
-        variant="solo"
-        auto-grow
-        no-resize
+        required
+        maxlength="1600"
         placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
-        rows="28"
-        counter
-        rounded
-        bg-color="rgba(255, 255, 255, 0.7)"
-      ></v-textarea>
+        style="background-color: rgba(255, 255, 255, 0.7); aspect-ratio: 1 / 1"
+        class="w-full p-16 text-xl resize-none md:rounded-3xl focus:outline-none"
+      ></textarea>
 
-      <div class="flex justify-between xm:mx-4 md:mx-0">
+      <div class="flex justify-between xm:mx-4 md:mx-0 mt-[10px]">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
-
           <Button
             v-if="!isListening"
             variant="regular"
@@ -423,7 +421,7 @@ const recommendASMR = async (dreamAnalysis) => {
       class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[800px] lg:ml-[840px] xl:ml-[880px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
-        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px] shadow-md"
+        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px]"
         style="background-color: rgba(255, 255, 255, 0.7)"
       >
         <img
