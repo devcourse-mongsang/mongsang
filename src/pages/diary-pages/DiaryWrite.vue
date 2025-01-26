@@ -1,91 +1,122 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import DropDownWeather from "@/components/common/DropDownWeather.vue";
-import DropDownFace from "../../components/common/DropDownFace.vue";
+import DropDownFace from "@/components/common/DropDownFace.vue";
 import { Icon } from "@iconify/vue";
 import { useDiaryStore } from "@/store/diaryStore";
+import { createDiary } from "@/api/api-diary/api.js";
+import { useAuthStore } from "@/store/authStore";
 
-// 상태 관리
 const selectedDate = ref(new Date());
 const diaryStore = useDiaryStore();
 
-// 더미 데이터
-const diaryData = ref({
-  date: "2025년 / 01월 / 20일",
-  username: "@Mala_love",
-  title: "",
-  // content:
-  //   "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.",
-  // dreamAnalysis:
-  //   "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.",
-  // aiImg: "/assets/imgs/img_placeholder.png",
-  // asmrImg: "/assets/imgs/youtube_thumbnail.png",
-});
+const router = useRouter();
+const authStore = useAuthStore();
 
-// 제목과 본문 초기화
-const title = ref(diaryData.value.title);
-//const content = ref(diaryData.value.content);
+const title = ref("");
+const condition = ref("satisfied");
+const weather = ref("sunny");
 
-// 날짜 포맷 계산
+const content = computed(() => diaryStore.content);
+
 const formattedDate = computed(() => {
   const year = selectedDate.value.getFullYear();
   const month = String(selectedDate.value.getMonth() + 1).padStart(2, "0");
   const day = String(selectedDate.value.getDate()).padStart(2, "0");
   return { year, month, day };
 });
+const updateCondition = (newCondition) => {
+  condition.value = newCondition;
+};
 
-// 데이터 삭제 핸들러
+const updateWeather = (newWeather) => {
+  weather.value = newWeather;
+};
+const handleCheckButtonClick = async () => {
+  const diary = {
+    author_id: authStore.profile.id,
+    condition: condition.value,
+    weather: weather.value,
+    title: title.value,
+    content: content.value,
+    dream_analysis: diaryStore.dreamAnalysis,
+    img_url: diaryStore.imgUrl,
+    youtube_url: diaryStore.youtubeUrl,
+  };
+
+  try {
+    const data = await createDiary(diary);
+    console.log("Data inserted:", data);
+    router.push(`/diary/details/${data[0].id}`);
+  } catch (error) {
+    console.error("Error inserting data:", error);
+  }
+};
+
+const deletedData = ref({
+  dreamAnalysis: "",
+  imgUrl: "",
+  youtubeUrl: "",
+});
+
 const deleteDreamAnalysis = () => {
-  diaryData.value.dreamAnalysis = "";
+  deletedData.value.dreamAnalysis = diaryStore.dreamAnalysis;
+  diaryStore.dreamAnalysis = "";
+  showDreamAnalysis.value = false;
 };
 
 const deleteImage = () => {
-  diaryData.value.aiImg = "";
+  deletedData.value.imgUrl = diaryStore.imgUrl;
+  diaryStore.imgUrl = "";
+  showAiImage.value = false;
 };
-
 const deleteAsmr = () => {
-  diaryData.value.asmrImg = "";
+  deletedData.value.youtubeUrl = diaryStore.youtubeUrl;
+  diaryStore.youtubeUrl = "";
+  showAsmrImage.value = false;
 };
 
 const contentTextarea = ref(null);
+const hasContent = ref(false);
 
-const content = ref(""); // textarea 내용
-const hasContent = ref(false); // 버튼 표시 여부
-
-// content 확인
 const checkContent = () => {
   hasContent.value =
     content.value.trim().length > 0 || diaryStore.content.trim().length > 0;
 };
 
-// 버튼 클릭 동작
-const fetchContent = () => {
-  content.value = diaryStore.content; // diaryData의 content를 textarea로 복사
-  checkContent(); // 버튼 상태 업데이트
-};
-
-// 초기화 시 diaryData의 content를 content에 복사
-onMounted(() => {
-  content.value = diaryStore.content;
-});
-
-// 데이터 표시 상태 관리
 const showDreamAnalysis = ref(false);
 const showAiImage = ref(false);
 const showAsmrImage = ref(false);
 
-// 데이터 표시 함수
 const toggleDreamAnalysis = () => {
+  if (!showDreamAnalysis.value && deletedData.value.dreamAnalysis) {
+    diaryStore.dreamAnalysis = deletedData.value.dreamAnalysis;
+    deletedData.value.dreamAnalysis = "";
+  }
   showDreamAnalysis.value = !showDreamAnalysis.value;
 };
-
 const toggleAiImage = () => {
+  if (!showAiImage.value && deletedData.value.imgUrl) {
+    diaryStore.imgUrl = deletedData.value.imgUrl;
+    deletedData.value.imgUrl = "";
+  }
   showAiImage.value = !showAiImage.value;
 };
 
 const toggleAsmrImage = () => {
+  if (!showAsmrImage.value && deletedData.value.youtubeUrl) {
+    diaryStore.youtubeUrl = deletedData.value.youtubeUrl;
+    deletedData.value.youtubeUrl = "";
+  }
   showAsmrImage.value = !showAsmrImage.value;
 };
+
+onMounted(() => {
+  showDreamAnalysis.value = !!diaryStore.dreamAnalysis;
+  showAiImage.value = !!diaryStore.imgUrl;
+  showAsmrImage.value = !!diaryStore.youtubeUrl;
+});
 </script>
 
 <template>
@@ -110,8 +141,8 @@ const toggleAsmrImage = () => {
 
         <!-- 상단 우측 버튼들 -->
         <div class="flex justify-end gap-4 ml-auto">
-          <DropDownFace />
-          <DropDownWeather />
+          <DropDownFace @update:condition="updateCondition" />
+          <DropDownWeather @update:weather="updateWeather" />
         </div>
       </div>
 
@@ -135,17 +166,8 @@ const toggleAsmrImage = () => {
               @input="checkContent"
               class="w-full h-32 p-2"
               placeholder="꿈 일기를 작성해주세요"
+              style="resize: none"
             ></textarea>
-            <button
-              v-show="!hasContent"
-              @click="fetchContent"
-              class="w-[50px] h-[50px] rounded-full bg-hc-gray/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            >
-              <Icon
-                icon="material-symbols:edit-note-rounded"
-                class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2"
-              />
-            </button>
           </div>
         </div>
 
@@ -230,7 +252,6 @@ const toggleAsmrImage = () => {
                     class="w-20 h-20 sm:w-[90px] sm:h-[90px] bg-[#D9D9D9] rounded-[20px] relative"
                   >
                     <button
-                      v-if="diaryStore.imgUrl"
                       @click="toggleAiImage"
                       class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     >
@@ -262,7 +283,7 @@ const toggleAsmrImage = () => {
                     </div>
                   </button>
                   <iframe
-                    v-if="diaryStore.youtubeUrl"
+                    v-if="showAsmrImage"
                     class="w-28 h-20 sm:w-[127px] sm:h-[90px] object-cover rounded-[20px]"
                     :src="diaryStore.youtubeUrl"
                     frameborder="0"
@@ -275,7 +296,6 @@ const toggleAsmrImage = () => {
                     class="w-28 h-20 sm:w-[127px] sm:h-[90px] bg-[#D9D9D9] rounded-[20px] relative"
                   >
                     <button
-                      v-if="diaryData.asmrImg"
                       @click="toggleAsmrImage"
                       class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     >
@@ -294,7 +314,10 @@ const toggleAsmrImage = () => {
 
       <!-- 하단 동그라미 버튼 -->
       <div class="flex justify-end mt-4">
-        <button class="w-[50px] h-[50px] bg-hc-blue rounded-full relative">
+        <button
+          class="w-[50px] h-[50px] bg-hc-blue rounded-full relative"
+          @click="handleCheckButtonClick"
+        >
           <Icon
             icon="material-symbols:check-rounded"
             class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-white top-1/2 left-1/2"

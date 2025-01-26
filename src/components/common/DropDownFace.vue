@@ -2,7 +2,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { Icon } from "@iconify/vue";
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 
 // 선택된 아이콘 상태
 const selectedIcon = ref(
@@ -11,13 +11,35 @@ const selectedIcon = ref(
 
 // 아이콘 리스트
 const icons = [
-  "material-symbols:sentiment-satisfied-outline-rounded",
-  "material-symbols:sentiment-neutral-outline-rounded",
-  "material-symbols:sentiment-dissatisfied-outline-rounded",
-  "material-symbols:sentiment-sad-outline-rounded",
-  "material-symbols:sentiment-extremely-dissatisfied-outline-rounded",
-  "material-symbols:sentiment-very-satisfied-outline-rounded",
+  {
+    icon: "material-symbols:sentiment-satisfied-outline-rounded",
+    name: "satisfied",
+  },
+  {
+    icon: "material-symbols:sentiment-neutral-outline-rounded",
+    name: "neutral",
+  },
+  {
+    icon: "material-symbols:sentiment-dissatisfied-outline-rounded",
+    name: "dissatisfied",
+  },
+  { icon: "material-symbols:sentiment-sad-outline-rounded", name: "sad" },
+  {
+    icon: "material-symbols:sentiment-extremely-dissatisfied-outline-rounded",
+    name: "extremely_dissatisfied",
+  },
+  {
+    icon: "material-symbols:sentiment-very-satisfied-outline-rounded",
+    name: "extremely_satisfied",
+  },
 ];
+
+const emit = defineEmits(["update:condition"]);
+
+const selectIcon = (icon) => {
+  selectedIcon.value = icon.icon;
+  emit("update:condition", icon.name);
+};
 </script>
 
 <template>
@@ -48,13 +70,13 @@ const icons = [
           <!-- 아이콘 리스트 -->
           <MenuItem v-for="icon in icons" :key="icon" v-slot="{ active }">
             <div
-              @click="selectedIcon = icon"
+              @click="selectIcon(icon)"
               :class="[
                 active ? 'bg-gray-200' : '',
                 'flex items-center justify-center w-12 h-12 rounded-full cursor-pointer',
               ]"
             >
-              <Icon :icon="icon" class="w-6 h-6 text-hc-blue" />
+              <Icon :icon="icon.icon" class="w-6 h-6 text-hc-blue" />
             </div>
           </MenuItem>
         </div>
