@@ -292,7 +292,7 @@ const recommendASMR = async (dreamAnalysis) => {
 <template>
   <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
-    <div class="md:ml-[70px] sticky h-full md:w-[760px]">
+    <div class="md:ml-[70px] h-full md:w-[760px] md:fixed">
       <v-textarea
         v-model="diaryStore.content"
         :rules="rules"
@@ -420,7 +420,7 @@ const recommendASMR = async (dreamAnalysis) => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto"
+      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[800px] lg:ml-[840px] xl:ml-[880px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
         class="flex flex-col items-center w-full rounded-3xl px-[65px] relative pb-[78px] shadow-md"
