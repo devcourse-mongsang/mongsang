@@ -65,54 +65,40 @@ export const getDiaryById = async (id) => {
       .select("*")
       .eq("id", id)
       .single();
-    if (error) throw new Error(error.message); // Error 메시지 처리
+    if (error) throw new Error(error.message);
     return data;
   } catch (error) {
-    console.error("게시물 조회 실패:", error.message); // 에러 로깅
-    throw error; // 에러를 외부로 던짐
+    console.error("게시물 조회 실패:", error.message);
+    throw error;
   }
 };
 
-// export const getDiaryWithUserInfo = async (author_id, created_at) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from("dream_journal")
-//       .select(
-//         `
-//         *,
-//         profiles:author_id (
-//           username
-//         )
-//       `
-//       )
-//       .eq("author_id", author_id)
-//       .filter("created_at::date", "eq", created_at)
-//       .single();
+export const getMonthlyDiaryImages = async (year, month) => {
+  try {
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+    const endDate = `${year}-${String(month).padStart(2, "0")}-31`;
 
-//     if (error) {
-//       console.error("일기 조회 실패:", error.message);
-//       return null;
-//     }
+    const { data, error } = await supabase
+      .from("dream_journal")
+      .select("id, created_at, img_url")
+      .gte("created_at", startDate)
+      .lte("created_at", endDate);
 
-//     if (data) {
-//       // created_at을 년/월/일 형식으로 변환
-//       const date = new Date(data.created_at);
-//       const formattedDate = {
-//         year: date.getFullYear(),
-//         month: String(date.getMonth() + 1).padStart(2, "0"),
-//         day: String(date.getDate()).padStart(2, "0"),
-//       };
+    if (error) throw error;
 
-//       return {
-//         ...data,
-//         username: data.profiles.username,
-//         formattedDate,
-//       };
-//     }
+    const imageMap = {};
+    data.forEach((diary) => {
+      const date = new Date(diary.created_at);
+      const day = date.getDate();
+      imageMap[day] = {
+        id: diary.id,
+        imgUrl: diary.img_url,
+      };
+    });
 
-//     return null;
-//   } catch (error) {
-//     console.error("에러 발생:", error);
-//     return null;
-//   }
-// };
+    return imageMap;
+  } catch (error) {
+    console.error("월별 이미지 조회 실패:", error.message);
+    return {};
+  }
+};
