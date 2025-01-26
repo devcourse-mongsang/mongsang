@@ -290,11 +290,9 @@ const recommendASMR = async (dreamAnalysis) => {
 };
 </script>
 <template>
-  <div class="flex h-full gap-x-[85px] overflow-hidden">
+  <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
-    <div
-      class="ml-[70px] fixed h-full xl:w-[720px] 2xl:w-[760px] 3xl:w-[800px] md:w-[680px] sm:w-[600px] w-[648px]"
-    >
+    <div class="md:ml-[70px] h-full md:w-[760px] md:fixed">
       <v-textarea
         v-model="diaryStore.content"
         :rules="rules"
@@ -308,7 +306,7 @@ const recommendASMR = async (dreamAnalysis) => {
         bg-color="rgba(255, 255, 255, 0.7)"
       ></v-textarea>
 
-      <div class="flex justify-between">
+      <div class="flex justify-between xm:mx-4 md:mx-0">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
 
@@ -422,10 +420,10 @@ const recommendASMR = async (dreamAnalysis) => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col w-[538px] gap-y-[50px] xl:w-[720px] xl:ml-[900px] mr-[70px] overflow-y-auto 2xl:w-[800px] 2xl:ml-[920px] 3xl:w-[840px] 3xl:ml-[960px]"
+      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[800px] lg:ml-[840px] xl:ml-[880px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
-        class="flex flex-col items-center w-full rounded-3xl px-[65px] relative pb-[78px] shadow-md"
+        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px] shadow-md"
         style="background-color: rgba(255, 255, 255, 0.7)"
       >
         <img
@@ -464,19 +462,21 @@ const recommendASMR = async (dreamAnalysis) => {
 
       <!-- ai 그림 생성 -->
       <div class="relative">
-        <p class="mb-[10px] font-semibold text-2xl">AI 그림 생성</p>
+        <p class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0">
+          AI 그림 생성
+        </p>
 
         <img
           v-if="diaryStore.imgUrl"
           :src="diaryStore.imgUrl"
           alt="AI 생성 이미지"
-          class="w-full h-fit rounded-3xl"
+          class="w-full h-fit md:rounded-3xl"
         />
         <img
           v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
-          class="w-full h-fit rounded-3xl"
+          class="w-full h-fit md:rounded-3xl"
         />
 
         <Button size="xs" variant="regular" class="absolute bottom-4 right-4">
@@ -495,11 +495,16 @@ const recommendASMR = async (dreamAnalysis) => {
 
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
-        <p class="mb-[10px] font-semibold text-2xl">추천 ASMR</p>
-        <div class="relative w-full overflow-hidden rounded-3xl h-[475px]">
+        <p class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0">
+          추천 ASMR
+        </p>
+        <div
+          class="relative w-full overflow-hidden md:rounded-3xl"
+          style="padding-top: 56.25%"
+        >
           <iframe
             v-if="asmrVideo"
-            class="w-full h-full"
+            class="absolute top-0 left-0 w-full h-full"
             :src="diaryStore.youtubeUrl"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -509,7 +514,7 @@ const recommendASMR = async (dreamAnalysis) => {
             v-else
             src="/public/assets/imgs/img_placeholder.png"
             alt="ASMR 비디오"
-            class="absolute w-full"
+            class="absolute top-0 left-0 w-full h-full"
           />
         </div>
       </div>
