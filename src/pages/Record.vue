@@ -10,10 +10,14 @@ import {
   mdiTrayArrowDown,
   mdiMicrophoneOff,
 } from "@mdi/js";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
+import { checkDiaryExists } from "@/api/api-record/api";
 const diaryStore = useDiaryStore();
+
+const isDiaryWritten = ref(false);
+const today = new Date().toISOString().split("T")[0];
 
 const rules = [(v) => v.length <= 1600 || "최대 1600자까지만 입력 가능합니다"];
 
@@ -288,6 +292,22 @@ const recommendASMR = async (dreamAnalysis) => {
     isFetching.value = false;
   }
 };
+
+// 오늘 일기 작성 확인
+const checkTodayDiary = async () => {
+  const exists = await checkDiaryExists(today);
+  isDiaryWritten.value = exists;
+};
+
+onMounted(async () => {
+  try {
+    const exists = await checkDiaryExists(today); // 비동기 함수 호출
+    isDiaryWritten.value = exists; // 상태 업데이트
+    console.log("오늘 일기 작성 여부:", exists); // 디버깅용 콘솔 출력
+  } catch (error) {
+    console.error("onMounted에서 에러 발생:", error.message);
+  }
+});
 </script>
 <template>
   <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
@@ -399,10 +419,23 @@ const recommendASMR = async (dreamAnalysis) => {
 
         <!-- 일기 쓰기 버튼 -->
         <RouterLink to="/diary/write">
-          <Button variant="filled" size="xs">
-            <v-tooltip activator="parent" location="bottom"
+          <Button
+            variant="filled"
+            size="xs"
+            :disabled="isDiaryWritten"
+            class="disabled:bg-hc-gray disabled:cursor-pointer"
+          >
+            <v-tooltip
+              activator="parent"
+              location="bottom right"
+              v-if="isDiaryWritten"
+              >앗! 오늘은 일기를 이미 작성하셨어요😲</v-tooltip
+            >
+            <v-tooltip activator="parent" location="bottom" v-else
               >일기 쓰러 가기</v-tooltip
-            ><v-icon>
+            >
+
+            <v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
