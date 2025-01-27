@@ -133,14 +133,16 @@ register();
 <template>
   <div v-if="!isLoading && post">
     <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
+      <RouterLink :to="`/mypage/profile/${author?.id}`">
       <div class="flex items-center gap-[10px]">
         <img
           :src="author?.profile_url || imgPlaceholder"
           alt="작성자 프로필 사진입니다."
           class="w-[40px] h-[40px] rounded-full"
         />
-        <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
-      </div>
+          <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
+        </div>
+      </RouterLink>
       <div v-if="isLoggedIn">
         <Button
           v-if="author?.id !== authStore.profile.id"
