@@ -38,7 +38,7 @@ const isFetching = ref(false);
 
 //음성 인식 시작
 const startListening = () => {
-  if (isListening.value) return; //중복 클릭 X
+  if (isListening.value) return;
 
   if (!("webkitSpeechRecognition" in window)) {
     alert("⚠️음성 입력을 지원하지 않는 브라우저입니다.");
@@ -301,9 +301,9 @@ const checkTodayDiary = async () => {
 
 onMounted(async () => {
   try {
-    const exists = await checkDiaryExists(today); // 비동기 함수 호출
-    isDiaryWritten.value = exists; // 상태 업데이트
-    console.log("오늘 일기 작성 여부:", exists); // 디버깅용 콘솔 출력
+    const exists = await checkDiaryExists(today);
+    isDiaryWritten.value = exists;
+    console.log("오늘 일기 작성 여부:", exists);
   } catch (error) {
     console.error("onMounted에서 에러 발생:", error.message);
   }

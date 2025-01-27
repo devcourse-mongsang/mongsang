@@ -4,13 +4,14 @@ import Button from "@/components/common/Button.vue";
 import CoverflowSwiper from "@/components/common/CoverflowSwiper.vue";
 import { ref } from "vue";
 import { useAuthStore } from "@/store/authStore";
+import { mdiReload } from "@mdi/js";
 
 const videos = ref([]);
 
 const fetchASMRVideos = async () => {
   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
   const keyword = "asmr ambience";
-  const maxResults = 20;
+  const maxResults = 24;
   const response = await fetch(
     `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
   );
@@ -80,11 +81,29 @@ fetchASMRVideos();
 
     <!-- AI 추천 ASMR -->
     <div
-      class="max-w-[1280px] px-4 md:px-8 lg:px-11 py-8 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px]"
+      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px]"
     >
-      <h3 class="mb-8 text-2xl font-semibold">
-        당신의 꿈에 귀 기울이는 순간, ASMR 추천
-      </h3>
+      <div class="flex items-center mb-4 gap-x-3">
+        <h3 class="text-2xl font-semibold">
+          당신의 꿈에 귀 기울이는 순간, ASMR 추천
+        </h3>
+        <Button
+          variant="custom"
+          size="xs"
+          @click="fetchASMRVideos"
+          style="background-color: rgba(255, 255, 255, 0.5)"
+        >
+          <v-icon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-6 h-6"
+            >
+              <path :d="mdiReload" />
+            </svg> </v-icon
+        ></Button>
+      </div>
       <ul
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
       >
