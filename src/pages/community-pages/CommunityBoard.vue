@@ -1,7 +1,6 @@
 <script setup>
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import { getPostByCategory } from "@/api/api-community/api";
-import DropDown from "../../components/common/DropDown.vue";
 import dateConverter from "@/utils/dateConveter";
 
 import { computed, onMounted, ref, watch } from "vue";
@@ -13,6 +12,8 @@ import { getUserById } from "@/api/api-user/api";
 import { fetchImagesFromSupabase } from "@/api/api-community/imgsApi";
 import { useLoadingStore } from "@/store/loadingStore";
 import SkeletonUi from "@/components/community/SkeletonUi.vue";
+import DropDownPostList from "@/components/community/DropDownPostList.vue";
+import { usePostsStore } from "@/store/dropDownSortStore";
 
 const route = useRoute();
 const selectedCategory = ref(route.params.boardType);
@@ -32,17 +33,15 @@ const currentBoard = ref(
   boards[selectedCategory.value] || { title: "게시판 없음" }
 );
 const posts = ref([]);
-const menuItems = [
-  { title: "인기순" },
-  { title: "최신순" },
-  { title: "작성순" },
-];
 
 const authorCache = ref({});
 const postImgs = ref({});
 
 const loadingStore = useLoadingStore();
 const isLoading = computed(() => loadingStore.isLoading);
+
+const postsStore = usePostsStore();
+const sortedPosts = computed(() => postsStore.sortedPosts(postsStore.sortKey));
 
 const fetchPosts = async () => {
   loadingStore.startLoading();
@@ -51,6 +50,7 @@ const fetchPosts = async () => {
       selectedCategory.value,
       supabase
     );
+    postsStore.setPosts([...fetchedPosts]);
     posts.value = fetchedPosts || [];
 
     for (let post of posts.value) {
@@ -93,7 +93,13 @@ onMounted(fetchPosts);
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
       <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
-      <DropDown :items="menuItems" buttonText="인기순" />
+      <DropDownPostList
+        @select="
+          (selected) => {
+            console.log(selected);
+          }
+        "
+      />
     </div>
     <div class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden"></div>
 
@@ -108,8 +114,8 @@ onMounted(fetchPosts);
     </div>
 
     <!-- 게시글 리스트 -->
-    <ul v-else-if="posts.length">
-      <li v-for="post in posts" :key="post.id">
+    <ul v-else-if="postsStore.sortedPosts('작성순').length">
+      <li v-for="post in sortedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
             <div class="flex flex-col sm:gap-7 xm:gap-6">
@@ -172,4 +178,11 @@ onMounted(fetchPosts);
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+</style>
