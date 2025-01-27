@@ -24,18 +24,6 @@ async function handleLogout() {
 }
 
 const currentUserId = computed(() => authStore.user?.id);
-
-onMounted(async () => {
-  while (!currentUserId.value) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  console.log("Current User ID:", currentUserId.value);
-  await notificationsStore.fetchNotifications(currentUserId.value);
-});
-
-function handleCloseNotification(notificationId) {
-  notificationsStore.markNotificationAsRead(notificationId);
-}
 </script>
 
 <template>
@@ -92,37 +80,6 @@ function handleCloseNotification(notificationId) {
       </div>
 
       <span class="block h-[1px] w-full bg-hc-white/30" />
-    </div>
-
-    <div
-      v-if="showNotifications && notificationsStore.notifications.length"
-      class="mt-[1rem] bg-[rgba(255,255,255,0.5)] rounded-[1.25rem] text-[0.85rem] text-[#000] px-[0.9375rem] pt-[0.9375rem] sm:flex sm:flex-col gap-[0.3125rem] max-h-[11rem] overflow-y-auto no-scrollbar"
-    >
-      <template
-        v-for="notification in notificationsStore.notifications"
-        :key="notification.id"
-      >
-        <p v-if="notification.type === 'follow'">
-          <span class="font-semibold">@{{ notification.sender.username }}</span>
-          님이 회원님을 팔로우 했습니다.
-        </p>
-        <p v-else-if="notification.type === 'like'">
-          <span class="font-semibold">@{{ notification.sender.username }}</span
-          >님이 회원의 게시글에 좋아요를 눌렀습니다.
-        </p>
-        <p v-else-if="notification.type === 'comment'">
-          <span class="font-semibold">@{{ notification.sender.username }}</span
-          >님이 회원의 게시글에 댓글을 남겼습니다.
-        </p>
-        <img :src="sidebarHr" alt="구분선 이미지" />
-      </template>
-
-      <button
-        class="underline text-[#757575] text-center mb-[0.5625rem] cursor-pointer"
-        @click="showNotifications = false"
-      >
-        닫기
-      </button>
     </div>
 
     <div class="flex gap-4 py-3 xm:flex-col xm:py-[25%]">
