@@ -3,13 +3,10 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { usePostsStore } from "@/store/dropDownSortStore";
 
-// Pinia 스토어 가져오기
 const postsStore = usePostsStore();
 
-// 드롭다운 메뉴 항목
-const options = ["최신순", "작성순", "좋아요순", "댓글순"];
+const options = ["최신순", "작성순", "좋아요순"];
 
-// 정렬 기준 선택 함수
 function selectSort(option) {
   postsStore.setSortKey(option); // Pinia 스토어의 sortKey 업데이트
 }

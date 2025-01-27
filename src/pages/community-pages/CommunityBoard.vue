@@ -14,6 +14,7 @@ import { useLoadingStore } from "@/store/loadingStore";
 import SkeletonUi from "@/components/community/SkeletonUi.vue";
 import DropDownPostList from "@/components/community/DropDownPostList.vue";
 import { usePostsStore } from "@/store/dropDownSortStore";
+import { getPostLike } from "@/api/api-like/api";
 
 const route = useRoute();
 const selectedCategory = ref(route.params.boardType);
@@ -43,6 +44,15 @@ const isLoading = computed(() => loadingStore.isLoading);
 const postsStore = usePostsStore();
 const sortedPosts = computed(() => postsStore.sortedPosts(postsStore.sortKey));
 
+const likes = computed(async () => {
+  const postIdList = sortedPosts.value.map((post) => post.id);
+  const res = await Promise.all(
+    postIdList.map((postId) => getPostLike(postId))
+  );
+  console.log(res);
+  return res;
+});
+
 const fetchPosts = async () => {
   loadingStore.startLoading();
   try {
@@ -52,6 +62,7 @@ const fetchPosts = async () => {
     );
     postsStore.setPosts([...fetchedPosts]);
     posts.value = fetchedPosts || [];
+    await postsStore.fetchLikesForPosts();
 
     for (let post of posts.value) {
       if (!authorCache.value[post.author_id]) {
@@ -114,7 +125,7 @@ onMounted(fetchPosts);
     </div>
 
     <!-- 게시글 리스트 -->
-    <ul v-else-if="postsStore.sortedPosts('작성순').length">
+    <ul v-else-if="sortedPosts.length">
       <li v-for="post in sortedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
