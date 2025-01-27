@@ -28,7 +28,7 @@ export default defineComponent({
     size: {
       type: String,
       required: true,
-      validator: (value) => ["xs", "sm", "md", "lg"].includes(value),
+      validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
     },
 
     className: {

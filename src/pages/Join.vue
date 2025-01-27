@@ -103,8 +103,10 @@ const checkEmail = async () => {
 const checkUsername = async () => {
   const { username } = registerCredentials.value;
 
-  if (!username.trim() || !/^[a-zA-Z0-9]{4,12}$/.test(username)) {
-    usernameError.value = "아이디는 4~12자 사이여야 합니다.";
+  // 한글, 영문, 숫자를 허용하고 4~12자 제한
+  if (!username.trim() || !/^[가-힣a-zA-Z0-9]{4,12}$/.test(username)) {
+    usernameError.value =
+      "아이디는 4~12자 사이여야 하며, 한글, 영문, 숫자만 사용할 수 있습니다.";
     usernameAvailable.value = false; // 사용 불가능 상태
     return;
   }
