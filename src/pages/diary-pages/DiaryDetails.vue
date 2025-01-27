@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { useAuthStore } from "@/store/authStore";
 import { getDiaryById } from "@/api/api-diary/api";
+import { weatherIcons, faceIcons, getIconByName } from "@/utils/iconUtils";
 
 const route = useRoute();
 const diaryId = route.params.id;
@@ -82,12 +83,18 @@ const toggleModal = () => {
 
         <div class="flex items-center gap-2 justify-end ml-auto">
           <p class="text-xl xm:hidden sm:block">오늘의 기분</p>
-          <Icon :icon="diaryData.condition" class="w-6 h-6 text-hc-blue" />
+          <Icon
+            :icon="getIconByName(faceIcons, diaryData.condition)"
+            class="w-6 h-6 text-hc-blue"
+          />
         </div>
 
         <div class="flex items-center gap-2 justify-end">
           <p class="text-xl xm:hidden sm:block">오늘의 날씨</p>
-          <Icon :icon="diaryData.weather" class="w-6 h-6 text-hc-blue" />
+          <Icon
+            :icon="getIconByName(weatherIcons, diaryData.weather)"
+            class="w-6 h-6 text-hc-blue"
+          />
         </div>
 
         <!-- 더보기 버튼과 모달 -->
@@ -170,5 +177,19 @@ const toggleModal = () => {
         class="w-full aspect-video"
       ></iframe>
     </div>
+
+    <RouterLink to="/diary">
+      <v-fab
+        icon="$mdi-plus"
+        class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      >
+        <Icon
+          icon="material-symbols:book-2-outline"
+          width="1.5rem"
+          height="1.5rem"
+          style="color: #729ecb"
+        />
+      </v-fab>
+    </RouterLink>
   </div>
 </template>
