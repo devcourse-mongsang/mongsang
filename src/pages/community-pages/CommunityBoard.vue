@@ -1,7 +1,6 @@
 <script setup>
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import { getPostByCategory } from "@/api/api-community/api";
-import DropDown from "../../components/common/DropDown.vue";
 import dateConverter from "@/utils/dateConveter";
 
 import { computed, onMounted, ref, watch } from "vue";
@@ -13,9 +12,16 @@ import { getUserById } from "@/api/api-user/api";
 import { fetchImagesFromSupabase } from "@/api/api-community/imgsApi";
 import { useLoadingStore } from "@/store/loadingStore";
 import SkeletonUi from "@/components/community/SkeletonUi.vue";
+import DropDownPostList from "@/components/community/DropDownPostList.vue";
+import { usePostsStore } from "@/store/dropDownSortStore";
+import { getPostLike } from "@/api/api-like/api";
+import { useAuthStore } from "@/store/authStore";
+import { useModalStore } from "@/store/modalStore";
+import router from "@/router";
 
 const route = useRoute();
 const selectedCategory = ref(route.params.boardType);
+const modalStore = useModalStore();
 
 const boards = {
   "free-board": { title: "자유게시판" },
@@ -32,17 +38,26 @@ const currentBoard = ref(
   boards[selectedCategory.value] || { title: "게시판 없음" }
 );
 const posts = ref([]);
-const menuItems = [
-  { title: "인기순" },
-  { title: "최신순" },
-  { title: "작성순" },
-];
 
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 const authorCache = ref({});
 const postImgs = ref({});
 
 const loadingStore = useLoadingStore();
 const isLoading = computed(() => loadingStore.isLoading);
+
+const postsStore = usePostsStore();
+const sortedPosts = computed(() => postsStore.sortedPosts(postsStore.sortKey));
+
+const likes = computed(async () => {
+  const postIdList = sortedPosts.value.map((post) => post.id);
+  const res = await Promise.all(
+    postIdList.map((postId) => getPostLike(postId))
+  );
+  console.log(res);
+  return res;
+});
 
 const fetchPosts = async () => {
   loadingStore.startLoading();
@@ -51,7 +66,9 @@ const fetchPosts = async () => {
       selectedCategory.value,
       supabase
     );
+    postsStore.setPosts([...fetchedPosts]);
     posts.value = fetchedPosts || [];
+    await postsStore.fetchLikesForPosts();
 
     for (let post of posts.value) {
       if (!authorCache.value[post.author_id]) {
@@ -69,6 +86,19 @@ const fetchPosts = async () => {
   } finally {
     loadingStore.stopLoading();
   }
+};
+
+const onIsLoggedout = () => {
+  modalStore.addModal({
+    title: "",
+    content: "로그인 후 이용해주세요.",
+    btnText: "로그인",
+    isOneBtn: true,
+    onClick: () => {
+      modalStore.modals = []; // 모든 모달 닫기
+      router.push({ name: "login" });
+    },
+  });
 };
 
 watch(
@@ -93,7 +123,13 @@ onMounted(fetchPosts);
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
       <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
-      <DropDown :items="menuItems" buttonText="인기순" />
+      <DropDownPostList
+        @select="
+          (selected) => {
+            console.log(selected);
+          }
+        "
+      />
     </div>
     <div class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden"></div>
 
@@ -108,8 +144,8 @@ onMounted(fetchPosts);
     </div>
 
     <!-- 게시글 리스트 -->
-    <ul v-else-if="posts.length">
-      <li v-for="post in posts" :key="post.id">
+    <ul v-else-if="sortedPosts.length">
+      <li v-for="post in sortedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
             <div class="flex flex-col sm:gap-7 xm:gap-6">
@@ -156,7 +192,10 @@ onMounted(fetchPosts);
     <p v-else>게시글이 없습니다.</p>
 
     <!-- 글 작성 버튼 -->
-    <RouterLink :to="`/${route.params.boardType}/create-post`">
+    <RouterLink
+      v-show="isLoggedIn"
+      :to="`/${route.params.boardType}/create-post`"
+    >
       <v-fab
         icon="$mdi-plus"
         class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
@@ -169,7 +208,27 @@ onMounted(fetchPosts);
         />
       </v-fab>
     </RouterLink>
+    <v-fab
+      v-show="!isLoggedIn"
+      icon="$mdi-plus"
+      class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      @click="onIsLoggedout"
+    >
+      <Icon
+        icon="material-symbols:edit-outline"
+        width="1.5rem"
+        height="1.5rem"
+        style="color: #729ecb"
+      />
+    </v-fab>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+</style>

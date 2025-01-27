@@ -63,6 +63,14 @@ watch(
   }
 );
 
+// 자기소개 입력값 실시간 제어
+const handleProfileBioInput = (event) => {
+  const value = event.target.value;
+  if (value.length > 16) {
+    registerCredentials.value.profile_bio = value.slice(0, 16);
+  }
+};
+
 const checkEmail = async () => {
   const email = registerCredentials.value?.email?.trim();
 
@@ -103,8 +111,10 @@ const checkEmail = async () => {
 const checkUsername = async () => {
   const { username } = registerCredentials.value;
 
-  if (!username.trim() || !/^[a-zA-Z0-9]{4,12}$/.test(username)) {
-    usernameError.value = "아이디는 4~12자 사이여야 합니다.";
+  // 한글, 영문, 숫자를 허용하고 4~12자 제한
+  if (!username.trim() || !/^[가-힣a-zA-Z0-9]{4,12}$/.test(username)) {
+    usernameError.value =
+      "닉네임는 4~12자 사이여야 하며, 한글, 영문, 숫자만 사용할 수 있습니다.";
     usernameAvailable.value = false; // 사용 불가능 상태
     return;
   }
@@ -117,15 +127,15 @@ const checkUsername = async () => {
       .single();
 
     if (data) {
-      usernameError.value = "이미 사용 중인 아이디입니다.";
+      usernameError.value = "이미 사용 중인 닉네임입니다.";
       usernameAvailable.value = false; // 사용 불가능 상태
     } else {
       usernameError.value = "";
       usernameAvailable.value = true; // 사용 가능 상태
     }
   } catch (error) {
-    console.error("아이디 확인 오류:", error.message);
-    usernameError.value = "아이디 확인 중 오류가 발생했습니다.";
+    console.error("닉네임 확인 오류:", error.message);
+    usernameError.value = "닉네임 확인 중 오류가 발생했습니다.";
     usernameAvailable.value = false; // 사용 불가능 상태
   }
 };
@@ -274,7 +284,7 @@ const register = async () => {
 
         <div>
           <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
-            >아이디</label
+            >닉네임</label
           >
           <div class="flex items-center">
             <Input
@@ -301,22 +311,34 @@ const register = async () => {
             v-else-if="usernameAvailable"
             class="text-green text-xs ml-10 mt-2"
           >
-            사용가능한 아이디입니다.
+            사용가능한 닉네임입니다.
           </p>
         </div>
 
         <div>
-          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
-            >자기소개</label
-          >
+          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue">
+            자기소개
+          </label>
           <Input
             type="text"
-            placeholder="자기소개를 입력해주세요"
+            placeholder="자기소개는 최대 16자입니다."
             v-model="registerCredentials.profile_bio"
+            @input="handleProfileBioInput"
+            :maxlength="16"
             variant="shadowed"
             size="sm"
             borderRadius="lg"
           />
+
+          <p
+            class="text-xs ml-10 mt-2"
+            :class="{
+              'text-red': registerCredentials.profile_bio.length === 16,
+              'text-green': registerCredentials.profile_bio.length < 16,
+            }"
+          >
+            {{ registerCredentials.profile_bio.length }}/16
+          </p>
         </div>
         <div>
           <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"

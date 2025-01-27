@@ -6,7 +6,6 @@ import Button from "@/components/common/Button.vue";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { register } from "swiper/element/bundle";
-import { Icon } from "@iconify/vue";
 import { deletePost, getPostById } from "@/api/api-community/api";
 import { getUserById } from "@/api/api-user/api";
 import { useAuthStore } from "@/store/authStore";
@@ -19,8 +18,13 @@ import {
 import MeatballsMenu from "@/components/common/MeatballsMenu.vue";
 import { useLoadingStore } from "@/store/loadingStore";
 import Comment from "./Comment.vue";
+import LikesCounter from "@/components/common/LikesCounter.vue";
+import { useModalStore } from "@/store/modalStore";
+import { useFollowStore } from "@/store/followStore";
 
+const modalStore = useModalStore();
 const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 const route = useRoute();
 
 const postId = ref("");
@@ -32,6 +36,8 @@ const category = ref("");
 const loadingStore = useLoadingStore();
 const isLoading = computed(() => loadingStore.isLoading); // 로딩 상태 참조
 
+const followStore = useFollowStore();
+
 const fetchPostItem = async (postId) => {
   if (postId) {
     const fetchedPost = await getPostById(postId);
@@ -40,10 +46,9 @@ const fetchPostItem = async (postId) => {
 };
 
 const fetchAuthor = async (userId) => {
-  if (userId) {
-    const fetchedUser = await getUserById(userId);
-    author.value = fetchedUser[0] || {};
-  }
+  if (!userId) return;
+  const fetchedUser = await getUserById(userId);
+  author.value = fetchedUser[0] || {};
 };
 
 const fetchDeletePost = async (postId) => {
@@ -69,11 +74,29 @@ const fetchAllData = async () => {
       if (post.value.author_id) {
         await fetchAuthor(post.value.author_id);
       }
+      await followStore.fetchLoggedInUserFollowing(authStore.profile.id);
     } catch (error) {
       console.error("Error during data fetch:", error);
     } finally {
       loadingStore.stopLoading();
     }
+  }
+};
+
+const onfollowButtonClick = async (followed_user) => {
+  if (!isLoggedIn.value) {
+    modalStore.addModal({
+      title: "",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
+  } else {
+    await followStore.toggleFollow(authStore.profile.id, followed_user);
   }
 };
 
@@ -88,9 +111,9 @@ watch(
 );
 
 onMounted(() => {
-  postId.value = route.params.postId; // 라우트 파라미터에서 postId 설정
+  postId.value = route.params.postId;
   category.value = route.params.boardType;
-  fetchAllData(); // 초기 데이터 로드
+  fetchAllData();
 });
 
 const menuItems = computed(() => [
@@ -114,26 +137,45 @@ register();
 <template>
   <div v-if="!isLoading && post">
     <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
-      <div class="flex items-center gap-[10px]">
-        <img
-          :src="author?.profile_url || imgPlaceholder"
-          alt="작성자 프로필 사진입니다."
-          class="w-[40px] h-[40px] rounded-full"
-        />
-        <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
+      <RouterLink :to="`/mypage/profile/${author?.id}`">
+        <div class="flex items-center gap-[10px]">
+          <img
+            :src="author?.profile_url || imgPlaceholder"
+            alt="작성자 프로필 사진입니다."
+            class="w-[40px] h-[40px] rounded-full"
+          />
+          <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
+        </div>
+      </RouterLink>
+      <div v-if="isLoggedIn">
+        <Button
+          v-if="author?.id !== authStore.profile.id"
+          size="md"
+          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          @click="onfollowButtonClick(author)"
+          :variant="
+            followStore.isUserFollowed(author?.id) ? 'regular' : 'filled'
+          "
+        >
+          {{ followStore.isUserFollowed(author?.id) ? "팔로잉" : "팔로우" }}
+        </Button>
+        <div v-if="author?.id === authStore.profile.id">
+          <MeatballsMenu :menuItems="menuItems" />
+        </div>
       </div>
-      <Button
-        v-if="author?.id !== authStore.profile.id"
-        variant="regular"
-        size="md"
-        class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
-      >
-        팔로잉
-      </Button>
-      <div v-if="author?.id === authStore.profile.id">
-        <MeatballsMenu :menuItems="menuItems" />
+
+      <div v-if="!isLoggedIn">
+        <Button
+          variant="regular"
+          size="md"
+          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          @click="onfollowButtonClick"
+        >
+          팔로잉
+        </Button>
       </div>
     </div>
+
     <div>
       <swiper-container
         navigation="true"
@@ -164,13 +206,7 @@ register();
             <h1 class="font-semibold xm:text-xl sm:text-2xl">
               {{ post.title }}
             </h1>
-            <Icon
-              class="cursor-pointer"
-              icon="stash:heart-light"
-              width="35"
-              height="35"
-              style="color: #729ecb"
-            />
+            <LikesCounter :postId="postId || null" />
           </div>
           <p>{{ dateConverter(post.created_at) }}</p>
           <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>

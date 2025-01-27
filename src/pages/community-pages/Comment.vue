@@ -1,18 +1,23 @@
 <script setup>
-import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
+import unknownUser from "../../../public/assets/imgs/unknownUser.png";
 import { createComment, getCommentById } from "@/api/api-community/commentsApi";
 import { useAuthStore } from "@/store/authStore";
 import { getUserById } from "@/api/api-user/api";
 import CommentList from "./CommentList.vue";
 
 import { Icon } from "@iconify/vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useModalStore } from "@/store/modalStore";
 
+const modalStore = useModalStore();
 const { postId } = defineProps({
   postId: Number,
 });
 
+const router = useRouter();
 const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 const comments = ref([]);
 const userCache = new Map();
 
@@ -32,6 +37,19 @@ const fetchComments = async (id) => {
     err.value = "댓글을 불러오는 중 오류가 발생했습니다.";
     console.error(err);
   }
+};
+
+const onIsloggedOut = () => {
+  modalStore.addModal({
+      title: "",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
 };
 
 const newComment = ref("");
@@ -103,9 +121,12 @@ onMounted(() => {
 
 <template>
   <div class="flex gap-[10px] items-center my-[10px]">
-    <div class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px] w-full">
+    <div
+      v-if="isLoggedIn"
+      class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px] w-full"
+    >
       <img
-        :src="authStore.profile.profile_url || imgPlaceholder"
+        :src="authStore.profile.profile_url || unknownUser"
         alt=""
         class="w-[40px] h-[40px] rounded-full shadow-lg"
       />
@@ -119,6 +140,33 @@ onMounted(() => {
           placeholder="댓글을 입력하세요"
           v-model="newComment"
           ref="inputRef"
+        />
+        <button type="submit">
+          <Icon icon="material-symbols:send-rounded" width="30" height="30" />
+        </button>
+      </form>
+    </div>
+    <div
+      v-else
+      class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px] w-full cursor-pointer"
+      @click.stop="onIsloggedOut"
+    >
+      <img
+        :src="unknownUser"
+        alt=""
+        class="w-[40px] h-[40px] rounded-full shadow-lg"
+      />
+      <form
+        @submit.prevent="onCommentButtonClick"
+        class="flex w-full rounded-[20px] shadow-lg items-center h-[45px] justify-between pl-[20px] pr-[10px] bg-hc-white"
+      >
+        <input
+          type="text"
+          class="w-full outline-none pointer-events-none"
+          placeholder="로그인 후 댓글을 작성해 보세요."
+          v-model="newComment"
+          ref="inputRef"
+          :disabled="true"
         />
         <button type="submit">
           <Icon icon="material-symbols:send-rounded" width="30" height="30" />

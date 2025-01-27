@@ -1,29 +1,34 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
 import { useSidebarStore } from "../../store/sidebar"; // Pinia store import
 import DropDownCommunity from "./DropDownCommunity.vue";
 import { Icon } from "@iconify/vue";
-import sidebarHr from "../../../public/assets/icons/sidebar_hr.svg";
 import Headers from "./Headers.vue";
 import { RouterLink } from "vue-router";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
+import { useModalStore } from "@/store/modalStore";
 
+const modalStore = useModalStore();
 const authStore = useAuthStore();
 const sidebarStore = useSidebarStore(); // Pinia store 초기화
 const router = useRouter();
 
-const showNotifications = ref(false);
-
 async function handleLogout() {
-  const success = await authStore.logout();
-  if (success) {
-    alert("로그아웃 성공!");
-    router.push("/");
-  }
+  modalStore.addModal({
+    title: "로그아웃",
+    content: "로그아웃 하시겠습니까?",
+    btnText: "확인",
+    cancelBtnText: "취소",
+    isOneBtn: false,
+    onClick: async () => {
+      const success = await authStore.logout();
+      if (success) {
+        modalStore.modals = [];
+        router.push("/");
+      }
+    },
+  });
 }
-
-const currentUserId = computed(() => authStore.user?.id);
 </script>
 
 <template>
@@ -42,22 +47,58 @@ const currentUserId = computed(() => authStore.user?.id);
     <!-- 사이드바 콘텐츠 -->
     <div>
       <span class="block h-[1px] w-full bg-hc-white/30" />
-      <div class="py-[10px] flex flex-col gap-[15px]">
-        <RouterLink class="flex items-center gap-[10px]" to="/mypage/profile">
-          <img
-            class="w-10 h-10 rounded-full"
-            src="https://cdn.pixabay.com/photo/2019/11/08/11/56/kitten-4611189_1280.jpg"
-            alt="사용자 프로필 이미지입니다."
-          />
-          <div class="text-hc-white">
-            <p class="font-semibold">@Mala_love</p>
-            <p class="text-hc-black">저는 마라를 사랑합니다.</p>
-          </div>
-        </RouterLink>
+      <div>
+        <!-- 로그인 상태 -->
+        <div v-if="authStore.user" class="py-[10px] flex flex-col gap-[15px]">
+          <RouterLink
+            class="flex items-center gap-[10px] hover:opacity-80"
+            :to="`/mypage/profile/${authStore.user.id}`"
+          >
+            <img
+              class="w-10 h-10 rounded-full"
+              :src="authStore.profile.profile_url"
+              alt="사용자의 프로필 이미지입니다."
+            />
+            <div class="text-hc-white">
+              <p
+                class="font-semibold"
+                :style="{ fontSize: 'clamp(16px, 2.5vw, 20px)' }"
+              >
+                @{{ authStore.profile.username }}
+              </p>
+              <p
+                class="text-hc-black"
+                :style="{ fontSize: 'clamp(10px, 2vw, 13px)' }"
+              >
+                {{ authStore.profile.profile_bio }}
+              </p>
+            </div>
+          </RouterLink>
+        </div>
+
+        <!-- 비로그인 상태 -->
+        <div v-else class="py-[10px] flex flex-col gap-[15px]">
+          <RouterLink
+            class="flex items-center gap-[10px] hover:opacity-80"
+            to="/login"
+          >
+            <img
+              class="w-10 h-10 rounded-full"
+              src="/assets/imgs/unknownUser.png"
+              alt="알 수 없는 사용자 이미지입니다."
+            />
+            <button
+              class="text-hc-white font-semibold hover:underline text-[20px]"
+            >
+              로그인
+            </button>
+          </RouterLink>
+        </div>
 
         <div class="flex justify-between">
           <div>
             <Icon
+              v-if="authStore.user"
               id="logout-icon"
               icon="material-symbols:logout-rounded"
               @click="handleLogout"
@@ -73,7 +114,6 @@ const currentUserId = computed(() => authStore.user?.id);
               width="1.5rem"
               height="1.5rem"
               style="color: #ffffff"
-              class="cursor-pointer"
             />
           </div>
         </div>
@@ -110,12 +150,3 @@ const currentUserId = computed(() => authStore.user?.id);
     <DropDownCommunity />
   </div>
 </template>
-<style scoped>
-.no-scrollbar::-webkit-scrollbar {
-  display: none; /* for Chrome, Safari, and Opera */
-}
-.no-scrollbar {
-  -ms-overflow-style: none; /* for Internet Explorer and Edge */
-  scrollbar-width: none; /* for Firefox */
-}
-</style>
