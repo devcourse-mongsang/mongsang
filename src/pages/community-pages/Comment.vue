@@ -8,7 +8,9 @@ import CommentList from "./CommentList.vue";
 import { Icon } from "@iconify/vue";
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useModalStore } from "@/store/modalStore";
 
+const modalStore = useModalStore();
 const { postId } = defineProps({
   postId: Number,
 });
@@ -38,8 +40,16 @@ const fetchComments = async (id) => {
 };
 
 const onIsloggedOut = () => {
-  alert("로그인 후 이용해 주세요.");
-  router.push({ name: "login" });
+  modalStore.addModal({
+      title: "",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
 };
 
 const newComment = ref("");

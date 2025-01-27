@@ -15,9 +15,13 @@ import SkeletonUi from "@/components/community/SkeletonUi.vue";
 import DropDownPostList from "@/components/community/DropDownPostList.vue";
 import { usePostsStore } from "@/store/dropDownSortStore";
 import { getPostLike } from "@/api/api-like/api";
+import { useAuthStore } from "@/store/authStore";
+import { useModalStore } from "@/store/modalStore";
+import router from "@/router";
 
 const route = useRoute();
 const selectedCategory = ref(route.params.boardType);
+const modalStore = useModalStore();
 
 const boards = {
   "free-board": { title: "자유게시판" },
@@ -35,6 +39,8 @@ const currentBoard = ref(
 );
 const posts = ref([]);
 
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 const authorCache = ref({});
 const postImgs = ref({});
 
@@ -80,6 +86,19 @@ const fetchPosts = async () => {
   } finally {
     loadingStore.stopLoading();
   }
+};
+
+const onIsLoggedout = () => {
+  modalStore.addModal({
+    title: "",
+    content: "로그인 후 이용해주세요.",
+    btnText: "로그인",
+    isOneBtn: true,
+    onClick: () => {
+      modalStore.modals = []; // 모든 모달 닫기
+      router.push({ name: "login" });
+    },
+  });
 };
 
 watch(
@@ -173,7 +192,10 @@ onMounted(fetchPosts);
     <p v-else>게시글이 없습니다.</p>
 
     <!-- 글 작성 버튼 -->
-    <RouterLink :to="`/${route.params.boardType}/create-post`">
+    <RouterLink
+      v-show="isLoggedIn"
+      :to="`/${route.params.boardType}/create-post`"
+    >
       <v-fab
         icon="$mdi-plus"
         class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
@@ -186,6 +208,19 @@ onMounted(fetchPosts);
         />
       </v-fab>
     </RouterLink>
+    <v-fab
+      v-show="!isLoggedIn"
+      icon="$mdi-plus"
+      class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      @click="onIsLoggedout"
+    >
+      <Icon
+        icon="material-symbols:edit-outline"
+        width="1.5rem"
+        height="1.5rem"
+        style="color: #729ecb"
+      />
+    </v-fab>
   </div>
 </template>
 

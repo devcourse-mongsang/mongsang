@@ -1,10 +1,19 @@
 <script setup>
-import { useRoute } from "vue-router";
 import { useSidebarStore } from "../../store/sidebar";
 import { Icon } from "@iconify/vue";
+import { useAuthStore } from "@/store/authStore";
+import router from "@/router";
 
 const sidebarStore = useSidebarStore();
-const route = useRoute();
+const authStore = useAuthStore();
+
+const sendToLogin = () => {
+  router.push({ name: "login" });
+};
+
+const sendToMypage = () => {
+  router.push({ name: "profile", params: { id: authStore.profile.id } });
+};
 </script>
 
 <template>
@@ -48,7 +57,20 @@ const route = useRoute();
     </div>
 
     <!-- 알림 아이콘과 홈 바로가기 -->
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-4 cursor-pointer">
+      <!-- 로그인 상태 노출 -->
+      <div class="text-[#18375B] font-semibold">
+        <div
+          v-if="authStore.isLoggedIn && authStore.profile"
+          @click="sendToMypage"
+        >
+          {{ authStore.profile.username }}님
+        </div>
+        <div v-else @click="sendToLogin">
+          <p>로그인</p>
+        </div>
+      </div>
+
       <!-- 알림 바로가기 -->
       <div id="noti-icon">
         <router-link to="/notification" class="bg-transparent cursor-pointer">
