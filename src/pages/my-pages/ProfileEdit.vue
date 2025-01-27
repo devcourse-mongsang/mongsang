@@ -94,7 +94,13 @@ watch(
     confirmPasswordError.value = "";
   }
 );
-
+// 자기소개 입력값 실시간 제어
+const handleProfileBioInput = (event) => {
+  const value = event.target.value;
+  if (value.length > 16) {
+    userData.value.profile_bio = value.slice(0, 16);
+  }
+};
 // 사진 변경 처리 (미리보기)
 const handleImageChange = (event) => {
   const file = event.target.files[0];
@@ -190,7 +196,7 @@ const openConfirmationModal = () => {
     onClick: () => {
       modalStore.modals = []; // 모든 모달 닫기
       handleSave(); // 저장 로직 실행
-      router.push("/mypage/profile");
+      router.push("/");
     },
   });
 };
@@ -278,6 +284,8 @@ const openConfirmationModal = () => {
             >
               <Input
                 v-model="userData.profile_bio"
+                @input="handleProfileBioInput"
+                :maxlength="16"
                 type="text"
                 placeholder="자기소개를 입력해주세요"
                 size="lg"
@@ -286,6 +294,16 @@ const openConfirmationModal = () => {
                 :isProfilePage="true"
               />
             </div>
+
+            <p
+              class="text-xs ml-5 mt-2"
+              :class="{
+                'text-red': userData.profile_bio.length === 16,
+                'text-green': userData.profile_bio.length < 16,
+              }"
+            >
+              {{ userData.profile_bio.length }}/16
+            </p>
           </div>
 
           <!-- 비밀번호 변경 -->

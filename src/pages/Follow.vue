@@ -35,6 +35,9 @@ const allUsers = computed(() => {
 const initializeData = async () => {
   loggedInUserId.value = authStore.profile.id;
 
+  // 전체 사용자 데이터
+  await followStore.fetchAllUsers();
+
   // 프로필 유저 이름 가져오기
   const profileUser = followStore.allUsers.find(
     (user) => user.id === profileUserId
@@ -46,9 +49,6 @@ const initializeData = async () => {
 
   // 프로필 주인의 팔로워/팔로잉 데이터
   await followStore.fetchFollowData(profileUserId);
-
-  // 전체 사용자 데이터
-  await followStore.fetchAllUsers();
 };
 
 // 팔로우 토글
@@ -87,7 +87,7 @@ onMounted(() => {
 
     <!-- 메인 카드 -->
     <div
-      class="w-[642px] h-[1250px] bg-hc-white/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-8"
+      class="w-[642px] h-[1250px] bg-hc-blue/20 border-[7px] border-hc-white/50 rounded-[20px] relative p-8"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
       <div class="flex flex-col h-full">
@@ -160,7 +160,8 @@ onMounted(() => {
               v-for="user in allUsers"
               :key="user.id"
               @click="goToProfile(user.id)"
-              class="flex items-center justify-between p-4 bg-hc-white/60 rounded-[10px] shadow-sm"
+              class="flex items-center justify-between p-4 rounded-[10px] shadow-sm"
+              style="background-color: rgba(255, 255, 255, 0.5) !important"
             >
               <div class="flex items-center gap-4">
                 <img
@@ -179,7 +180,6 @@ onMounted(() => {
                   followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
                 "
                 size="xl"
-                class="border border-hc-blue"
               >
                 {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
