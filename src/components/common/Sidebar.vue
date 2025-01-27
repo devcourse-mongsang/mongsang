@@ -119,7 +119,7 @@ async function handleLogout() {
         </div>
       </div>
 
-      <span class="block h-[1px] w-full bg-hc-white/30" />
+      <span class="block h-[1px] w-full bg-hc-white/30 mt-2.5" />
     </div>
 
     <div class="flex gap-4 py-3 xm:flex-col xm:py-[25%]">
