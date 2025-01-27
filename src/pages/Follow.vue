@@ -3,11 +3,14 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
 import { useFollowStore } from "@/store/followStore";
+import { useLoadingStore } from "@/store/loadingStore";
 import Button from "@/components/common/Button.vue";
+import SkeletonFollow from "@/components/community/SkeletonFollow.vue";
 
 // 스토어 설정
 const authStore = useAuthStore();
 const followStore = useFollowStore();
+const loadingStore = useLoadingStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -33,22 +36,27 @@ const allUsers = computed(() => {
 
 // 초기 데이터 로드
 const initializeData = async () => {
-  loggedInUserId.value = authStore.profile.id;
+  loadingStore.startLoading(); // 로딩 시작
+  try {
+    loggedInUserId.value = authStore.profile.id;
 
-  // 전체 사용자 데이터
-  await followStore.fetchAllUsers();
+    // 전체 사용자 데이터
+    await followStore.fetchAllUsers();
 
-  // 프로필 유저 이름 가져오기
-  const profileUser = followStore.allUsers.find(
-    (user) => user.id === profileUserId
-  );
-  profileUsername.value = profileUser ? profileUser.username : "Unknown";
+    // 프로필 유저 이름 가져오기
+    const profileUser = followStore.allUsers.find(
+      (user) => user.id === profileUserId
+    );
+    profileUsername.value = profileUser ? profileUser.username : "Unknown";
 
-  // 로그인한 유저의 팔로우 데이터
-  await followStore.fetchLoggedInUserFollowing(loggedInUserId.value);
+    // 로그인한 유저의 팔로우 데이터
+    await followStore.fetchLoggedInUserFollowing(loggedInUserId.value);
 
-  // 프로필 주인의 팔로워/팔로잉 데이터
-  await followStore.fetchFollowData(profileUserId);
+    // 프로필 주인의 팔로워/팔로잉 데이터
+    await followStore.fetchFollowData(profileUserId);
+  } finally {
+    loadingStore.stopLoading(); // 로딩 종료
+  }
 };
 
 // 팔로우 토글
@@ -85,8 +93,12 @@ onMounted(() => {
       <img src="/assets/imgs/big_logo.png" alt="Logo" class="h-36" />
     </div>
 
+    <!-- 로딩 중 스켈레톤 -->
+    <SkeletonFollow v-if="loadingStore.isLoading" />
+
     <!-- 메인 카드 -->
     <div
+      v-else
       class="w-[642px] h-[1250px] bg-hc-blue/20 border-[7px] border-hc-white/50 rounded-[20px] relative p-8"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
@@ -193,7 +205,6 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
 <style scoped>
 .shadow-sm {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
