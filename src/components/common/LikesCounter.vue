@@ -19,20 +19,20 @@ const likesDisplay = ref(0);
 const isLiked = ref(false);
 const isLoggedIn = computed(() => authStore.isLoggedIn);
 
-const fetchLikes = async (userId) => {
+const fetchLikes = async (userId = null) => {
   try {
     likesDisplay.value = await getPostLikeCount(postId);
-    const res = await getUserLikeForPost(postId, userId);
-    if (res !== null) {
-      isLiked.value = true;
-    }
+    if (!userId) return;
+    const userLike = await getUserLikeForPost(postId, userId);
+    isLiked.value = !!userLike;
   } catch (error) {
-    console.error("Error fetching likes:", error);
+    console.error("Error fetching likes:", error.message);
   }
 };
 
 const onLikeButtonClick = () => {
-  if (isLoggedIn) {
+  console.log(isLoggedIn.value);
+  if (isLoggedIn.value) {
     handleLike(postId, authStore.profile.id);
     console.log(postId);
   } else {
@@ -70,7 +70,11 @@ const handleLike = async (postId, userId) => {
 };
 
 onMounted(() => {
-  fetchLikes(authStore.profile.id);
+  if (authStore.isLoggedIn) {
+    fetchLikes(authStore.profile.id);
+  } else {
+    fetchLikes(null);
+  }
 });
 </script>
 <template>
