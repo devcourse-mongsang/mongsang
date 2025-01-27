@@ -12,6 +12,7 @@
       :type="currentType"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
+      :maxlength="maxlength"
       v-bind="otherProps"
     />
     <button
@@ -70,6 +71,10 @@ export default defineComponent({
     isProfilePage: {
       type: Boolean,
       default: false,
+    },
+    maxlength: {
+      type: Number,
+      default: null, // 필요 시 기본값 설정
     },
   },
   setup(props, { attrs }) {
