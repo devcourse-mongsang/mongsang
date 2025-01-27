@@ -20,6 +20,7 @@ import { useLoadingStore } from "@/store/loadingStore";
 import Comment from "./Comment.vue";
 import LikesCounter from "@/components/common/LikesCounter.vue";
 import { useModalStore } from "@/store/modalStore";
+import { useFollowStore } from "@/store/followStore";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -34,6 +35,8 @@ const category = ref("");
 
 const loadingStore = useLoadingStore();
 const isLoading = computed(() => loadingStore.isLoading); // 로딩 상태 참조
+
+const followStore = useFollowStore();
 
 const fetchPostItem = async (postId) => {
   if (postId) {
@@ -71,6 +74,7 @@ const fetchAllData = async () => {
       if (post.value.author_id) {
         await fetchAuthor(post.value.author_id);
       }
+      await followStore.fetchLoggedInUserFollowing(authStore.profile.id);
     } catch (error) {
       console.error("Error during data fetch:", error);
     } finally {
@@ -79,7 +83,7 @@ const fetchAllData = async () => {
   }
 };
 
-const onfollowButtonClick = () => {
+const onfollowButtonClick = async (followed_user) => {
   if (!isLoggedIn.value) {
     modalStore.addModal({
       title: "",
@@ -92,7 +96,7 @@ const onfollowButtonClick = () => {
       },
     });
   } else {
-    console.log("팔로우 기능을 구현해주새요");
+    await followStore.toggleFollow(authStore.profile.id, followed_user);
   }
 };
 
@@ -133,23 +137,27 @@ register();
 <template>
   <div v-if="!isLoading && post">
     <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
-      <div class="flex items-center gap-[10px]">
-        <img
-          :src="author?.profile_url || imgPlaceholder"
-          alt="작성자 프로필 사진입니다."
-          class="w-[40px] h-[40px] rounded-full"
-        />
-        <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
-      </div>
+      <RouterLink :to="`/mypage/profile/${author?.id}`">
+        <div class="flex items-center gap-[10px]">
+          <img
+            :src="author?.profile_url || imgPlaceholder"
+            alt="작성자 프로필 사진입니다."
+            class="w-[40px] h-[40px] rounded-full"
+          />
+          <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
+        </div>
+      </RouterLink>
       <div v-if="isLoggedIn">
         <Button
           v-if="author?.id !== authStore.profile.id"
-          variant="regular"
           size="md"
           class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
-          @click="onfollowButtonClick"
+          @click="onfollowButtonClick(author)"
+          :variant="
+            followStore.isUserFollowed(author?.id) ? 'regular' : 'filled'
+          "
         >
-          팔로잉
+          {{ followStore.isUserFollowed(author?.id) ? "팔로잉" : "팔로우" }}
         </Button>
         <div v-if="author?.id === authStore.profile.id">
           <MeatballsMenu :menuItems="menuItems" />

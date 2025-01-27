@@ -55,18 +55,22 @@ watch(deletedCommentId, (newId) => {
       :key="comment.id"
       class="flex gap-[10px] items-start border-b-2 border-hc-blue/30 py-5"
     >
-      <img
-        :src="comment.user?.profile_url || imgPlaceholder"
-        alt="댓글 작성자 프로필 이미지 입니다."
-        class="w-[40px] rounded-full aspect-square"
-      />
+      <RouterLink :to="`/mypage/profile/${comment.user?.id}`">
+        <img
+          :src="comment.user?.profile_url || imgPlaceholder"
+          alt="댓글 작성자 프로필 이미지 입니다."
+          class="w-[40px] rounded-full aspect-square"
+        />
+      </RouterLink>
       <div class="flex flex-col h-auto gap-[2px] w-full">
         <div class="flex items-center justify-between w-full">
-          <p class="font-bold leading-none text-[#18375B]">
-            {{ comment.user?.username || "Unknown User" }}
-          </p>
+          <RouterLink :to="`/mypage/profile/${comment.user?.id}`">
+            <p class="font-bold leading-none text-[#18375B]">
+              {{ comment.user?.username || "Unknown User" }}
+            </p>
+          </RouterLink>
           <button
-            v-show="userProfile && (comment.user?.id === userProfile.id)"
+            v-show="userProfile && comment.user?.id === userProfile.id"
             @click="() => onDeleteButtonClick(comment.id)"
           >
             <Icon
