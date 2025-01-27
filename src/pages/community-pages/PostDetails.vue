@@ -188,7 +188,7 @@ register();
             <h1 class="font-semibold xm:text-xl sm:text-2xl">
               {{ post.title }}
             </h1>
-            <LikesCounter :postId="postId" />
+            <LikesCounter :postId="postId || null" />
           </div>
           <p>{{ dateConverter(post.created_at) }}</p>
           <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>

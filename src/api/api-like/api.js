@@ -1,7 +1,6 @@
 import supabase from "@/config/supabase";
 
 export const getPostLikeCount = async (postId) => {
-  console.log("postId input: ", postId);
   const { count, error } = await supabase
     .from("post_likes")
     .select("*", { count: "exact", head: true })
@@ -12,7 +11,6 @@ export const getPostLikeCount = async (postId) => {
     return 0;
   }
 
-  console.log("Like count for postId", postId, ":", count);
   return count || 0;
 };
 

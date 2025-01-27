@@ -49,6 +49,7 @@ watch(deletedCommentId, (newId) => {
     >
       <h2 class="text-xl font-semibold">댓글</h2>
     </div>
+    <p class="mt-2" v-if="sortedComments.length === 0">아직 댓글이 없습니다</p>
     <div
       v-for="comment in sortedComments"
       :key="comment.id"
@@ -65,7 +66,7 @@ watch(deletedCommentId, (newId) => {
             {{ comment.user?.username || "Unknown User" }}
           </p>
           <button
-            v-show="comment.user?.id === userProfile.id"
+            v-show="userProfile && (comment.user?.id === userProfile.id)"
             @click="() => onDeleteButtonClick(comment.id)"
           >
             <Icon
