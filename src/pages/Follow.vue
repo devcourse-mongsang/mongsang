@@ -1,183 +1,192 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/store/authStore";
+import { useFollowStore } from "@/store/followStore";
 import Button from "@/components/common/Button.vue";
 
-// 더미 데이터 - 모든 사용자
-const allUsers = ref([
-  {
-    id: 1,
-    username: "@Mala_love",
-    bio: "저는 마라를 사랑합니다",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: false,
-  },
-  {
-    id: 2,
-    username: "@HotPot_Chef",
-    bio: "마라탕 요리사입니다",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: false,
-  },
-  {
-    id: 3,
-    username: "@Spicy_Food",
-    bio: "매운 음식 전문가",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: false,
-  },
-  {
-    id: 4,
-    username: "@Food_Lover",
-    bio: "저는 마라를 사랑합니다",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: false,
-  },
-  {
-    id: 5,
-    username: "@Cooking_Pro",
-    bio: "저는 마라를 사랑합니다",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: false,
-  },
-  {
-    id: 6,
-    username: "@Cooking_Pro",
-    bio: "요리 전문가",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: false,
-  },
-]);
+// 스토어 설정
+const authStore = useAuthStore();
+const followStore = useFollowStore();
 
-// 친구 목록 (이미 팔로우한 사용자)
-const friends = ref([
-  {
-    id: 7,
-    username: "@Best_Friend1",
-    bio: "오랜 친구",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: true,
-  },
-  {
-    id: 8,
-    username: "@Best_Friend2",
-    bio: "오랜 친구",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: true,
-  },
-  {
-    id: 9,
-    username: "@Best_Friend3",
-    bio: "오랜 친구",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: true,
-  },
-  {
-    id: 10,
-    username: "@Best_Friend4",
-    bio: "오랜 친구",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: true,
-  },
-  {
-    id: 11,
-    username: "@Best_Friend5",
-    bio: "오랜 친구",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: true,
-  },
-  {
-    id: 12,
-    username: "@Best_Friend6",
-    bio: "오랜 친구",
-    profileImage: "/assets/imgs/unknownUser.png",
-    isFollowing: true,
-  },
-]);
+const route = useRoute();
+const router = useRouter();
 
-const toggleFollow = (user) => {
-  user.isFollowing = !user.isFollowing;
+const viewType = route.query.viewType; // "followers" 또는 "following"
+const profileUserId = route.params.id; // 현재 보고 있는 프로필 주인의 ID
+const loggedInUserId = ref(null); // 로그인한 사용자 ID
+const profileUsername = ref(""); // 현재 보고 있는 프로필 유저 이름
+
+// 현재 리스트 (followers 또는 following)
+const currentList = computed(() => {
+  return viewType === "followers"
+    ? followStore.followers
+    : followStore.profileFollowing;
+});
+
+// All Users (로그인한 사용자 제외)
+const allUsers = computed(() => {
+  return followStore.allUsers.filter(
+    (user) => user.id !== loggedInUserId.value
+  );
+});
+
+// 초기 데이터 로드
+const initializeData = async () => {
+  loggedInUserId.value = authStore.profile.id;
+
+  // 프로필 유저 이름 가져오기
+  const profileUser = followStore.allUsers.find(
+    (user) => user.id === profileUserId
+  );
+  profileUsername.value = profileUser ? profileUser.username : "Unknown";
+
+  // 로그인한 유저의 팔로우 데이터
+  await followStore.fetchLoggedInUserFollowing(loggedInUserId.value);
+
+  // 프로필 주인의 팔로워/팔로잉 데이터
+  await followStore.fetchFollowData(profileUserId);
+
+  // 전체 사용자 데이터
+  await followStore.fetchAllUsers();
 };
+
+// 팔로우 토글
+const toggleFollow = async (user) => {
+  await followStore.toggleFollow(loggedInUserId.value, user);
+
+  // 현재 보고 있는 프로필이 로그인 유저의 프로필인지 확인
+  if (loggedInUserId.value === profileUserId) {
+    // Following 목록에 실시간으로 추가/삭제 반영
+    if (followStore.isUserFollowed(user.id)) {
+      followStore.profileFollowing.push(user); // 팔로잉 추가
+    } else {
+      followStore.profileFollowing = followStore.profileFollowing.filter(
+        (u) => u.id !== user.id
+      ); // 팔로잉 제거
+    }
+  }
+};
+
+// 프로필 이동
+const goToProfile = (id) => {
+  router.push(`/mypage/profile/${id}`);
+};
+
+onMounted(() => {
+  initializeData();
+});
 </script>
 
 <template>
   <div class="flex flex-col justify-center items-center min-h-screen">
-    <!-- Logo Section -->
+    <!-- 로고 -->
     <div class="mb-8">
       <img src="/assets/imgs/big_logo.png" alt="Logo" class="h-36" />
     </div>
 
+    <!-- 메인 카드 -->
     <div
       class="w-[642px] h-[1250px] bg-hc-white/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-8"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
       <div class="flex flex-col h-full">
-        <!-- Friends Section -->
+        <!-- 현재 리스트 (Followers / Following) -->
         <div class="flex-1 px-4">
-          <h2 class="text-[32px] font-semibold text-hc-black mb-6">Friends</h2>
+          <h2 class="text-[32px] font-semibold text-hc-black mb-6">
+            @{{ profileUsername }}'s
+            {{ viewType === "followers" ? "Followers" : "Following" }}
+          </h2>
+
           <div
+            v-if="currentList.length > 0"
             class="flex flex-col gap-4 overflow-y-auto no-scrollbar"
             style="max-height: 500px"
           >
             <div
-              v-for="friend in friends"
-              :key="friend.id"
+              v-for="user in currentList"
+              :key="user.id"
               class="flex items-center justify-between p-4 bg-hc-white/50 rounded-[10px] shadow-sm"
             >
-              <div class="flex items-center gap-4">
+              <div
+                class="flex items-center gap-4 cursor-pointer"
+                @click="goToProfile(user.id)"
+              >
                 <img
-                  :src="friend.profileImage"
-                  :alt="friend.username"
+                  :src="user.profile_url"
+                  :alt="user.username"
                   class="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <p class="text-xl font-semibold">{{ friend.username }}</p>
-                  <p class="text-base text-gray-600">{{ friend.bio }}</p>
+                  <p class="text-xl font-semibold">@{{ user.username }}</p>
+                  <p class="text-base text-gray-600">{{ user.profile_bio }}</p>
                 </div>
               </div>
+              <!-- 로그인 유저의 팔로우 여부 표시 -->
               <Button
-                @click="toggleFollow(friend)"
-                :variant="friend.isFollowing ? 'regular' : 'filled'"
+                v-if="user.id !== loggedInUserId"
+                @click.stop="toggleFollow(user)"
+                :variant="
+                  followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
+                "
                 size="xl"
               >
-                {{ friend.isFollowing ? "팔로잉" : "팔로우" }}
+                {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
             </div>
           </div>
+          <div v-else class="flex flex-col items-center mt-16">
+            <p class="text-lg text-gray-500">
+              {{
+                viewType === "followers"
+                  ? "팔로워한 유저가 없습니다."
+                  : "팔로잉한 유저가 없습니다."
+              }}
+            </p>
+          </div>
         </div>
 
-        <!-- All Users Section -->
+        <!-- All Users -->
         <div class="flex-1 px-4 pt-4">
           <h2 class="text-[32px] font-semibold text-hc-black mb-6">
-            All users
+            All Users
           </h2>
           <div
+            v-if="allUsers.length > 0"
             class="flex flex-col gap-4 overflow-y-auto no-scrollbar"
             style="max-height: 500px"
           >
             <div
               v-for="user in allUsers"
               :key="user.id"
-              class="flex items-center justify-between p-4 bg-hc-white/50 rounded-[10px] shadow-sm"
+              @click="goToProfile(user.id)"
+              class="flex items-center justify-between p-4 bg-hc-white/60 rounded-[10px] shadow-sm"
             >
               <div class="flex items-center gap-4">
                 <img
-                  :src="user.profileImage"
+                  :src="user.profile_url"
                   :alt="user.username"
                   class="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <p class="text-xl font-semibold">{{ user.username }}</p>
-                  <p class="text-base text-hc-black">{{ user.bio }}</p>
+                  <p class="text-xl font-semibold">@{{ user.username }}</p>
+                  <p class="text-base text-hc-black">{{ user.profile_bio }}</p>
                 </div>
               </div>
               <Button
-                @click="toggleFollow(user)"
-                :variant="user.isFollowing ? 'regular' : 'filled'"
+                @click.stop="toggleFollow(user)"
+                :variant="
+                  followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
+                "
                 size="xl"
+                class="border border-hc-blue"
               >
-                {{ user.isFollowing ? "팔로잉" : "팔로우" }}
+                {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
             </div>
+          </div>
+          <div v-else class="flex flex-col items-center mt-16">
+            <p class="text-lg text-gray-500">표시할 유저가 없습니다.</p>
           </div>
         </div>
       </div>

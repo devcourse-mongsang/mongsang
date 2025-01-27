@@ -60,7 +60,7 @@ const router = createRouter({
       component: LayoutMyPage,
       children: [
         {
-          path: "profile",
+          path: "profile/:id",
           name: "profile",
           component: () => import("../pages/my-pages/Profile.vue"),
         },
@@ -70,7 +70,7 @@ const router = createRouter({
           component: () => import("../pages/my-pages/ProfileEdit.vue"),
         },
         {
-          path: "/username/follow", // 임시 경로
+          path: "username/follow/:id",
           name: "follow",
           component: () => import("../pages/Follow.vue"),
         },
@@ -88,6 +88,11 @@ const router = createRouter({
           path: "/diary/write",
           name: "diaryWrite",
           component: () => import("../pages/diary-pages/DiaryWrite.vue"),
+        },
+        {
+          path: "/notification",
+          name: "notification",
+          component: () => import("../pages/Notification.vue"),
         },
       ],
     },
