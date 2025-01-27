@@ -7,7 +7,7 @@ import { usePostsStore } from "@/store/dropDownSortStore";
 const postsStore = usePostsStore();
 
 // 드롭다운 메뉴 항목
-const options = ["작성순", "최신순", "좋아요순", "댓글순"];
+const options = ["최신순", "작성순", "좋아요순", "댓글순"];
 
 // 정렬 기준 선택 함수
 function selectSort(option) {
