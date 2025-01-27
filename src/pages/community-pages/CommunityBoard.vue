@@ -50,13 +50,17 @@ const isLoading = computed(() => loadingStore.isLoading);
 const postsStore = usePostsStore();
 const sortedPosts = computed(() => postsStore.sortedPosts(postsStore.sortKey));
 
-const likes = computed(async () => {
-  const postIdList = sortedPosts.value.map((post) => post.id);
-  const res = await Promise.all(
-    postIdList.map((postId) => getPostLike(postId))
-  );
-  console.log(res);
-  return res;
+const searchQuery = ref("");
+
+const filteredAndSortedPosts = computed(() => {
+  const filtered = searchQuery.value.trim()
+    ? sortedPosts.value.filter((post) =>
+        [post.title, post.content].some((field) =>
+          field.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+      )
+    : sortedPosts.value;
+  return filtered;
 });
 
 const fetchPosts = async () => {
@@ -134,8 +138,18 @@ onMounted(fetchPosts);
     <div class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden"></div>
 
     <!-- 검색창 -->
-    <div class="flex justify-center mx-4">
-      <div class="w-full bg-hc-white h-[45px] rounded-[20px] mb-[35px]"></div>
+    <div class="flex justify-center mx-4 mb-[35px]">
+      <div
+        class="w-full bg-hc-white h-[45px] rounded-[20px] flex items-center px-4"
+      >
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="게시물 검색"
+          class="w-full h-full px-4 outline-none"
+        />
+        <Icon icon="ic:round-search" width="24" height="24" />
+      </div>
     </div>
 
     <!-- 로딩 상태 -->
@@ -144,8 +158,8 @@ onMounted(fetchPosts);
     </div>
 
     <!-- 게시글 리스트 -->
-    <ul v-else-if="sortedPosts.length">
-      <li v-for="post in sortedPosts" :key="post.id">
+    <ul v-else-if="filteredAndSortedPosts.length">
+      <li v-for="post in filteredAndSortedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
             <div class="flex flex-col sm:gap-7 xm:gap-6">
