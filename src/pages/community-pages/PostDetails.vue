@@ -6,7 +6,6 @@ import Button from "@/components/common/Button.vue";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { register } from "swiper/element/bundle";
-import { Icon } from "@iconify/vue";
 import { deletePost, getPostById } from "@/api/api-community/api";
 import { getUserById } from "@/api/api-user/api";
 import { useAuthStore } from "@/store/authStore";
@@ -19,8 +18,10 @@ import {
 import MeatballsMenu from "@/components/common/MeatballsMenu.vue";
 import { useLoadingStore } from "@/store/loadingStore";
 import Comment from "./Comment.vue";
+import LikesCounter from "@/components/common/LikesCounter.vue";
 
 const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 const route = useRoute();
 
 const postId = ref("");
@@ -40,10 +41,9 @@ const fetchPostItem = async (postId) => {
 };
 
 const fetchAuthor = async (userId) => {
-  if (userId) {
-    const fetchedUser = await getUserById(userId);
-    author.value = fetchedUser[0] || {};
-  }
+  if (!userId) return;
+  const fetchedUser = await getUserById(userId);
+  author.value = fetchedUser[0] || {};
 };
 
 const fetchDeletePost = async (postId) => {
@@ -77,6 +77,15 @@ const fetchAllData = async () => {
   }
 };
 
+const onfollowButtonClick = () => {
+  if (!isLoggedIn.value) {
+    alert("로그인 후 사용해 주세요")
+    router.push({ name: "login" });
+  } else {
+    console.log("팔로우 기능을 구현해주새요");
+  }
+};
+
 postId.value = route.params.postId;
 
 watch(
@@ -88,9 +97,9 @@ watch(
 );
 
 onMounted(() => {
-  postId.value = route.params.postId; // 라우트 파라미터에서 postId 설정
+  postId.value = route.params.postId;
   category.value = route.params.boardType;
-  fetchAllData(); // 초기 데이터 로드
+  fetchAllData();
 });
 
 const menuItems = computed(() => [
@@ -122,18 +131,33 @@ register();
         />
         <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
       </div>
-      <Button
-        v-if="author?.id !== authStore.profile.id"
-        variant="regular"
-        size="md"
-        class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
-      >
-        팔로잉
-      </Button>
-      <div v-if="author?.id === authStore.profile.id">
-        <MeatballsMenu :menuItems="menuItems" />
+      <div v-if="isLoggedIn">
+        <Button
+          v-if="author?.id !== authStore.profile.id"
+          variant="regular"
+          size="md"
+          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          @click="onfollowButtonClick"
+        >
+          팔로잉
+        </Button>
+        <div v-if="author?.id === authStore.profile.id">
+          <MeatballsMenu :menuItems="menuItems" />
+        </div>
+      </div>
+
+      <div v-if="!isLoggedIn">
+        <Button
+          variant="regular"
+          size="md"
+          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          @click="onfollowButtonClick"
+        >
+          팔로잉
+        </Button>
       </div>
     </div>
+
     <div>
       <swiper-container
         navigation="true"
@@ -164,13 +188,7 @@ register();
             <h1 class="font-semibold xm:text-xl sm:text-2xl">
               {{ post.title }}
             </h1>
-            <Icon
-              class="cursor-pointer"
-              icon="stash:heart-light"
-              width="35"
-              height="35"
-              style="color: #729ecb"
-            />
+            <LikesCounter :postId="postId" />
           </div>
           <p>{{ dateConverter(post.created_at) }}</p>
           <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>
