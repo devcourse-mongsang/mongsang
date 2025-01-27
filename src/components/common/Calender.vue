@@ -123,8 +123,10 @@ export default {
                     class="calendar-square-background"
                     :style="{
                       backgroundImage: `url(${
-                        monthlyDiaries[day]?.imgUrl ||
-                        '/assets/imgs/img_placeholder.png'
+                        monthlyDiaries[day]
+                          ? monthlyDiaries[day].imgUrl ||
+                            '/assets/imgs/img_placeholder.png'
+                          : '/assets/imgs/calender_placeholder.png'
                       })`,
                     }"
                   >
