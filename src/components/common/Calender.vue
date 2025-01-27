@@ -1,50 +1,6 @@
-<template>
-  <section class="calendar-section">
-    <div class="calendar-container">
-      <table class="calendar-table has-text-centered is-fullwidth">
-        <thead>
-          <tr>
-            <th
-              v-for="(day, index) in days"
-              :key="day"
-              :class="[
-                'day-header',
-                { 'day-header--weekend': index === 0 || index === 6 },
-              ]"
-            >
-              {{ day }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(date, idx) in dates" :key="idx">
-            <td v-for="(day, secondIdx) in date" :key="secondIdx">
-              <RouterLink :to="`/diary/details`">
-                <div class="calendar-box">
-                  <div class="calendar-square-background">
-                    <span
-                      :class="[
-                        'calendar-date-circle',
-                        {
-                          'calendar-date-circle--weekend':
-                            secondIdx === 0 || secondIdx === 6,
-                        },
-                      ]"
-                      >{{ day }}</span
-                    >
-                  </div>
-                </div>
-              </RouterLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-</template>
-
 <script>
-const imgPlaceholder = "/assets/imgs/img_placeholder.png";
+import { getMonthlyDiaryImages } from "@/api/api-diary/api";
+
 export default {
   props: {
     year: {
@@ -60,16 +16,27 @@ export default {
     return {
       days: ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
       dates: [],
+      monthlyDiaries: {},
     };
   },
   watch: {
-    year: "calendarData", // 연도 변경 시 달력 재계산
-    month: "calendarData", // 월 변경 시 달력 재계산
+    async year() {
+      await this.loadMonthData();
+      this.calendarData();
+    },
+    async month() {
+      await this.loadMonthData();
+      this.calendarData();
+    },
   },
-  created() {
+  async created() {
+    await this.loadMonthData();
     this.calendarData();
   },
   methods: {
+    async loadMonthData() {
+      this.monthlyDiaries = await getMonthlyDiaryImages(this.year, this.month);
+    },
     calendarData() {
       const [monthFirstDay, monthLastDate, lastMonthLastDate] =
         this.getFirstDayLastDate(this.year, this.month);
@@ -116,12 +83,72 @@ export default {
           weekOfDays.push(k);
         }
       }
-      if (weekOfDays.length > 0) dates.push(weekOfDays); // 남은 날짜 추가
+      if (weekOfDays.length > 0) dates.push(weekOfDays);
       return dates;
     },
   },
 };
 </script>
+
+<template>
+  <section class="calendar-section">
+    <div class="calendar-container">
+      <table class="calendar-table has-text-centered is-fullwidth">
+        <thead>
+          <tr>
+            <th
+              v-for="(day, index) in days"
+              :key="day"
+              :class="[
+                'day-header',
+                { 'day-header--weekend': index === 0 || index === 6 },
+              ]"
+            >
+              {{ day }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(date, idx) in dates" :key="idx">
+            <td v-for="(day, secondIdx) in date" :key="secondIdx">
+              <RouterLink
+                :to="
+                  monthlyDiaries[day]?.id
+                    ? `/diary/details/${monthlyDiaries[day].id}`
+                    : ''
+                "
+              >
+                <div class="calendar-box">
+                  <div
+                    class="calendar-square-background"
+                    :style="{
+                      backgroundImage: `url(${
+                        monthlyDiaries[day]?.imgUrl ||
+                        '/assets/imgs/img_placeholder.png'
+                      })`,
+                    }"
+                  >
+                    <span
+                      :class="[
+                        'calendar-date-circle',
+                        {
+                          'calendar-date-circle--weekend':
+                            secondIdx === 0 || secondIdx === 6,
+                        },
+                      ]"
+                      >{{ day }}</span
+                    >
+                  </div>
+                </div>
+              </RouterLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</template>
+
 <style scoped>
 .calendar-box {
   margin-top: 0.3125rem; /* 5px */
@@ -134,6 +161,12 @@ export default {
   background-size: cover;
   margin-left: 0.5rem; /* 8px */
   margin-right: 0.3rem; /* 5px */
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.calendar-square-background:hover {
+  opacity: 0.8;
 }
 
 .calendar-date-circle {

@@ -2,19 +2,25 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { Icon } from "@iconify/vue";
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 
 // 선택된 아이콘 상태
 const selectedIcon = ref("material-symbols:wb-sunny-outline-rounded");
 
-// 아이콘 리스트
 const icons = [
-  "material-symbols:wb-sunny-outline-rounded",
-  "lsicon:cloudy-outline",
-  "material-symbols:air-rounded",
-  "material-symbols:rainy-outline",
-  "material-symbols:ac-unit-rounded",
+  { icon: "material-symbols:wb-sunny-outline-rounded", name: "sunny" },
+  { icon: "lsicon:cloudy-outline", name: "cloudy" },
+  { icon: "material-symbols:air-rounded", name: "windy" },
+  { icon: "material-symbols:rainy-outline", name: "rainy" },
+  { icon: "material-symbols:ac-unit-rounded", name: "snowy" },
 ];
+
+const emit = defineEmits(["update:weather"]);
+
+const selectIcon = (icon) => {
+  selectedIcon.value = icon.icon;
+  emit("update:weather", icon.name);
+};
 </script>
 
 <template>
@@ -45,13 +51,13 @@ const icons = [
           <!-- 아이콘 리스트 -->
           <MenuItem v-for="icon in icons" :key="icon" v-slot="{ active }">
             <div
-              @click="selectedIcon = icon"
+              @click="selectIcon(icon)"
               :class="[
                 active ? 'bg-gray-200' : '',
                 'flex items-center justify-center w-12 h-12 rounded-full cursor-pointer',
               ]"
             >
-              <Icon :icon="icon" class="w-6 h-6 text-hc-blue" />
+              <Icon :icon="icon.icon" class="w-6 h-6 text-hc-blue" />
             </div>
           </MenuItem>
         </div>

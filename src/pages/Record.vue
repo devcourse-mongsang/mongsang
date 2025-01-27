@@ -290,25 +290,22 @@ const recommendASMR = async (dreamAnalysis) => {
 };
 </script>
 <template>
-  <div class="flex h-full gap-x-[85px] overflow-hidden">
+  <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
     <div
-      class="ml-[70px] fixed h-full xl:w-[720px] 2xl:w-[760px] 3xl:w-[800px] md:w-[680px] sm:w-[600px] w-[648px]"
+      class="md:ml-[70px] h-full md:fixed md:w-[640px] lg:w-[680px] xl:w-[720px] 2xl:w-[760px] 3xl:w-[780px]"
     >
-      <v-textarea
+      <textarea
         v-model="diaryStore.content"
         :rules="rules"
-        variant="solo"
-        auto-grow
-        no-resize
+        required
+        maxlength="1600"
         placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
-        rows="28"
-        counter
-        rounded
-        bg-color="rgba(255, 255, 255, 0.7)"
-      ></v-textarea>
+        style="background-color: rgba(255, 255, 255, 0.7); aspect-ratio: 1 / 1"
+        class="w-full p-16 text-xl resize-none md:rounded-3xl focus:outline-none"
+      ></textarea>
 
-      <div class="flex justify-between">
+      <div class="flex justify-between xm:mx-4 md:mx-0 mt-[10px]">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
           <Button
@@ -318,6 +315,9 @@ const recommendASMR = async (dreamAnalysis) => {
             size="xs"
             @click="startListening"
           >
+            <v-tooltip activator="parent" location="bottom" color="#E5E5E5"
+              >음성인식 시작</v-tooltip
+            >
             <v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -337,6 +337,9 @@ const recommendASMR = async (dreamAnalysis) => {
             size="xs"
             @click="stopListening"
           >
+            <v-tooltip activator="parent" location="bottom"
+              >음성인식 종료</v-tooltip
+            >
             <v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -350,7 +353,9 @@ const recommendASMR = async (dreamAnalysis) => {
           </Button>
 
           <!-- 분석 버튼 -->
-          <Button variant="regular" size="xs" @click="analyzeDream"
+          <Button variant="regular" size="xs" @click="analyzeDream">
+            <v-tooltip activator="parent" location="bottom"
+              >AI 꿈 분석</v-tooltip
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -363,7 +368,9 @@ const recommendASMR = async (dreamAnalysis) => {
           ></Button>
 
           <!-- AI 이미지 생성 버튼  -->
-          <Button variant="regular" size="xs" @click="generateImage"
+          <Button variant="regular" size="xs" @click="generateImage">
+            <v-tooltip activator="parent" location="bottom"
+              >AI 그림 생성</v-tooltip
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -376,7 +383,8 @@ const recommendASMR = async (dreamAnalysis) => {
           ></Button>
 
           <!-- ASMR 추천 버튼  -->
-          <Button variant="regular" size="xs" @click="recommendASMR"
+          <Button variant="regular" size="xs" @click="recommendASMR">
+            <v-tooltip activator="parent" location="bottom">ASMR 추천</v-tooltip
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -388,8 +396,12 @@ const recommendASMR = async (dreamAnalysis) => {
               </svg> </v-icon
           ></Button>
         </div>
+
+        <!-- 일기 쓰기 버튼 -->
         <RouterLink to="/diary/write">
-          <Button variant="filled" size="xs"
+          <Button variant="filled" size="xs">
+            <v-tooltip activator="parent" location="bottom"
+              >일기 쓰러 가기</v-tooltip
             ><v-icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -406,10 +418,10 @@ const recommendASMR = async (dreamAnalysis) => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col w-[538px] gap-y-[50px] xl:w-[720px] xl:ml-[900px] mr-[70px] overflow-y-auto 2xl:w-[800px] 2xl:ml-[920px] 3xl:w-[840px] 3xl:ml-[960px]"
+      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[800px] lg:ml-[840px] xl:ml-[880px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
-        class="flex flex-col items-center w-full rounded-3xl px-[65px] relative pb-[78px] shadow-md"
+        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px]"
         style="background-color: rgba(255, 255, 255, 0.7)"
       >
         <img
@@ -448,19 +460,21 @@ const recommendASMR = async (dreamAnalysis) => {
 
       <!-- ai 그림 생성 -->
       <div class="relative">
-        <p class="mb-[10px] font-semibold">AI 그림 생성</p>
+        <p class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0">
+          AI 그림 생성
+        </p>
 
         <img
           v-if="diaryStore.imgUrl"
           :src="diaryStore.imgUrl"
           alt="AI 생성 이미지"
-          class="w-full h-fit rounded-3xl"
+          class="w-full h-fit md:rounded-3xl"
         />
         <img
           v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
-          class="w-full h-fit rounded-3xl"
+          class="w-full h-fit md:rounded-3xl"
         />
 
         <Button size="xs" variant="regular" class="absolute bottom-4 right-4">
@@ -479,11 +493,16 @@ const recommendASMR = async (dreamAnalysis) => {
 
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
-        <p class="mb-[10px] font-semibold">추천 ASMR</p>
-        <div class="relative w-full overflow-hidden rounded-3xl h-[475px]">
+        <p class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0">
+          추천 ASMR
+        </p>
+        <div
+          class="relative w-full overflow-hidden md:rounded-3xl"
+          style="padding-top: 56.25%"
+        >
           <iframe
             v-if="asmrVideo"
-            class="w-full h-full"
+            class="absolute top-0 left-0 w-full h-full"
             :src="diaryStore.youtubeUrl"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -491,13 +510,18 @@ const recommendASMR = async (dreamAnalysis) => {
           ></iframe>
           <img
             v-else
-            src="/public/assets/imgs/img_placeholder.png"
+            src="/public/assets/imgs/youtube_placeholder.png"
             alt="ASMR 비디오"
-            class="absolute w-full"
+            class="absolute top-0 left-0 w-full h-full"
           />
         </div>
       </div>
     </div>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+.v-tooltip > ::v-deep(.v-overlay__content) {
+  background: #757575;
+  color: white;
+}
+</style>
