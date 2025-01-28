@@ -7,21 +7,31 @@ import { useAuthStore } from "@/store/authStore";
 import { mdiReload } from "@mdi/js";
 
 const videos = ref([]);
+const isLoading = ref(true); // 로딩 상태 추가
 
 const fetchASMRVideos = async () => {
+  videos.value = [];
+  isLoading.value = true; // 로딩 상태 시작
   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
   const keyword = "asmr ambience";
   const maxResults = 24;
-  const response = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
-  );
-  const data = await response.json();
 
-  if (data.items && data.items.length > 0) {
-    const randomVideos = getRandomVideos(data.items, 4);
-    videos.value = randomVideos;
-  } else {
-    console.error("ASMR 영상이 없습니다.");
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
+    );
+    const data = await response.json();
+
+    if (data.items && data.items.length > 0) {
+      const randomVideos = getRandomVideos(data.items, 4);
+      videos.value = randomVideos;
+    } else {
+      console.error("ASMR 영상이 없습니다.");
+    }
+  } catch (error) {
+    console.error("Error fetching ASMR videos:", error);
+  } finally {
+    isLoading.value = false; // 로딩 상태 종료
   }
 };
 
@@ -81,7 +91,7 @@ fetchASMRVideos();
 
     <!-- AI 추천 ASMR -->
     <div
-      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px]"
+      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
         <h3 class="text-2xl font-semibold">
@@ -107,13 +117,19 @@ fetchASMRVideos();
       <ul
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
       >
-        <li v-for="video in videos" :key="video.id.videoId">
+        <li v-for="index in 4" :key="'skeleton_' + index" v-if="isLoading">
+          <v-skeleton-loader
+            type="image"
+            class="w-full max-h-[300px] object-cover"
+          ></v-skeleton-loader>
+        </li>
+        <li v-for="video in videos" :key="video.id.videoId" v-else>
           <iframe
             :src="'https://www.youtube.com/embed/' + video.id.videoId"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
-            class="w-full max-h-[300px] rounded-[20px] object-cover"
+            class="w-full max-h-[300px] rounded-[20px] object-cover h-auto"
             style="aspect-ratio: 16 / 9"
           ></iframe>
         </li>
@@ -129,12 +145,4 @@ h2,
 h3 {
   color: #333;
 }
-
-/* img {
-  transition: transform 0.3s ease;
-} */
-
-/* img:hover {
-  transform: scale(1.05);
-} */
 </style>
