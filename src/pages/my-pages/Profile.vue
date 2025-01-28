@@ -16,7 +16,14 @@ const authStore = useAuthStore();
 const loggedInUserId = authStore.profile.id;
 
 // 사용자 데이터
-const userData = ref(null);
+const userData = ref({
+  profile_url: "",
+  username: "",
+  profile_bio: "",
+  posts_count: 0,
+  followers_count: 0,
+  following_count: 0,
+});
 
 // 게시물 데이터
 const posts = ref([]);
@@ -169,94 +176,128 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-[1156px] mx-auto relative pt-[143.5px]">
+  <div
+    class="w-full max-w-[1156px] mx-auto relative pt-[0px] sm:pt-[64px] sm:min-h-screen"
+  >
+    <!-- 프로필 섹션과 버튼을 묶는 컨테이너 -->
     <div
-      class="w-full h-[80vh] border-[7px] border-hc-white/50 rounded-[20px] bg-hc-white/30 overflow-y-auto no-scrollbar"
+      class="w-full sm:border-[7px] border-hc-white/50 sm:rounded-[20px] bg-hc-white/30 overflow-y-auto no-scrollbar"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
       <!-- 프로필 섹션 -->
-      <div class="w-[830px] mx-auto pt-[138px] relative">
-        <template v-if="loggedInUserId === userId">
-          <router-link to="/mypage/profile/edit">
-            <Button
-              variant="custom"
-              size="md"
-              class="absolute right-0 top-[138px] text-xl bg-hc-white"
-            >
-              프로필 편집
-            </Button>
-          </router-link>
-        </template>
-
-        <template v-else>
-          <Button
-            variant="custom"
-            size="md"
-            @click="toggleFollow"
-            class="absolute right-0 top-[138px] px-6 py-2 rounded-[20px] text-xl"
-            :class="
-              isFollowing
-                ? 'bg-hc-white text-hc-aquaBlue'
-                : 'bg-hc-blue text-white'
-            "
-          >
-            {{ isFollowing ? "팔로잉" : "팔로우" }}
-          </Button>
-        </template>
-
-        <div class="flex items-start gap-10" v-if="userData">
+      <div
+        class="profile-container w-full sm:w-[830px] mx-auto pt-[48px] sm:pt-[138px] px-2 sm:px-0 flex flex-col xm:flex-row items-start gap-16 sm:gap-4"
+      >
+        <div class="profile-section flex gap-4 sm:gap-12 items-start">
+          <!-- 프로필 사진 -->
           <img
             :src="userData.profile_url"
-            class="w-[160px] h-[160px] rounded-full object-cover"
+            class="w-[120px] sm:w-[160px] h-[120px] sm:h-[160px] rounded-full object-cover"
           />
+          <!-- 프로필 정보 -->
           <div class="flex flex-col gap-4">
-            <p class="text-4xl font-semibold">@{{ userData.username }}</p>
-            <p class="text-[32px]">{{ userData.profile_bio }}</p>
-            <div class="flex gap-12 text-[32px]">
-              <p>
-                게시물
-                <span class="font-semibold">{{ userData.posts_count }}</span>
+            <div class="flex items-center gap-4 sm:gap-8">
+              <p class="text-2xl sm:text-4xl font-semibold">
+                {{ userData?.username || "알 수 없음" }}
               </p>
-              <p class="cursor-pointer" @click="handleFollowClick('followers')">
-                팔로워
+            </div>
+            <p class="text-xm sm:text-[32px]">
+              {{ userData.profile_bio || "소개 없음" }}
+            </p>
+            <!-- 게시물, 팔로워, 팔로잉 섹션 -->
+            <div class="stats-container flex gap-6 text-xm sm:text-[30px]">
+              <div class="flex items-center gap-2">
+                <p>게시물</p>
+                <span class="font-semibold">{{ userData.posts_count }}</span>
+              </div>
+              <div
+                class="flex items-center gap-2 cursor-pointer"
+                @click="handleFollowClick('followers')"
+              >
+                <p>팔로워</p>
                 <span class="font-semibold">{{
                   userData.followers_count
                 }}</span>
-              </p>
-              <p class="cursor-pointer" @click="handleFollowClick('following')">
-                팔로잉
+              </div>
+              <div
+                class="flex items-center gap-2 cursor-pointer"
+                @click="handleFollowClick('following')"
+              >
+                <p>팔로잉</p>
                 <span class="font-semibold">{{
                   userData.following_count
                 }}</span>
-              </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="w-[830px] mx-auto mt-28 relative">
-        <div class="border-t border-hc-blue mb-6"></div>
-        <div class="flex items-center gap-2">
-          <!-- Iconify 아이콘 -->
-          <Icon icon="mdi:grid" width="24" height="24" class="text-hc-blue" />
-          <p class="text-2xl sm:text-xl lg:text-2xl">게시물</p>
+        <!-- 프로필 편집 버튼 -->
+        <div
+          class="edit-profile-btn w-full xm:w-auto flex justify-center items-center"
+        >
+          <template v-if="loggedInUserId === userId">
+            <router-link
+              to="/mypage/profile/edit"
+              class="w-full xm:w-auto block"
+            >
+              <Button
+                variant="custom"
+                size="md"
+                class="sm:text-hc-black text-hc-white text-xl sm:bg-hc-white bg-hc-blue w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px]"
+              >
+                프로필 편집
+              </Button>
+            </router-link>
+          </template>
+          <template v-else>
+            <Button
+              variant="custom"
+              size="md"
+              @click="toggleFollow"
+              class="px-6 py-2 w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px] text-xl"
+              :class="
+                isFollowing
+                  ? 'bg-hc-gray text-hc-white'
+                  : 'bg-hc-blue text-hc-white'
+              "
+            >
+              {{ isFollowing ? "팔로잉" : "팔로우" }}
+            </Button>
+          </template>
         </div>
       </div>
+
+      <!-- 구분선 및 게시물 헤더 -->
+      <div
+        class="w-full sm:w-[830px] mx-auto xm:mt-28 mt-16 relative px-4 sm:px-0"
+      >
+        <div class="border-t border-hc-blue mb-6 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <Icon icon="mdi:grid" width="24" height="24" class="text-hc-blue" />
+          <p class="text-xl sm:text-2xl">게시물</p>
+        </div>
+      </div>
+
       <!-- 게시물 그리드 -->
       <div
-        class="w-[830px] mx-auto mt-8 grid grid-cols-3 gap-[10px] pb-[128px]"
+        class="w-full sm:w-[830px] mx-auto mt-8 grid grid-cols-3 sm:gap-[10px] gap-[0px] pb-[0px] sm:pb-[128px] sm:px-4 px-0"
         v-if="posts.length > 0"
       >
-        <img
+        <div
           v-for="post in posts"
           :key="post.id"
-          :src="post.img_url || '/assets/imgs/img_placeholder.png'"
-          class="cursor-pointer w-[270px] h-[270px] rounded-[20px] object-cover"
+          class="relative pt-[100%] cursor-pointer w-full rounded-none sm:rounded-[20px] overflow-hidden"
           @click="goToPost(post.id, post.category)"
-        />
+        >
+          <img
+            :src="post.img_url || '/assets/imgs/img_placeholder.png'"
+            class="absolute top-0 left-0 w-full h-full object-cover"
+          />
+        </div>
       </div>
-      <div v-else class="w-[830px] mx-auto text-center mt-20">
-        <p class="text-xl text-gray-500">
+      <div v-else class="w-full sm:w-[830px] mx-auto text-center mt-20">
+        <p class="text-sm xm:text-base sm:text-xl text-gray-500 pb-32">
           아직 게시물이 없습니다. 첫 게시물을 작성해보세요!
         </p>
       </div>
@@ -264,7 +305,34 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
+/* 반응형 스타일 */
+.profile-container {
+  display: flex;
+  flex-direction: column; /* 기본적으로 세로 배치 */
+  align-items: center; /* 내부 요소 가운데 정렬 */
+  gap: 36px; /* 더 작은 간격 */
+}
+
+@media (min-width: 768px) {
+  .profile-container {
+    flex-direction: row; /* 큰 화면에서는 가로 배치 */
+  }
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: row; /* 프로필 사진과 정보는 가로 정렬 */
+  align-items: flex-start;
+  gap: 42px; /* 사진과 정보 사이 간격 */
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: row; /* 게시물, 팔로워, 팔로잉을 가로 정렬 */
+  gap: 20px; /* 요소들 사이 간격 */
+}
+
 .shadow-sm {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
