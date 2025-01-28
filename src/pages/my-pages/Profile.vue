@@ -1,6 +1,6 @@
 <script setup>
 import Button from "@/components/common/Button.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
@@ -9,7 +9,7 @@ import supabase from "@/config/supabase";
 // 라우트에서 사용자 ID 가져오기
 const route = useRoute();
 const router = useRouter();
-const userId = route.params.id; // URL에서 유저 ID 추출
+const userId = ref(route.params.id); // URL에서 유저 ID 추출
 
 // 인증된 사용자 정보
 const authStore = useAuthStore();
@@ -37,7 +37,7 @@ const fetchUserData = async () => {
     const { data, error } = await supabase
       .from("profiles")
       .select("id, username, profile_bio, profile_url, created_at, updated_at")
-      .eq("id", userId) // URL에서 가져온 유저 ID로 조회
+      .eq("id", userId.value) // ref로 변경된 userId 사용
       .single();
 
     if (error) throw error;
@@ -45,17 +45,17 @@ const fetchUserData = async () => {
     const { count: posts_count } = await supabase
       .from("community")
       .select("*", { count: "exact", head: true })
-      .eq("author_id", userId);
+      .eq("author_id", userId.value);
 
     const { count: followers_count } = await supabase
       .from("follow")
       .select("*", { count: "exact", head: true })
-      .eq("followed_userid", userId); // followed_userid 기준으로 팔로워 수를 조회
+      .eq("followed_userid", userId.value); // followed_userid 기준으로 팔로워 수를 조회
 
     const { count: following_count } = await supabase
       .from("follow")
       .select("*", { count: "exact", head: true })
-      .eq("follower_userid", userId); // follower_userid 기준으로 팔로잉 수를 조회
+      .eq("follower_userid", userId.value); // follower_userid 기준으로 팔로잉 수를 조회
 
     userData.value = { ...data, posts_count, followers_count, following_count };
   } catch (error) {
@@ -70,7 +70,7 @@ const checkFollowStatus = async () => {
       .from("follow")
       .select("*")
       .eq("follower_userid", loggedInUserId)
-      .eq("followed_userid", userId);
+      .eq("followed_userid", userId.value);
 
     if (error) throw error;
 
@@ -115,7 +115,7 @@ const fetchPosts = async () => {
     const { data, error } = await supabase
       .from("community")
       .select("id, created_at, category") // category 추가
-      .eq("author_id", userId);
+      .eq("author_id", userId.value);
 
     if (error) throw error;
 
@@ -153,6 +153,7 @@ const fetchPosts = async () => {
     console.error("게시물 로드 실패:", error.message);
   }
 };
+
 // 게시물 클릭 핸들러
 const goToPost = (postId, category) => {
   router.push(`/${category}/${postId}`); // 게시물 상세 페이지로 이동
@@ -160,7 +161,7 @@ const goToPost = (postId, category) => {
 
 const handleFollowClick = (viewType) => {
   router.push({
-    path: `/mypage/username/follow/${userId}`,
+    path: `/mypage/username/follow/${userId.value}`,
     query: { viewType }, // type: 'followers' or 'following'
   });
 };
@@ -169,10 +170,25 @@ const handleFollowClick = (viewType) => {
 onMounted(() => {
   fetchUserData();
   fetchPosts();
-  if (loggedInUserId !== userId) {
+  if (loggedInUserId !== userId.value) {
     checkFollowStatus();
   }
 });
+
+// 라우트 파라미터 변경 감지
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      userId.value = newId; // userId를 새 값으로 갱신
+      fetchUserData(); // 사용자 정보 다시 불러오기
+      fetchPosts(); // 게시물 다시 불러오기
+      if (loggedInUserId !== newId) {
+        checkFollowStatus(); // 팔로우 상태 다시 확인
+      }
+    }
+  }
+);
 </script>
 
 <template>
