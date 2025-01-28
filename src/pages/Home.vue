@@ -4,33 +4,47 @@ import Button from "@/components/common/Button.vue";
 import CoverflowSwiper from "@/components/common/CoverflowSwiper.vue";
 import { ref } from "vue";
 import { useAuthStore } from "@/store/authStore";
+import { mdiReload } from "@mdi/js";
 
-const popularPosts = ref([
-  {
-    image:
-      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
-    title: "TITLE 1",
-    name: "name 1",
-  },
-  {
-    image:
-      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
-    title: "TITLE 2",
-    name: "name 2",
-  },
-  {
-    image:
-      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
-    title: "TITLE 3",
-    name: "name 3",
-  },
-  {
-    image:
-      "https://cdn.pixabay.com/photo/2023/12/30/21/14/fields-8478994_1280.jpg",
-    title: "TITLE 4",
-    name: "name 4",
-  },
-]);
+const videos = ref([]);
+const isLoading = ref(true); // 로딩 상태 추가
+
+const fetchASMRVideos = async () => {
+  videos.value = [];
+  isLoading.value = true; // 로딩 상태 시작
+  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+  const keyword = "asmr ambience";
+  const maxResults = 24;
+
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
+    );
+    const data = await response.json();
+
+    if (data.items && data.items.length > 0) {
+      const randomVideos = getRandomVideos(data.items, 4);
+      videos.value = randomVideos;
+    } else {
+      console.error("ASMR 영상이 없습니다.");
+    }
+  } catch (error) {
+    console.error("Error fetching ASMR videos:", error);
+  } finally {
+    isLoading.value = false; // 로딩 상태 종료
+  }
+};
+
+const getRandomVideos = (arr, n) => {
+  const mixed = arr.slice(0);
+  for (let i = mixed.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
+  }
+  return mixed.slice(0, n);
+};
+
+fetchASMRVideos();
 </script>
 
 <template>
@@ -77,26 +91,47 @@ const popularPosts = ref([
 
     <!-- AI 추천 ASMR -->
     <div
-      class="max-w-[1141px] px-4 md:px-8 lg:px-11 py-8 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px]"
+      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
-      <h3 class="mb-8 text-2xl font-semibold">
-        당신의 꿈에 귀 기울이는 순간, ASMR 추천
-      </h3>
+      <div class="flex items-center mb-4 gap-x-3">
+        <h3 class="text-2xl font-semibold">
+          당신의 꿈에 귀 기울이는 순간, ASMR 추천
+        </h3>
+        <Button
+          variant="custom"
+          size="xs"
+          @click="fetchASMRVideos"
+          style="background-color: rgba(255, 255, 255, 0.5)"
+        >
+          <v-icon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-6 h-6"
+            >
+              <path :d="mdiReload" />
+            </svg> </v-icon
+        ></Button>
+      </div>
       <ul
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4"
       >
-        <li v-for="(item, index) in popularPosts" :key="index">
-          <div class="">
-            <img
-              class="object-cover w-full max-h-[300px] rounded-[20px]"
-              :src="item.image"
-              :alt="`${item.title} 이미지입니다.`"
-            />
-            <div class="text-start">
-              <h4 class="text-lg font-semibold">{{ item.title }}</h4>
-              <p class="text-sm text-gray-600">{{ item.name }}</p>
-            </div>
-          </div>
+        <li v-for="index in 4" :key="'skeleton_' + index" v-if="isLoading">
+          <v-skeleton-loader
+            type="image"
+            class="w-full max-h-[300px] object-cover"
+          ></v-skeleton-loader>
+        </li>
+        <li v-for="video in videos" :key="video.id.videoId" v-else>
+          <iframe
+            :src="'https://www.youtube.com/embed/' + video.id.videoId"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            class="w-full max-h-[300px] rounded-[20px] object-cover h-auto"
+            style="aspect-ratio: 16 / 9"
+          ></iframe>
         </li>
       </ul>
     </div>
@@ -110,12 +145,4 @@ h2,
 h3 {
   color: #333;
 }
-
-/* img {
-  transition: transform 0.3s ease;
-} */
-
-/* img:hover {
-  transform: scale(1.05);
-} */
 </style>
