@@ -2,6 +2,7 @@
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import { getPostByCategory } from "@/api/api-community/api";
 import dateConverter from "@/utils/dateConveter";
+import "@mdi/font/css/materialdesignicons.css";
 
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -18,6 +19,15 @@ import { getPostLike } from "@/api/api-like/api";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
 import router from "@/router";
+
+// 페이지네이션
+const page = ref(1);
+const itemPerPage = ref(6);
+const paginationedPosts = computed(() => {
+  const start = (page.value - 1) * itemPerPage.value;
+  const end = start + itemPerPage.value;
+  return filteredAndSortedPosts.value.slice(start, end);
+});
 
 const route = useRoute();
 const selectedCategory = ref(route.params.boardType);
@@ -158,8 +168,8 @@ onMounted(fetchPosts);
     </div>
 
     <!-- 게시글 리스트 -->
-    <ul v-else-if="filteredAndSortedPosts.length">
-      <li v-for="post in filteredAndSortedPosts" :key="post.id">
+    <ul v-else-if="paginationedPosts.length">
+      <li v-for="post in paginationedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
             <div class="flex flex-col sm:gap-7 xm:gap-6">
@@ -235,6 +245,14 @@ onMounted(fetchPosts);
         style="color: #729ecb"
       />
     </v-fab>
+    <div class="text-xs-center" v-if="!isLoading">
+      <v-pagination
+        v-model="page"
+        :length="Math.ceil(filteredAndSortedPosts.length / itemPerPage)"
+        prev-icon="mdi-menu-left"
+        next-icon="mdi-menu-right"
+      ></v-pagination>
+    </div>
   </div>
 </template>
 
