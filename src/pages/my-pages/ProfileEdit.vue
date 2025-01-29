@@ -296,7 +296,7 @@ const openConfirmationModal = () => {
             </div>
 
             <p
-              class="text-xs ml-5 mt-2"
+              class="text-xs ml-5 mt-4"
               :class="{
                 'text-red': userData.profile_bio.length === 16,
                 'text-green': userData.profile_bio.length < 16,
