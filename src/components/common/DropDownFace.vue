@@ -2,12 +2,17 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { Icon } from "@iconify/vue";
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, watch, defineProps } from "vue";
+
+const props = defineProps({
+  initialCondition: {
+    type: String,
+    default: "satified",
+  },
+});
 
 // 선택된 아이콘 상태
-const selectedIcon = ref(
-  "material-symbols:sentiment-satisfied-outline-rounded"
-);
+const selectedIcon = ref("");
 
 // 아이콘 리스트
 const icons = [
@@ -35,6 +40,17 @@ const icons = [
 ];
 
 const emit = defineEmits(["update:condition"]);
+
+watch(
+  () => props.initialCondition,
+  (newCondition) => {
+    const matchedIcon = icons.find((icon) => icon.name === newCondition);
+    selectedIcon.value =
+      matchedIcon?.icon ||
+      "material-symbols:sentiment-very-satisfied-outline-rounded";
+  },
+  { immediate: true }
+);
 
 const selectIcon = (icon) => {
   selectedIcon.value = icon.icon;

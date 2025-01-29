@@ -28,14 +28,18 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const title = ref("");
-const condition = ref("satisfied");
-const weather = ref("sunny");
+const condition = ref(props.initialData?.condition || "satisfied");
+const weather = ref(props.initialData?.weather || "sunny");
 
 const content = ref("");
 
-watch(content, (newValue) => {
-  diaryStore.content = newValue;
-});
+watch(
+  () => diaryStore.content,
+  (newValue) => {
+    content.value = newValue;
+  },
+  { immediate: true }
+);
 const formattedDate = computed(() => {
   const year = selectedDate.value.getFullYear();
   const month = String(selectedDate.value.getMonth() + 1).padStart(2, "0");
@@ -142,8 +146,7 @@ onMounted(() => {
   if (props.initialData) {
     title.value = props.initialData.title;
     content.value = props.initialData.content;
-    condition.value = props.initialData.condition;
-    weather.value = props.initialData.weather;
+
     selectedDate.value = props.initialData.createdAt;
     if (props.isUpdateMode) {
       diaryStore.dreamAnalysis = props.initialData.dreamAnalysis;
@@ -176,8 +179,14 @@ onMounted(() => {
 
         <!-- 상단 우측 버튼들 -->
         <div class="flex justify-end gap-4 ml-auto">
-          <DropDownFace @update:condition="updateCondition" />
-          <DropDownWeather @update:weather="updateWeather" />
+          <DropDownFace
+            :initial-condition="props.initialData?.condition"
+            @update:condition="updateCondition"
+          />
+          <DropDownWeather
+            :initial-weather="props.initialData?.weather"
+            @update:weather="updateWeather"
+          />
         </div>
       </div>
 
