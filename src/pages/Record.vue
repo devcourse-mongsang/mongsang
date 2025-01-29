@@ -206,6 +206,15 @@ const generateImage = async () => {
 };
 
 //이미지 다운로드
+const downloadImage = async () => {
+  const imgUrl = diaryStore.imgUrl;
+
+  const link = document.createElement("a");
+  link.href = imgUrl;
+  link.download = `${Date.now()}_dream_image.png`;
+  link.target = "_blank";
+  link.click();
+};
 
 //꿈 감정 분석
 const analyzeEmotion = async () => {
@@ -520,7 +529,12 @@ onMounted(async () => {
           class="w-full h-fit md:rounded-3xl"
         />
 
-        <Button size="xs" variant="regular" class="absolute bottom-4 right-4">
+        <Button
+          size="xs"
+          variant="regular"
+          class="absolute bottom-4 right-4"
+          @click="downloadImage"
+        >
           <v-icon>
             <svg
               xmlns="http://www.w3.org/2000/svg"
