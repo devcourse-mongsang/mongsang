@@ -9,31 +9,31 @@ import { mdiReload } from "@mdi/js";
 const videos = ref([]);
 const isLoading = ref(true); // 로딩 상태 추가
 
-const fetchASMRVideos = async () => {
-  videos.value = [];
-  isLoading.value = true; // 로딩 상태 시작
-  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-  const keyword = "asmr ambience";
-  const maxResults = 24;
+// const fetchASMRVideos = async () => {
+//   videos.value = [];
+//   isLoading.value = true; // 로딩 상태 시작
+//   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+//   const keyword = "asmr ambience";
+//   const maxResults = 24;
 
-  try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
-    );
-    const data = await response.json();
+//   try {
+//     const response = await fetch(
+//       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
+//     );
+//     const data = await response.json();
 
-    if (data.items && data.items.length > 0) {
-      const randomVideos = getRandomVideos(data.items, 4);
-      videos.value = randomVideos;
-    } else {
-      console.error("ASMR 영상이 없습니다.");
-    }
-  } catch (error) {
-    console.error("Error fetching ASMR videos:", error);
-  } finally {
-    isLoading.value = false; // 로딩 상태 종료
-  }
-};
+//     if (data.items && data.items.length > 0) {
+//       const randomVideos = getRandomVideos(data.items, 4);
+//       videos.value = randomVideos;
+//     } else {
+//       console.error("ASMR 영상이 없습니다.");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching ASMR videos:", error);
+//   } finally {
+//     isLoading.value = false; // 로딩 상태 종료
+//   }
+// };
 
 const getRandomVideos = (arr, n) => {
   const mixed = arr.slice(0);
@@ -44,7 +44,7 @@ const getRandomVideos = (arr, n) => {
   return mixed.slice(0, n);
 };
 
-fetchASMRVideos();
+// fetchASMRVideos();
 </script>
 
 <template>
@@ -123,7 +123,7 @@ fetchASMRVideos();
             class="w-full max-h-[300px] object-cover"
           ></v-skeleton-loader>
         </li>
-        <li v-for="video in videos" :key="video.id.videoId" v-else>
+        <!-- <li v-for="video in videos" :key="video.id.videoId" v-else>
           <iframe
             :src="'https://www.youtube.com/embed/' + video.id.videoId"
             frameborder="0"
@@ -132,7 +132,7 @@ fetchASMRVideos();
             class="w-full max-h-[300px] rounded-[20px] object-cover h-auto"
             style="aspect-ratio: 16 / 9"
           ></iframe>
-        </li>
+        </li> -->
       </ul>
     </div>
   </div>
