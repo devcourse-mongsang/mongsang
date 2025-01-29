@@ -75,9 +75,14 @@ const router = createRouter({
           component: () => import("../pages/Follow.vue"),
         },
         {
-          path: "/diary/details/:id",
+          path: "/diary/:id",
           name: "diaryDetail",
           component: () => import("../pages/diary-pages/DiaryDetails.vue"),
+        },
+        {
+          path: "/diary/:id/update-diary",
+          name: "updateDiary",
+          component: () => import("../pages/diary-pages/UpdateDiary.vue"),
         },
         {
           path: "/diary",

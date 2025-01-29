@@ -59,31 +59,49 @@ export default {
       return [firstDay, lastDate, prevLastDate];
     },
     getMonthOfDays(monthFirstDay, monthLastDate, prevMonthLastDate) {
-      let day = 1;
-      let prevDay = prevMonthLastDate - monthFirstDay + 1;
       const dates = [];
-      let weekOfDays = [];
+      let day = 1;
+      const weekOfDays = [];
+
+      const prevMonth = this.month === 1 ? 12 : this.month - 1;
+      const prevYear = this.month === 1 ? this.year - 1 : this.year;
+      const nextMonth = this.month === 12 ? 1 : this.month + 1;
+      const nextYear = this.month === 12 ? this.year + 1 : this.year;
+
+      // 지난 달
+      for (let j = 0; j < monthFirstDay; j++) {
+        weekOfDays.push({
+          day: prevMonthLastDate - monthFirstDay + 1 + j,
+          month: prevMonth,
+          year: prevYear,
+        });
+      }
+
+      // 이번 달
       while (day <= monthLastDate) {
-        if (day === 1) {
-          for (let j = 0; j < monthFirstDay; j += 1) {
-            weekOfDays.push(prevDay);
-            prevDay += 1;
-          }
-        }
-        weekOfDays.push(day);
+        weekOfDays.push({
+          day: day++,
+          month: this.month,
+          year: this.year,
+        });
+
         if (weekOfDays.length === 7) {
-          dates.push(weekOfDays);
-          weekOfDays = [];
-        }
-        day += 1;
-      }
-      const len = weekOfDays.length;
-      if (len > 0 && len < 7) {
-        for (let k = 1; k <= 7 - len; k += 1) {
-          weekOfDays.push(k);
+          dates.push([...weekOfDays]);
+          weekOfDays.length = 0;
         }
       }
-      if (weekOfDays.length > 0) dates.push(weekOfDays);
+
+      // 다음 달
+      let nextDay = 1;
+      while (weekOfDays.length > 0 && weekOfDays.length < 7) {
+        weekOfDays.push({
+          day: nextDay++,
+          month: nextMonth,
+          year: nextYear,
+        });
+      }
+
+      if (weekOfDays.length) dates.push(weekOfDays);
       return dates;
     },
   },
@@ -110,11 +128,23 @@ export default {
         </thead>
         <tbody>
           <tr v-for="(date, idx) in dates" :key="idx">
-            <td v-for="(day, secondIdx) in date" :key="secondIdx">
+            <td v-for="(dayObj, secondIdx) in date" :key="secondIdx">
               <RouterLink
                 :to="
-                  monthlyDiaries[day]?.id
-                    ? `/diary/details/${monthlyDiaries[day].id}`
+                  monthlyDiaries[
+                    `${dayObj.year}-${String(dayObj.month).padStart(
+                      2,
+                      '0'
+                    )}-${String(dayObj.day).padStart(2, '0')}`
+                  ]?.id
+                    ? `/diary/${
+                        monthlyDiaries[
+                          `${dayObj.year}-${String(dayObj.month).padStart(
+                            2,
+                            '0'
+                          )}-${String(dayObj.day).padStart(2, '0')}`
+                        ].id
+                      }`
                     : ''
                 "
               >
@@ -123,9 +153,18 @@ export default {
                     class="calendar-square-background"
                     :style="{
                       backgroundImage: `url(${
-                        monthlyDiaries[day]
-                          ? monthlyDiaries[day].imgUrl ||
-                            '/assets/imgs/img_placeholder.png'
+                        monthlyDiaries[
+                          `${dayObj.year}-${String(dayObj.month).padStart(
+                            2,
+                            '0'
+                          )}-${String(dayObj.day).padStart(2, '0')}`
+                        ]
+                          ? monthlyDiaries[
+                              `${dayObj.year}-${String(dayObj.month).padStart(
+                                2,
+                                '0'
+                              )}-${String(dayObj.day).padStart(2, '0')}`
+                            ].imgUrl || '/assets/imgs/img_placeholder.png'
                           : '/assets/imgs/calender_placeholder.png'
                       })`,
                     }"
@@ -138,7 +177,7 @@ export default {
                             secondIdx === 0 || secondIdx === 6,
                         },
                       ]"
-                      >{{ day }}</span
+                      >{{ dayObj.day }}</span
                     >
                   </div>
                 </div>
