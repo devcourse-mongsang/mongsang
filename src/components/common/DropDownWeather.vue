@@ -2,10 +2,17 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { Icon } from "@iconify/vue";
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, watch, defineProps } from "vue";
+
+const props = defineProps({
+  initialWeather: {
+    type: String,
+    default: "sunny",
+  },
+});
 
 // 선택된 아이콘 상태
-const selectedIcon = ref("material-symbols:wb-sunny-outline-rounded");
+const selectedIcon = ref("");
 
 const icons = [
   { icon: "material-symbols:wb-sunny-outline-rounded", name: "sunny" },
@@ -16,6 +23,16 @@ const icons = [
 ];
 
 const emit = defineEmits(["update:weather"]);
+
+watch(
+  () => props.initialWeather,
+  (newWeather) => {
+    const matchedIcon = icons.find((icon) => icon.name === newWeather);
+    selectedIcon.value =
+      matchedIcon?.icon || "material-symbols:wb-sunny-outline-rounded";
+  },
+  { immediate: true }
+);
 
 const selectIcon = (icon) => {
   selectedIcon.value = icon.icon;
