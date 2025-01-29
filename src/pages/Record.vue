@@ -11,6 +11,7 @@ import {
   mdiMicrophoneOff,
 } from "@mdi/js";
 import { ref, onMounted } from "vue";
+import { useRoute, onBeforeRouteLeave } from "vue-router";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
 import { checkDiaryExists } from "@/api/api-record/api";
@@ -35,6 +36,15 @@ const isGeneratingImage = ref(false);
 const emotion = ref("");
 const asmrVideo = ref(null);
 const isFetching = ref(false);
+
+//일기 작성 페이지를 제외한 다른 페이지 이동 시 데이터 초기화
+const route = useRoute();
+
+onBeforeRouteLeave((to) => {
+  if (to.path !== "/diary/write") {
+    diaryStore.resetData();
+  }
+});
 
 //음성 인식 시작
 const startListening = () => {
