@@ -75,8 +75,8 @@ export const getDiaryById = async (id) => {
 
 export const getMonthlyDiaryImages = async (year, month) => {
   try {
-    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-    const endDate = `${year}-${String(month).padStart(2, "0")}-31`;
+    const startDate = new Date(year, month - 2, 1).toISOString().split("T")[0];
+    const endDate = new Date(year, month + 1, 0).toISOString().split("T")[0];
 
     const { data, error } = await supabase
       .from("dream_journal")
@@ -89,8 +89,14 @@ export const getMonthlyDiaryImages = async (year, month) => {
     const imageMap = {};
     data.forEach((diary) => {
       const date = new Date(diary.created_at);
-      const day = date.getDate();
-      imageMap[day] = {
+      const diaryYear = date.getFullYear();
+      const diaryMonth = date.getMonth() + 1;
+      const diaryDay = date.getDate();
+
+      const key = `${diaryYear}-${String(diaryMonth).padStart(2, "0")}-${String(
+        diaryDay
+      ).padStart(2, "0")}`;
+      imageMap[key] = {
         id: diary.id,
         imgUrl: diary.img_url,
       };
@@ -100,5 +106,35 @@ export const getMonthlyDiaryImages = async (year, month) => {
   } catch (error) {
     console.error("월별 이미지 조회 실패:", error.message);
     return {};
+  }
+};
+
+export const deleteDiary = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("dream_journal")
+      .delete()
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return data;
+  } catch (error) {
+    console.error("게시물 삭제 실패:", error.message);
+    throw error;
+  }
+};
+
+export const updateDiary = async (id, updates) => {
+  try {
+    const { data, error } = await supabase
+      .from("dream_journal")
+      .update(updates)
+      .eq("id", id)
+      .select();
+
+    if (error) throw new Error(error.message);
+    return data;
+  } catch (error) {
+    console.error("게시물 업데이트 실패:", error.message);
+    throw error;
   }
 };

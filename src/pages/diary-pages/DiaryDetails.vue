@@ -5,12 +5,30 @@ import { Icon } from "@iconify/vue";
 import { useAuthStore } from "@/store/authStore";
 import { getDiaryById } from "@/api/api-diary/api";
 import { weatherIcons, faceIcons, getIconByName } from "@/utils/iconUtils";
+import { useRouter } from "vue-router";
+import { deleteDiary } from "@/api/api-diary/api";
 
+const router = useRouter();
 const route = useRoute();
 const diaryId = route.params.id;
 
 const diaryData = ref(null);
+
 const authStore = useAuthStore();
+
+const handleDeleteDiary = async () => {
+  if (confirm("정말로 이 일기를 삭제하시겠습니까?")) {
+    try {
+      await deleteDiary(diaryId);
+
+      alert("일기가 삭제되었습니다.");
+      router.push("/diary");
+    } catch (error) {
+      console.error("일기 삭제 실패:", error);
+      alert("일기 삭제에 실패했습니다.");
+    }
+  }
+};
 
 onMounted(async () => {
   try {
@@ -112,16 +130,19 @@ const toggleModal = () => {
             class="absolute right-0 mt-2 w-[191px] rounded-[20px] bg-hc-white shadow-blue z-50"
           >
             <div class="py-5 px-4">
-              <button
-                class="w-full text-base text-center text-hc-black hover:opacity-60 mb-3"
-              >
-                게시글 수정
-              </button>
+              <RouterLink :to="`/diary/${diaryId}/update-diary`">
+                <button
+                  class="w-full text-base text-center text-hc-black hover:opacity-60 mb-3"
+                >
+                  일기 수정
+                </button>
+              </RouterLink>
               <hr class="border-hc-blue border-1 mb-3" />
               <button
                 class="w-full text-base text-center text-hc-coral hover:opacity-70"
+                @click="handleDeleteDiary"
               >
-                게시글 삭제
+                일기 삭제
               </button>
             </div>
           </div>

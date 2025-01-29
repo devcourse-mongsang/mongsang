@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import DropDownWeather from "@/components/common/DropDownWeather.vue";
 import DropDownFace from "@/components/common/DropDownFace.vue";
@@ -7,6 +7,19 @@ import { Icon } from "@iconify/vue";
 import { useDiaryStore } from "@/store/diaryStore";
 import { createDiary } from "@/api/api-diary/api.js";
 import { useAuthStore } from "@/store/authStore";
+
+const props = defineProps({
+  initialData: {
+    type: Object,
+    default: () => null,
+  },
+  isUpdateMode: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits(["submit"]);
 
 const selectedDate = ref(new Date());
 const diaryStore = useDiaryStore();
@@ -18,8 +31,11 @@ const title = ref("");
 const condition = ref("satisfied");
 const weather = ref("sunny");
 
-const content = computed(() => diaryStore.content);
+const content = ref("");
 
+watch(content, (newValue) => {
+  diaryStore.content = newValue;
+});
 const formattedDate = computed(() => {
   const year = selectedDate.value.getFullYear();
   const month = String(selectedDate.value.getMonth() + 1).padStart(2, "0");
@@ -34,23 +50,30 @@ const updateWeather = (newWeather) => {
   weather.value = newWeather;
 };
 const handleCheckButtonClick = async () => {
-  const diary = {
-    author_id: authStore.profile.id,
-    condition: condition.value,
-    weather: weather.value,
+  const diaryData = {
     title: title.value,
     content: content.value,
-    dream_analysis: diaryStore.dreamAnalysis,
-    img_url: diaryStore.imgUrl,
-    youtube_url: diaryStore.youtubeUrl,
+    condition: condition.value,
+    weather: weather.value,
   };
 
-  try {
-    const data = await createDiary(diary);
-    console.log("Data inserted:", data);
-    router.push(`/diary/details/${data[0].id}`);
-  } catch (error) {
-    console.error("Error inserting data:", error);
+  if (props.isUpdateMode) {
+    emit("submit", diaryData);
+  } else {
+    const diary = {
+      author_id: authStore.profile.id,
+      ...diaryData,
+      dream_analysis: diaryStore.dreamAnalysis,
+      img_url: diaryStore.imgUrl,
+      youtube_url: diaryStore.youtubeUrl,
+    };
+
+    try {
+      const data = await createDiary(diary);
+      router.push(`/diary/${data[0].id}`);
+    } catch (error) {
+      console.error("Error inserting data:", error);
+    }
   }
 };
 
@@ -77,7 +100,6 @@ const deleteAsmr = () => {
   showAsmrImage.value = false;
 };
 
-const contentTextarea = ref(null);
 const hasContent = ref(false);
 
 const checkContent = () => {
@@ -116,6 +138,19 @@ onMounted(() => {
   showDreamAnalysis.value = !!diaryStore.dreamAnalysis;
   showAiImage.value = !!diaryStore.imgUrl;
   showAsmrImage.value = !!diaryStore.youtubeUrl;
+
+  if (props.initialData) {
+    title.value = props.initialData.title;
+    content.value = props.initialData.content;
+    condition.value = props.initialData.condition;
+    weather.value = props.initialData.weather;
+    selectedDate.value = props.initialData.createdAt;
+    if (props.isUpdateMode) {
+      diaryStore.dreamAnalysis = props.initialData.dreamAnalysis;
+      diaryStore.imgUrl = props.initialData.imgUrl;
+      diaryStore.youtubeUrl = props.initialData.youtubeUrl;
+    }
+  }
 });
 </script>
 
@@ -164,7 +199,7 @@ onMounted(() => {
             <textarea
               v-model="content"
               @input="checkContent"
-              class="w-full h-32 p-2"
+              class="w-full h-32 p-2 focus:outline-none"
               placeholder="꿈 일기를 작성해주세요"
               style="resize: none"
             ></textarea>
@@ -182,51 +217,66 @@ onMounted(() => {
               >
                 꿈 분석
               </p>
-              <button
-                v-if="diaryStore.dreamAnalysis"
-                @click="deleteDreamAnalysis"
-                class="absolute top-0 right-0"
-              >
-                <div
-                  class="flex justify-start items-center w-[30px] h-[30px] relative gap-2.5 p-[3px] rounded-[15px] bg-[#757575]"
-                >
-                  <Icon
-                    icon="mdi:trash-can-outline"
-                    class="absolute w-5 h-5 transform -translate-x-1/2 -translate-y-1/2 text-hc-white top-1/2 left-1/2"
-                  />
-                </div>
-              </button>
-              <div
-                v-if="showDreamAnalysis"
-                class="h-20 overflow-y-auto sm:h-32"
-              >
+              <div v-if="isUpdateMode" class="h-20 overflow-y-auto sm:h-32">
                 <p class="text-base sm:text-xl text-hc-black">
                   {{ diaryStore.dreamAnalysis }}
                 </p>
               </div>
-              <div
-                v-else
-                class="w-full h-20 sm:h-32 bg-[#D9D9D9] rounded-[20px] relative"
-              >
+              <div v-else>
                 <button
-                  @click="toggleDreamAnalysis"
-                  class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  v-if="diaryStore.dreamAnalysis"
+                  @click="deleteDreamAnalysis"
+                  class="absolute z-10 -top-2 -right-2"
                 >
-                  <Icon
-                    icon="material-symbols:notes-rounded"
-                    class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2"
-                  />
+                  <div
+                    class="flex justify-start items-center w-[30px] h-[30px] relative gap-2.5 p-[3px] rounded-[15px] bg-[#757575]"
+                  >
+                    <Icon
+                      icon="mdi:trash-can-outline"
+                      class="absolute w-5 h-5 transform -translate-x-1/2 -translate-y-1/2 text-hc-white top-1/2 left-1/2"
+                    />
+                  </div>
                 </button>
+                <div
+                  v-if="showDreamAnalysis"
+                  class="h-20 overflow-y-auto sm:h-32"
+                >
+                  <p class="text-base sm:text-xl text-hc-black">
+                    {{ diaryStore.dreamAnalysis }}
+                  </p>
+                </div>
+                <div
+                  v-else
+                  class="w-full h-20 sm:h-32 bg-[#D9D9D9] rounded-[20px] relative"
+                >
+                  <button
+                    @click="toggleDreamAnalysis"
+                    class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  >
+                    <Icon
+                      icon="material-symbols:notes-rounded"
+                      class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2"
+                    />
+                  </button>
+                </div>
               </div>
             </div>
 
             <!-- 이미지와 ASMR -->
             <div class="flex flex-wrap gap-4">
+              <!-- 이미지 -->
               <div class="relative">
                 <p class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue">
                   이미지
                 </p>
-                <div class="relative">
+                <div v-if="isUpdateMode">
+                  <img
+                    :src="diaryStore.imgUrl"
+                    class="w-20 h-20 sm:w-[90px] sm:h-[90px] object-cover rounded-[20px]"
+                    alt="AI Image"
+                  />
+                </div>
+                <div v-else>
                   <button
                     v-if="diaryStore.imgUrl"
                     @click="deleteImage"
@@ -263,11 +313,22 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
+
+              <!-- ASMR -->
               <div class="relative">
                 <p class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue">
                   ASMR
                 </p>
-                <div class="relative">
+                <div v-if="isUpdateMode">
+                  <iframe
+                    class="w-28 h-20 sm:w-[127px] sm:h-[90px] object-cover rounded-[20px]"
+                    :src="diaryStore.youtubeUrl"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+                <div v-else>
                   <button
                     v-if="diaryStore.youtubeUrl"
                     @click="deleteAsmr"
@@ -290,7 +351,6 @@ onMounted(() => {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                   ></iframe>
-
                   <div
                     v-else
                     class="w-28 h-20 sm:w-[127px] sm:h-[90px] bg-[#D9D9D9] rounded-[20px] relative"
