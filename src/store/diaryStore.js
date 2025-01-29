@@ -20,5 +20,11 @@ export const useDiaryStore = defineStore("diary", {
     setYoutubeUrl(newYoutubeUrl) {
       this.youtubeUrl = newYoutubeUrl;
     },
+    resetData() {
+      this.content = "";
+      this.dreamAnalysis = "";
+      this.imgUrl = "";
+      this.youtubeUrl = "";
+    },
   },
 });
