@@ -89,14 +89,14 @@ const toggleFollow = async () => {
         .from("follow")
         .delete()
         .eq("follower_userid", loggedInUserId)
-        .eq("followed_userid", userId);
+        .eq("followed_userid", userId.value);
 
       if (error) throw error;
     } else {
       // 팔로우 처리
       const { error } = await supabase.from("follow").insert({
         follower_userid: loggedInUserId,
-        followed_userid: userId,
+        followed_userid: userId.value,
       });
 
       if (error) throw error;
@@ -217,7 +217,7 @@ watch(
                 {{ userData?.username || "알 수 없음" }}
               </p>
             </div>
-            <p class="text-xm sm:text-[32px]">
+            <p class="text-xm sm:text-[30px]">
               {{ userData.profile_bio || "소개 없음" }}
             </p>
             <!-- 게시물, 팔로워, 팔로잉 섹션 -->
@@ -231,7 +231,7 @@ watch(
                 @click="handleFollowClick('followers')"
               >
                 <p>팔로워</p>
-                <span class="font-semibold">{{
+                <span class="font-semibold w-[20px]">{{
                   userData.followers_count
                 }}</span>
               </div>

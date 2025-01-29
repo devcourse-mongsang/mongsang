@@ -89,7 +89,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-col justify-center items-center min-h-screen">
     <!-- 로고 -->
-    <div class="mb-8">
+    <div class="mb-8 hidden md:block">
       <img src="/assets/imgs/big_logo.png" alt="Logo" class="h-36" />
     </div>
 
@@ -217,5 +217,7 @@ onMounted(() => {
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+@media (min-width: 768px) {
 }
 </style>
