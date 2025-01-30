@@ -10,12 +10,15 @@ import {
 } from "../../api/api-like/api";
 import router from "@/router";
 import { useModalStore } from "@/store/modalStore";
+import supabase from "@/config/supabase";
 
-const modalStore = useModalStore();
-const { postId } = defineProps({
+// props를 제대로 받을 수 있도록 수정
+const props = defineProps({
   postId: Number,
+  authorId: Number,
 });
 
+const modalStore = useModalStore();
 const authStore = useAuthStore();
 const likesDisplay = ref(0);
 const isLiked = ref(false);
@@ -23,9 +26,9 @@ const isLoggedIn = computed(() => authStore.isLoggedIn);
 
 const fetchLikes = async (userId = null) => {
   try {
-    likesDisplay.value = await getPostLikeCount(postId);
+    likesDisplay.value = await getPostLikeCount(props.postId);
     if (!userId) return;
-    const userLike = await getUserLikeForPost(postId, userId);
+    const userLike = await getUserLikeForPost(props.postId, userId);
     isLiked.value = !!userLike;
   } catch (error) {
     console.error("Error fetching likes:", error.message);
@@ -33,10 +36,8 @@ const fetchLikes = async (userId = null) => {
 };
 
 const onLikeButtonClick = () => {
-  console.log(isLoggedIn.value);
   if (isLoggedIn.value) {
-    handleLike(postId, authStore.profile.id);
-    console.log(postId);
+    handleLike(props.postId, authStore.profile.id);
   } else {
     modalStore.addModal({
       title: "",
@@ -51,10 +52,34 @@ const onLikeButtonClick = () => {
   }
 };
 
+const createNotification = async (senderId, recipientId, postId) => {
+  const kstNow = new Date()
+    .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+    .replace(" ", "T");
+  const newNotification = {
+    sender_id: senderId,
+    recipient_id: recipientId,
+    type: "like",
+    reference_id: postId,
+    content: "새로운 좋아요가 있었습니다.",
+    is_read: false,
+    createdat: kstNow, // 한국 시간 추가
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from("notifications")
+      .insert([newNotification]);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error("Error creating notification:", error);
+  }
+};
+
 const handleLike = async (postId, userId) => {
   try {
     const res = await getUserLikeForPost(postId, userId);
-    console.log(res);
     if (res === null) {
       // db에서 가져온 좋아요 결과가 없으면
       likesDisplay.value += 1; // 화면에 보이는 좋아요 +1 하고
@@ -65,7 +90,9 @@ const handleLike = async (postId, userId) => {
         post_id: postId,
       };
       const likeRes = await likePost(newLike); // 생성 요청한다.
-      console.log(likeRes);
+
+      // 좋아요가 생성되면 알림도 생성
+      createNotification(authStore.profile.id, props.authorId, postId);
     } else if (res) {
       // db에서 가져온 좋아요 결과가 있으면
       likesDisplay.value -= 1; // 화면에 보이는 좋아요 -1 하고
@@ -75,8 +102,6 @@ const handleLike = async (postId, userId) => {
   } catch (error) {
     console.error("Error handling like:", error);
   }
-
-  console.log(isLiked.value);
 };
 
 onMounted(() => {
@@ -87,6 +112,7 @@ onMounted(() => {
   }
 });
 </script>
+
 <template>
   <div class="flex flex-col items-center">
     <button @click="onLikeButtonClick">

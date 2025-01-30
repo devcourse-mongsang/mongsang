@@ -206,7 +206,7 @@ register();
             <h1 class="font-semibold xm:text-xl sm:text-2xl">
               {{ post.title }}
             </h1>
-            <LikesCounter :postId="postId || null" />
+            <LikesCounter :postId="postId || null" :authorId="post.author_id" />
           </div>
           <p>{{ dateConverter(post.created_at) }}</p>
           <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>
@@ -218,7 +218,7 @@ register();
       <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
 
       <div class="flex flex-col">
-        <Comment :postId="postId" />
+        <Comment :postId="postId" :authorId="post.author_id" />
       </div>
     </div>
   </div>
