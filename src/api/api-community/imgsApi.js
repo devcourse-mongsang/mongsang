@@ -120,3 +120,38 @@ export const deleteImagesFromFolder = async (postId) => {
     console.error("Error deleting images:", error);
   }
 };
+
+// 🔹 특정 이미지 파일을 Supabase에서 삭제하는 함수
+export const deleteSingleImage = async (postId, fileName) => {
+  try {
+    const filePath = fileName.split(
+      "supabase.co/storage/v1/object/public/MongSang_Img/"
+    )[1];
+    const { data, error } = await supabase.storage
+      .from("MongSang_Img")
+      .remove([`${filePath}`]);
+
+    if (error) throw error;
+  } catch (err) {
+    console.error("❌ 이미지 삭제 오류:", err);
+  }
+};
+
+// 🔹 삭제된 이미지 목록을 찾아 개별 삭제하는 함수
+export const deleteRemovedImages = async (postId, remainingImages) => {
+  console.log(remainingImages);
+  try {
+    const originalImages = await fetchImagesFromSupabase(postId);
+    const deletedImages = originalImages.filter(
+      (img) => !remainingImages.includes(img)
+    );
+
+    if (deletedImages.length > 0) {
+      for (const img of deletedImages) {
+        await deleteSingleImage(postId, img);
+      }
+    }
+  } catch (error) {
+    console.error("❌ 삭제할 이미지 처리 중 오류 발생:", error);
+  }
+};
