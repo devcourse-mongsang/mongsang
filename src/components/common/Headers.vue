@@ -89,7 +89,7 @@ onMounted(async () => {
       </div>
 
       <!-- 알림 바로가기 -->
-      <div id="noti-icon" class="relative">
+      <div v-if="authStore.isLoggedIn" id="noti-icon" class="relative">
         <router-link to="/notification" class="bg-transparent cursor-pointer">
           <Icon
             id="noti-icon"
