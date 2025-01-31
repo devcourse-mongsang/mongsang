@@ -1,10 +1,13 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useSidebarStore } from "../../store/sidebar";
 import { Icon } from "@iconify/vue";
 import { useAuthStore } from "@/store/authStore";
 import { useNotificationsStore } from "@/store/notificationsStore";
 import router from "@/router";
+
+const headersElement = ref(null);
+defineExpose({ headersElement });
 
 const sidebarStore = useSidebarStore();
 const authStore = useAuthStore();
@@ -31,7 +34,7 @@ onMounted(async () => {
 });
 </script>
 
-<template>
+<template ref="headersElement">
   <!-- 상단 바 -->
   <nav
     class="flex items-center justify-between h-10 p-[30px] z-20 fixed mx-auto w-full"
@@ -43,7 +46,6 @@ onMounted(async () => {
         id="menuicon"
         v-model="sidebarStore.isHamburgerOpen"
         class="hidden"
-        @change="handleToggle"
       />
       <label
         for="menuicon"
@@ -51,19 +53,19 @@ onMounted(async () => {
         aria-label="메뉴 열기"
       >
         <span
-          class="block absolute w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300"
+          class="block absolute w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none"
           :class="{
             'rotate-45 translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
           }"
         ></span>
         <span
-          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300"
+          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none"
           :class="{
             'opacity-0': sidebarStore.isHamburgerOpen,
           }"
         ></span>
         <span
-          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300"
+          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none"
           :class="{
             '-rotate-45 -translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
           }"
