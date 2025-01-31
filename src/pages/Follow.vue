@@ -87,9 +87,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center min-h-screen">
+  <div
+    class="w-full max-w-[642px] flex flex-col justify-center items-center min-h-screen"
+  >
     <!-- 로고 -->
-    <div class="mb-8 hidden md:block">
+    <div class="mb-8 hidden sm:block">
       <img src="/assets/imgs/big_logo.png" alt="Logo" class="h-36" />
     </div>
 
@@ -99,17 +101,19 @@ onMounted(() => {
     <!-- 메인 카드 -->
     <div
       v-else
-      class="w-[642px] h-[1250px] bg-hc-blue/20 border-[7px] border-hc-white/50 rounded-[20px] relative p-8"
+      class="w-full h-[1250px] bg-hc-blue/20 sm:border-[7px] border-hc-white/50 sm:rounded-[20px] relative p-8"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
       <div class="flex flex-col h-full">
         <!-- 현재 리스트 (Followers / Following) -->
         <div class="flex-1 px-4">
-          <h2 class="text-[32px] font-semibold text-hc-black mb-6">
+          <h2
+            class="text-2xl sm:text-[32px] font-semibold text-hc-black mb-2.5 sm:mb-6"
+          >
             @{{ profileUsername }}'s
             {{ viewType === "followers" ? "Followers" : "Following" }}
           </h2>
-
+          <div class="border-t border-hc-blue mb-5 block sm:hidden"></div>
           <div
             v-if="currentList.length > 0"
             class="flex flex-col gap-4 overflow-y-auto no-scrollbar"
@@ -130,8 +134,12 @@ onMounted(() => {
                   class="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <p class="text-xl font-semibold">@{{ user.username }}</p>
-                  <p class="text-base text-gray-600">{{ user.profile_bio }}</p>
+                  <p class="text-xm sm:text-xl font-semibold">
+                    @{{ user.username }}
+                  </p>
+                  <p class="text-base text-gray-600 mr-4">
+                    {{ user.profile_bio }}
+                  </p>
                 </div>
               </div>
               <!-- 로그인 유저의 팔로우 여부 표시 -->
@@ -142,6 +150,7 @@ onMounted(() => {
                   followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
                 "
                 size="xl"
+                class="min-w-32"
               >
                 {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
@@ -159,10 +168,13 @@ onMounted(() => {
         </div>
 
         <!-- All Users -->
-        <div class="flex-1 px-4 pt-4">
-          <h2 class="text-[32px] font-semibold text-hc-black mb-6">
+        <div class="flex-1 px-4 sm:pt-4">
+          <h2
+            class="text-2xl sm:text-[32px] font-semibold text-hc-black mb-2.5 sm:mb-6"
+          >
             All Users
           </h2>
+          <div class="border-t border-hc-blue mb-5 block sm:hidden"></div>
           <div
             v-if="allUsers.length > 0"
             class="flex flex-col gap-4 overflow-y-auto no-scrollbar"
@@ -183,7 +195,9 @@ onMounted(() => {
                 />
                 <div>
                   <p class="text-xl font-semibold">@{{ user.username }}</p>
-                  <p class="text-base text-hc-black">{{ user.profile_bio }}</p>
+                  <p class="text-base text-hc-black mr-4">
+                    {{ user.profile_bio }}
+                  </p>
                 </div>
               </div>
               <Button
@@ -192,6 +206,7 @@ onMounted(() => {
                   followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
                 "
                 size="xl"
+                class="min-w-32"
               >
                 {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
