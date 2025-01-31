@@ -1,11 +1,14 @@
 <script setup>
+import { ref, computed, onMounted } from "vue";
 import { useSidebarStore } from "../../store/sidebar";
 import { Icon } from "@iconify/vue";
 import { useAuthStore } from "@/store/authStore";
+import { useNotificationsStore } from "@/store/notificationsStore";
 import router from "@/router";
 
 const sidebarStore = useSidebarStore();
 const authStore = useAuthStore();
+const notificationsStore = useNotificationsStore();
 
 const sendToLogin = () => {
   router.push({ name: "login" });
@@ -14,6 +17,18 @@ const sendToLogin = () => {
 const sendToMypage = () => {
   router.push({ name: "profile", params: { id: authStore.profile.id } });
 };
+
+const hasUnreadNotifications = computed(() => {
+  return notificationsStore.notifications.some(
+    (notification) => !notification.is_read
+  );
+});
+
+onMounted(async () => {
+  if (authStore.isLoggedIn) {
+    await notificationsStore.fetchNotifications(authStore.user.id);
+  }
+});
 </script>
 
 <template>
@@ -72,7 +87,7 @@ const sendToMypage = () => {
       </div>
 
       <!-- 알림 바로가기 -->
-      <div id="noti-icon">
+      <div id="noti-icon" class="relative">
         <router-link to="/notification" class="bg-transparent cursor-pointer">
           <Icon
             id="noti-icon"
@@ -82,6 +97,11 @@ const sendToMypage = () => {
             style="color: #729ecb"
             class="cursor-pointer"
           />
+          <!-- Red dot for unread notifications -->
+          <span
+            v-if="hasUnreadNotifications"
+            class="absolute top-2 right-2 translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-hc-pink rounded-full"
+          ></span>
         </router-link>
       </div>
 

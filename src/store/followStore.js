@@ -50,12 +50,40 @@ export const useFollowStore = defineStore("followStore", {
       return this.following.some((user) => user.id === userId);
     },
 
+    // 알림 생성 함수 추가
+    async createNotification(senderId, recipientId) {
+      console.log("Creating notification...");
+      const kstNow = new Date()
+        .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+        .replace(" ", "T");
+      const newNotification = {
+        sender_id: senderId,
+        recipient_id: recipientId,
+        type: "follow",
+        reference_id: recipientId,
+        content: "새로운 팔로우가 있습니다.",
+        is_read: false,
+        createdat: kstNow, // 한국 시간 추가
+      };
+
+      try {
+        const { data, error } = await supabase
+          .from("notifications")
+          .insert([newNotification]);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error("Error creating notification:", error);
+      }
+    },
+
     // 팔로우/언팔로우 토글
     async toggleFollow(loggedInUserId, user) {
       const isFollowing = this.isUserFollowed(user.id);
 
       if (isFollowing) {
         // 이미 팔로우 중이라면 언팔로우
+        console.log("Unfollowing user:", user.id);
         await supabase
           .from("follow")
           .delete()
@@ -73,6 +101,9 @@ export const useFollowStore = defineStore("followStore", {
 
         // 상태에 새 사용자 추가
         this.following.push(user);
+
+        // 팔로우 성공 후 알림 생성
+        this.createNotification(loggedInUserId, user.id);
       }
     },
   },

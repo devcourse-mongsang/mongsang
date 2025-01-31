@@ -9,10 +9,12 @@ import { Icon } from "@iconify/vue";
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useModalStore } from "@/store/modalStore";
+import supabase from "@/config/supabase";
 
 const modalStore = useModalStore();
-const { postId } = defineProps({
+const props = defineProps({
   postId: Number,
+  authorId: Number,
 });
 
 const router = useRouter();
@@ -41,15 +43,15 @@ const fetchComments = async (id) => {
 
 const onIsloggedOut = () => {
   modalStore.addModal({
-      title: "",
-      content: "로그인 후 이용해주세요.",
-      btnText: "로그인",
-      isOneBtn: true,
-      onClick: () => {
-        modalStore.modals = []; // 모든 모달 닫기
-        router.push({ name: "login" });
-      },
-    });
+    title: "",
+    content: "로그인 후 이용해주세요.",
+    btnText: "로그인",
+    isOneBtn: true,
+    onClick: () => {
+      modalStore.modals = []; // 모든 모달 닫기
+      router.push({ name: "login" });
+    },
+  });
 };
 
 const newComment = ref("");
@@ -58,7 +60,7 @@ const newComment = ref("");
 const createOptimisticPayload = (content) => ({
   id: Date.now(), // 임시 ID 생성
   author_id: authStore.profile.id,
-  post_id: postId,
+  post_id: props.postId,
   content: content,
   user: {
     id: authStore.profile.id,
@@ -70,9 +72,35 @@ const createOptimisticPayload = (content) => ({
 // 실제 DB 요청에 보내는 payload
 const createServerPayload = (content) => ({
   author_id: authStore.profile.id,
-  post_id: postId,
+  post_id: props.postId,
   content: content,
 });
+
+// 알림 생성 함수 추가
+const createNotification = async (senderId, recipientId, postId) => {
+  const kstNow = new Date()
+    .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
+    .replace(" ", "T");
+  const newNotification = {
+    sender_id: senderId,
+    recipient_id: recipientId,
+    type: "comment",
+    reference_id: postId,
+    content: "새로운 댓글이 달렸습니다.",
+    is_read: false,
+    createdat: kstNow, // 한국 시간 추가
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from("notifications")
+      .insert([newNotification]);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error("Error creating notification:", error);
+  }
+};
 
 // 낙관적 업데이트: UI에서 임시 ID로 댓글 추가
 const fetchNewComments = async () => {
@@ -94,7 +122,8 @@ const fetchNewComments = async () => {
       comments.value[index].id = res[0].id; // 서버에서 받은 ID로 교체
     }
 
-    console.log("댓글 작성 성공: ", res);
+    // 댓글 작성 후 알림 생성
+    createNotification(authStore.profile.id, props.authorId, props.postId);
   } catch (error) {
     console.error("댓글 작성 실패: ", error);
     comments.value = comments.value.filter(
@@ -115,7 +144,7 @@ const onCommentButtonClick = (e) => {
 };
 
 onMounted(() => {
-  fetchComments(postId);
+  fetchComments(props.postId);
 });
 </script>
 
