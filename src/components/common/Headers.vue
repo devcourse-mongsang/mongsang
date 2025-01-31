@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, watch, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useSidebarStore } from "../../store/sidebar";
 import { Icon } from "@iconify/vue";
 import { useAuthStore } from "@/store/authStore";
@@ -26,17 +26,6 @@ const hasUnreadNotifications = computed(() => {
     (notification) => !notification.is_read
   );
 });
-
-const toggleHamburgerMenu = () => {
-  sidebarStore.toggleHamburger(); // Pinia의 actions를 통해 상태 변경
-};
-
-watch(
-  () => sidebarStore.isHamburgerOpen,
-  (newVal) => {
-    console.log("isHamburgerOpen 변경 감지됨:", newVal);
-  }
-);
 
 onMounted(async () => {
   if (authStore.isLoggedIn) {
