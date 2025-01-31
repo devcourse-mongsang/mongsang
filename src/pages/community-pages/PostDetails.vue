@@ -2,7 +2,7 @@
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import dateConverter from "../../utils/dateConveter";
 import Button from "@/components/common/Button.vue";
-
+import { Icon } from "@iconify/vue";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { register } from "swiper/element/bundle";
@@ -109,13 +109,45 @@ watch(
     fetchAllData();
   }
 );
+const shareKakao = () => {
+  if (!window.Kakao) {
+    return;
+  }
 
+  const shareUrl = `http://localhost:5173/${route.params.boardType}/${route.params.postId}`;
+
+  window.Kakao.Share.sendDefault({
+    objectType: "feed",
+    content: {
+      title: post.value.title,
+      description: post.value.content.substring(0, 50) + "...", // 미리보기 내용 50자 제한
+      imageUrl: postImgs.value[0] || imgPlaceholder,
+      link: {
+        mobileWebUrl: shareUrl,
+        webUrl: shareUrl,
+      },
+    },
+    buttons: [
+      {
+        title: "게시글 보기",
+        link: {
+          mobileWebUrl: shareUrl,
+          webUrl: shareUrl,
+        },
+      },
+    ],
+  });
+};
 onMounted(() => {
   postId.value = route.params.postId;
   category.value = route.params.boardType;
   fetchAllData();
 });
-
+onMounted(() => {
+  if (!window.Kakao.isInitialized()) {
+    window.Kakao.init(import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY);
+  }
+});
 const menuItems = computed(() => [
   {
     label: "Edit Post",
@@ -201,20 +233,41 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] xm:px-4 sm:px-[0px]">
-          <div class="flex items-center justify-between">
-            <h1 class="font-semibold xm:text-xl sm:text-2xl">
+        <div class="mt-[45px] xm:px-4 sm:px-0">
+          <div class="flex items-center">
+            <h1 class="font-semibold xm:text-xl sm:text-2xl w-11/12 sm:px-3">
               {{ post.title }}
             </h1>
-            <LikesCounter :postId="postId || null" :authorId="post.author_id" />
+            <div class="w-1/12 flex justify-end px-0">
+              <LikesCounter
+                :postId="postId || null"
+                :authorId="post.author_id"
+              />
+            </div>
           </div>
-          <p>{{ dateConverter(post.created_at) }}</p>
-          <p class="hidden pt-6 text-xl sm:flex">{{ post.content }}</p>
-        </div>
-        <div class="px-4 pt-6 mb-10 sm:hidden">
-          {{ post.content }}
+
+          <div class="flex items-start mt-2">
+            <p class="text-lg sm:text-xl w-11/12 sm:px-3 break-words">
+              {{ post.content }}
+            </p>
+            <div class="w-1/12 flex justify-end px-0">
+              <Icon
+                class="cursor-pointer"
+                icon="mdi:share-variant"
+                width="35"
+                height="35"
+                @click="shareKakao"
+                style="color: #729ecb"
+              />
+            </div>
+          </div>
+
+          <p class="text-sm text-gray-500 mt-2 sm:px-3">
+            {{ dateConverter(post.created_at) }}
+          </p>
         </div>
       </div>
+
       <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
 
       <div class="flex flex-col">
