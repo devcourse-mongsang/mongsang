@@ -7,7 +7,7 @@ import { getPostById } from "@/api/api-community/api";
 import supabase from "@/config/supabase";
 import { fetchImagesFromSupabase } from "@/api/api-community/imgsApi";
 import { Icon } from "@iconify/vue";
-import HomeSwiperSkeletonUi from "./\bHomeSwiperSkeletonUi.vue";
+import HomeSwiperSkeletonUi from "./HomeSwiperSkeletonUi.vue";
 
 const boards = {
   "free-board": { title: "자유게시판" },
