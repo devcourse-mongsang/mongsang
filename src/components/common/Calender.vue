@@ -107,101 +107,103 @@ export default {
   },
 };
 </script>
-
 <template>
   <section class="calendar-section">
-    <div class="calendar-container">
-      <table class="calendar-table has-text-centered is-fullwidth">
-        <thead>
-          <tr>
-            <th
-              v-for="(day, index) in days"
-              :key="day"
-              :class="[
-                'day-header',
-                { 'day-header--weekend': index === 0 || index === 6 },
-              ]"
-            >
-              {{ day }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(date, idx) in dates" :key="idx">
-            <td v-for="(dayObj, secondIdx) in date" :key="secondIdx">
-              <RouterLink
-                :to="
+    <div class="calendar-grid">
+      <!-- 요일 헤더 -->
+      <div
+        v-for="(day, index) in days"
+        :key="day"
+        :class="[
+          'day-header',
+          { 'day-header--weekend': index === 0 || index === 6 },
+        ]"
+      >
+        {{ day }}
+      </div>
+
+      <!-- 날짜 렌더링 -->
+      <div
+        v-for="(dayObj, idx) in dates.flat()"
+        :key="idx"
+        class="calendar-cell"
+      >
+        <RouterLink
+          :to="
+            monthlyDiaries[
+              `${dayObj.year}-${String(dayObj.month).padStart(2, '0')}-${String(
+                dayObj.day
+              ).padStart(2, '0')}`
+            ]?.id
+              ? `/diary/${
                   monthlyDiaries[
                     `${dayObj.year}-${String(dayObj.month).padStart(
                       2,
                       '0'
                     )}-${String(dayObj.day).padStart(2, '0')}`
-                  ]?.id
-                    ? `/diary/${
-                        monthlyDiaries[
-                          `${dayObj.year}-${String(dayObj.month).padStart(
-                            2,
-                            '0'
-                          )}-${String(dayObj.day).padStart(2, '0')}`
-                        ].id
-                      }`
-                    : ''
-                "
+                  ].id
+                }`
+              : ''
+          "
+        >
+          <div class="calendar-box">
+            <div
+              class="calendar-square-background w-[12vw] lg:w-[6.25rem] aspect-square"
+              :style="{
+                backgroundImage: `url(${
+                  monthlyDiaries[
+                    `${dayObj.year}-${String(dayObj.month).padStart(
+                      2,
+                      '0'
+                    )}-${String(dayObj.day).padStart(2, '0')}`
+                  ]
+                    ? monthlyDiaries[
+                        `${dayObj.year}-${String(dayObj.month).padStart(
+                          2,
+                          '0'
+                        )}-${String(dayObj.day).padStart(2, '0')}`
+                      ].imgUrl || '/assets/imgs/img_placeholder.png'
+                    : '/assets/imgs/calender_placeholder.png'
+                })`,
+              }"
+            >
+              <span
+                :class="[
+                  'calendar-date-circle',
+                  {
+                    'calendar-date-circle--weekend':
+                      idx % 7 === 0 || idx % 7 === 6,
+                  },
+                ]"
+                >{{ dayObj.day }}</span
               >
-                <div class="calendar-box">
-                  <div
-                    class="calendar-square-background"
-                    :style="{
-                      backgroundImage: `url(${
-                        monthlyDiaries[
-                          `${dayObj.year}-${String(dayObj.month).padStart(
-                            2,
-                            '0'
-                          )}-${String(dayObj.day).padStart(2, '0')}`
-                        ]
-                          ? monthlyDiaries[
-                              `${dayObj.year}-${String(dayObj.month).padStart(
-                                2,
-                                '0'
-                              )}-${String(dayObj.day).padStart(2, '0')}`
-                            ].imgUrl || '/assets/imgs/img_placeholder.png'
-                          : '/assets/imgs/calender_placeholder.png'
-                      })`,
-                    }"
-                  >
-                    <span
-                      :class="[
-                        'calendar-date-circle',
-                        {
-                          'calendar-date-circle--weekend':
-                            secondIdx === 0 || secondIdx === 6,
-                        },
-                      ]"
-                      >{{ dayObj.day }}</span
-                    >
-                  </div>
-                </div>
-              </RouterLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+          </div>
+        </RouterLink>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+.calendar-section {
+  display: flex;
+  justify-content: center;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
 .calendar-box {
   margin-top: 0.3125rem; /* 5px */
 }
+
 .calendar-square-background {
   position: relative;
-  width: 6.25rem; /* 100px */
-  height: 6.25rem; /* 100px */
   background-image: url("/assets/imgs/img_placeholder.png");
   background-size: cover;
-  margin-left: 0.5rem; /* 8px */
-  margin-right: 0.3rem; /* 5px */
   cursor: pointer;
   transition: opacity 0.2s;
 }
@@ -223,13 +225,21 @@ export default {
 .calendar-date-circle--weekend {
   @apply bg-hc-coral;
 }
+
 .day-header {
   font-family: "Cafe24Meongi-B-v1.0";
   font-size: 1.25rem; /* 20px */
   @apply text-hc-white;
+  text-align: center;
 }
 
 .day-header--weekend {
   @apply text-hc-coral;
+}
+
+.calendar-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
