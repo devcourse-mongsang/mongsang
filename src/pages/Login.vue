@@ -71,7 +71,7 @@ async function loginWithProvider(provider) {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: "http://localhost:5173/",
+        redirectTo: import.meta.env.VITE_PUBLIC_URL,
       },
     });
 

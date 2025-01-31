@@ -4,6 +4,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   deleteImagesFromFolder,
+  deleteRemovedImages,
   fetchImagesFromSupabase,
   uploadImagesToSupabase,
 } from "@/api/api-community/imgsApi";
@@ -37,7 +38,7 @@ const fetchData = async (id) => {
   }
 };
 
-const onImgPreviewDeleted = (url, index) => {
+const onImgPreviewDeleted = (index) => {
   imageUrls.value.splice(index, 1);
   imageFiles.value.splice(index, 1);
 };
@@ -45,10 +46,11 @@ const onImgPreviewDeleted = (url, index) => {
 const addImages = (files) => {
   Array.from(files).forEach((file) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      imageUrls.value.push(reader.result);
+    reader.onload = (event) => {
+      imageUrls.value.push(event.target.result);
     };
     reader.readAsDataURL(file);
+    imageFiles.value.push(file); // 🟢 imageFiles에도 추가
   });
 };
 
@@ -56,7 +58,6 @@ const handleInputChange = (event) => {
   const files = event.target.files;
   if (files) {
     addImages(files);
-    imageFiles.value = Array.from(files);
   }
 };
 
@@ -73,43 +74,41 @@ const fetchUpdatedImage = async (postId) => {
   }
 };
 
-const fetchUpdatedData = async (title, content, author_id, category) => {
+const fetchUpdatedData = async () => {
   try {
-    if (authStore.isLoggedIn && authStore.profile) {
-      const updatedData = {
-        title,
-        content,
-        author_id,
-        category,
-      };
+    if (!authStore.isLoggedIn || !authStore.profile) return;
 
-      const updateResponse = await updatePost(postId.value, updatedData);
-      const newPostId = updateResponse[0].id;
+    const { title, content, author_id, category } = postData.value;
+    const updatedData = { title, content, author_id, category };
 
-      await deleteImagesFromFolder(postId.value);
-      await fetchUpdatedImage(newPostId);
+    const updateResponse = await updatePost(postId.value, updatedData);
+    if (
+      !updateResponse ||
+      !Array.isArray(updateResponse) ||
+      !updateResponse.length
+    ) {
+      throw new Error("게시글 업데이트 실패");
     }
 
-    console.log("updataed data successfully fetched");
+    const newPostId = updateResponse[0]?.id;
+    if (!newPostId) throw new Error("업데이트된 게시글 ID 없음");
+
+    // 🔵 삭제된 이미지만 개별 삭제
+    await deleteRemovedImages(postId.value, imageUrls.value);
+
+    if (imageFiles.value.length > 0) {
+      await fetchUpdatedImage(newPostId);
+    } else {
+      router.push({ name: "communityBoard" });
+    }
   } catch (error) {
-    alert("이미지 업로드에 실패하였습니다.");
+    alert("업데이트에 실패하였습니다.");
     console.error(error);
   }
 };
-watch(
-  () => route.params.postId,
-  (newId, oldId) => {
-    if (newId !== oldId) {
-      postId.value = newId;
-      fetchData(newId);
-    }
-  }
-);
 
 onMounted(() => {
   fetchData(postId.value);
-  console.log("postId:", postId.value);
-  console.log("postData:", postData.title);
 });
 </script>
 
@@ -144,7 +143,6 @@ onMounted(() => {
         </div>
 
         <div class="m-[25px] flex flex-col gap-[10px]">
-          <p>{{ postData.title }}</p>
           <DragDropImg
             :handleInputChange="handleInputChange"
             :imageUrls="imageUrls"
@@ -162,7 +160,7 @@ onMounted(() => {
                 class="aspect-square w-full rounded-[20px] object-cover"
               />
               <button
-                @click="onImgPreviewDeleted(url, index)"
+                @click="onImgPreviewDeleted(index)"
                 class="absolute top-[10px] right-[10px] p-1 text-white bg-hc-gray/30 bg-opacity-50 rounded-full hover:scale-105 hover:bg-hc-gray"
               >
                 <Icon

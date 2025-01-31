@@ -20,29 +20,47 @@ const springs = [
 </script>
 
 <template>
-  <div class="container">
-    <GlassBox class="custom-box">
-      <div class="logo-container">
+  <div class="flex justify-center items-center">
+    <GlassBox
+      class="w-[100vw] lg:w-[52.375rem] h-full flex flex-col items-center pb-6"
+    >
+      <div class="flex justify-center items-center w-full pt-10">
         <img
-          class="logo"
+          class="w-[7rem] lg:w-[14.3125rem] h-full"
           src="../../../public/assets/imgs/big_logo.png"
           alt="로고 이미지입니다."
         />
       </div>
-      <div class="dropdown-container">
-        <DropDownDiary @updateDate="updateDate" />
+      <div class="relative w-full">
+        <!-- DropDownDiary 외부 상단 위치 -->
+        <div class="absolute mt-[1vh] ml-[2vw] z-10">
+          <DropDownDiary @updateDate="updateDate" />
+        </div>
+
+        <!-- 파란 박스 -->
+        <div
+          class="w-[97vw] lg:w-[49.125rem] mx-auto mt-[70px] rounded-tl-[20px] rounded-tr-[20px] rounded-bl-[10px] rounded-br-[10px] bg-[#729ecc80] box-border relative flex flex-col items-center pt-2 pb-2"
+        >
+          <Calender
+            :year="selectedDate[0]"
+            :month="selectedDate[1]"
+            class="mb-1 w-full"
+          />
+        </div>
       </div>
-      <div class="inner-box">
-        <Calender
-          :year="selectedDate[0]"
-          :month="selectedDate[1]"
-          class="calender-center"
-        />
-      </div>
+
       <div
         v-for="spring in springs"
         :key="spring.class"
-        :class="['spring', spring.class]"
+        :class="[
+          'absolute',
+          spring.class === 'top-left-1' ? 'top-[-23px] left-[90px]' : '',
+          spring.class === 'top-left-2' ? 'top-[-23px] left-[150px]' : '',
+          spring.class === 'top-right-1' ? 'top-[-23px] right-[90px]' : '',
+          spring.class === 'top-right-2' ? 'top-[-23px] right-[150px]' : '',
+          'hidden',
+          'md:block',
+        ]"
         :style="spring.style"
       >
         <svg
@@ -64,78 +82,4 @@ const springs = [
   </div>
 </template>
 
-<style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-.custom-box {
-  width: 52.375rem;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 1.25rem;
-}
-.logo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding-top: 2.5rem;
-}
-
-.logo {
-  width: 14.3125rem;
-  height: 8.25rem;
-}
-
-.dropdown-container {
-  position: absolute;
-  top: 8.75rem; /* 140px */
-  left: 1.875rem; /* 30px */
-}
-
-.inner-box {
-  width: 49.125rem; /* 786px */
-  margin: 2.1875rem auto 0; /* 35px */
-  border-radius: 1.25rem 1.25rem 0.625rem 0.625rem; /* 20px 20px 10px 10px */
-  background: rgba(114, 158, 203, 0.5);
-  box-sizing: border-box;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-top: 0.625rem; /* 10px */
-  padding-bottom: 0.625rem; /* 10px */
-}
-.calender-center {
-  align-items: center;
-  margin-bottom: 0.125rem; /* 2px */
-}
-.spring {
-  position: absolute;
-}
-.top-left-1 {
-  top: -1.4375rem; /* -23px */
-  left: 5.625rem; /* 90px */
-}
-
-.top-left-2 {
-  top: -1.4375rem; /* -23px */
-  left: 9.375rem; /* 150px */
-}
-
-.top-right-1 {
-  top: -1.4375rem; /* -23px */
-  right: 5.625rem; /* 90px */
-}
-
-.top-right-2 {
-  top: -1.4375rem; /* -23px */
-  right: 9.375rem; /* 150px */
-}
-</style>
+<style scoped></style>

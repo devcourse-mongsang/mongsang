@@ -7,6 +7,7 @@ import { getDiaryById } from "@/api/api-diary/api";
 import { weatherIcons, faceIcons, getIconByName } from "@/utils/iconUtils";
 import { useRouter } from "vue-router";
 import { deleteDiary } from "@/api/api-diary/api";
+import { useModalStore } from "@/store/modalStore";
 
 const router = useRouter();
 const route = useRoute();
@@ -15,19 +16,27 @@ const diaryId = route.params.id;
 const diaryData = ref(null);
 
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 
-const handleDeleteDiary = async () => {
-  if (confirm("정말로 이 일기를 삭제하시겠습니까?")) {
-    try {
-      await deleteDiary(diaryId);
-
-      alert("일기가 삭제되었습니다.");
-      router.push("/diary");
-    } catch (error) {
-      console.error("일기 삭제 실패:", error);
-      alert("일기 삭제에 실패했습니다.");
-    }
-  }
+const handleDeleteDiary = () => {
+  modalStore.addModal({
+    title: "일기 삭제",
+    content: "일기를 정말 삭제하시겠습니까?",
+    btnText: "삭제",
+    cancelBtnText: "취소",
+    isOneBtn: false,
+    onClick: async () => {
+      try {
+        await deleteDiary(diaryId);
+        modalStore.modals = [];
+        alert("일기가 삭제되었습니다.");
+        router.push("/diary");
+      } catch (error) {
+        console.error("일기 삭제 실패:", error);
+        alert("일기 삭제에 실패했습니다.");
+      }
+    },
+  });
 };
 
 onMounted(async () => {
