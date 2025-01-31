@@ -1,0 +1,216 @@
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { Icon } from "@iconify/vue";
+import { useAuthStore } from "@/store/authStore";
+import { getDiaryById } from "@/api/api-diary/api";
+import { weatherIcons, faceIcons, getIconByName } from "@/utils/iconUtils";
+import { useRouter } from "vue-router";
+import { deleteDiary } from "@/api/api-diary/api";
+
+const router = useRouter();
+const route = useRoute();
+const diaryId = route.params.id;
+
+const diaryData = ref(null);
+
+const authStore = useAuthStore();
+
+const handleDeleteDiary = async () => {
+  if (confirm("정말로 이 일기를 삭제하시겠습니까?")) {
+    try {
+      await deleteDiary(diaryId);
+
+      alert("일기가 삭제되었습니다.");
+      router.push("/diary");
+    } catch (error) {
+      console.error("일기 삭제 실패:", error);
+      alert("일기 삭제에 실패했습니다.");
+    }
+  }
+};
+
+onMounted(async () => {
+  try {
+    const diaryResponse = await getDiaryById(diaryId);
+    if (!diaryResponse) {
+      console.error("다이어리 데이터 불러오기 실패");
+      return;
+    }
+
+    await authStore.restoreSession();
+
+    diaryData.value = {
+      date: diaryResponse.created_at,
+      username: authStore.profile?.username || "unknown user",
+      title: diaryResponse.title,
+      content: diaryResponse.content,
+      condition: diaryResponse.condition,
+      weather: diaryResponse.weather,
+      dreamAnalysis: diaryResponse.dream_analysis,
+      imgUrl: diaryResponse.img_url,
+      youtubeUrl: diaryResponse.youtube_url,
+    };
+
+    console.log("diaryData:", diaryData.value);
+  } catch (error) {
+    console.error("데이터 로딩 에러:", error);
+  }
+});
+
+const formattedDate = computed(() => {
+  if (!diaryData.value?.date) return "";
+
+  const date = new Date(diaryData.value.date);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}년 / ${month}월 / ${day}일`;
+});
+
+// 모달 상태 관리
+const isModalOpen = ref(false);
+
+// 모달 토글 함수
+const toggleModal = () => {
+  isModalOpen.value = !isModalOpen.value;
+};
+</script>
+
+<template>
+  <div v-if="diaryData" class="max-w-[715px] mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8 xm:px-4 sm:px-[0px]">
+      <div class="relative w-[232px] h-[205.68px] mx-auto">
+        <img
+          src="/assets/imgs/diary_logo.png"
+          alt="Profile"
+          class="w-[216.03px] h-[205.68px] absolute right-4 top-0 object-contain"
+        />
+        <p
+          class="absolute right-7 top-[89px] text-2xl text-justify text-black whitespace-nowrap"
+        >
+          <span class="font-semibold">{{ diaryData.username }}</span>
+          <span> 의 꿈 일기</span>
+        </p>
+      </div>
+
+      <div class="flex items-center gap-8">
+        <p class="text-xl">{{ formattedDate }}</p>
+
+        <div class="flex items-center gap-2 justify-end ml-auto">
+          <p class="text-xl xm:hidden sm:block">오늘의 기분</p>
+          <Icon
+            :icon="getIconByName(faceIcons, diaryData.condition)"
+            class="w-6 h-6 text-hc-blue"
+          />
+        </div>
+
+        <div class="flex items-center gap-2 justify-end">
+          <p class="text-xl xm:hidden sm:block">오늘의 날씨</p>
+          <Icon
+            :icon="getIconByName(weatherIcons, diaryData.weather)"
+            class="w-6 h-6 text-hc-blue"
+          />
+        </div>
+
+        <!-- 더보기 버튼과 모달 -->
+        <div class="relative">
+          <button class="flex items-center gap-2" @click="toggleModal">
+            <Icon
+              icon="mdi:dots-horizontal"
+              class="w-6 h-6 text-hc-blue cursor-pointer"
+            />
+          </button>
+
+          <!-- 모달 -->
+          <div
+            v-if="isModalOpen"
+            class="absolute right-0 mt-2 w-[191px] rounded-[20px] bg-hc-white shadow-blue z-50"
+          >
+            <div class="py-5 px-4">
+              <RouterLink :to="`/diary/${diaryId}/update-diary`">
+                <button
+                  class="w-full text-base text-center text-hc-black hover:opacity-60 mb-3"
+                >
+                  일기 수정
+                </button>
+              </RouterLink>
+              <hr class="border-hc-blue border-1 mb-3" />
+              <button
+                class="w-full text-base text-center text-hc-coral hover:opacity-70"
+                @click="handleDeleteDiary"
+              >
+                일기 삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 일기장 이미지 -->
+    <img
+      :src="diaryData.imgUrl || '/assets/imgs/img_placeholder.png'"
+      alt="Dream"
+      class="w-full rounded-[0px] object-cover mb-8 xm:h-auto sm:rounded-[20px]"
+    />
+
+    <!-- 꿈 일기 제목과 내용 -->
+    <h2 class="text-2xl font-semibold mb-4 xm:text-xl xm:px-4 sm:px-[0px]">
+      {{ diaryData.title }}
+    </h2>
+    <p class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px]">
+      {{ diaryData.content }}
+    </p>
+    <!-- 구분선 -->
+    <hr class="border-hc-blue my-8" />
+
+    <!-- 꿈 분석 -->
+    <h3
+      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px]"
+    >
+      꿈 분석
+    </h3>
+    <p class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px]">
+      {{ diaryData.dreamAnalysis }}
+    </p>
+
+    <!-- 구분선 -->
+    <hr class="border-hc-blue my-8" />
+
+    <!-- ASMR 섹션 -->
+    <h3
+      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px]"
+    >
+      ASMR
+    </h3>
+    <div
+      v-if="diaryData.youtubeUrl"
+      class="w-full rounded-[20px] overflow-hidden xm:h-auto"
+    >
+      <iframe
+        :src="diaryData.youtubeUrl"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        class="w-full aspect-video"
+      ></iframe>
+    </div>
+
+    <RouterLink to="/diary">
+      <v-fab
+        icon="$mdi-plus"
+        class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      >
+        <Icon
+          icon="material-symbols:book-2-outline"
+          width="1.5rem"
+          height="1.5rem"
+          style="color: #729ecb"
+        />
+      </v-fab>
+    </RouterLink>
+  </div>
+</template>

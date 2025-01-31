@@ -1,10 +1,15 @@
-<script setup></script>
+<script setup>
+import { useAuthStore } from "@/store/authStore";
+import { onMounted } from "vue";
+import Modal from "./components/common/Modal.vue";
+const authStore = useAuthStore();
+
+onMounted(() => {
+  authStore.restoreSession(); // 세션 복구
+});
+</script>
+
 <template>
-  <nav class="flex gap-2">
-    <RouterLink to="/">홈</RouterLink>
-    <RouterLink to="/record">기록하기</RouterLink>
-    <RouterLink to="/diary">일기장</RouterLink>
-  </nav>
   <RouterView />
+  <Modal />
 </template>
-<style scoped></style>

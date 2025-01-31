@@ -1,0 +1,364 @@
+<script setup>
+import Button from "@/components/common/Button.vue";
+import { ref, onMounted, watch } from "vue";
+import { Icon } from "@iconify/vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/store/authStore";
+import supabase from "@/config/supabase";
+
+// 라우트에서 사용자 ID 가져오기
+const route = useRoute();
+const router = useRouter();
+const userId = ref(route.params.id); // URL에서 유저 ID 추출
+
+// 인증된 사용자 정보
+const authStore = useAuthStore();
+const loggedInUserId = authStore.profile.id;
+
+// 사용자 데이터
+const userData = ref({
+  profile_url: "",
+  username: "",
+  profile_bio: "",
+  posts_count: 0,
+  followers_count: 0,
+  following_count: 0,
+});
+
+// 게시물 데이터
+const posts = ref([]);
+
+// 팔로우 상태
+const isFollowing = ref(false);
+
+// 사용자 정보 가져오기
+const fetchUserData = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, username, profile_bio, profile_url, created_at, updated_at")
+      .eq("id", userId.value) // ref로 변경된 userId 사용
+      .single();
+
+    if (error) throw error;
+
+    const { count: posts_count } = await supabase
+      .from("community")
+      .select("*", { count: "exact", head: true })
+      .eq("author_id", userId.value);
+
+    const { count: followers_count } = await supabase
+      .from("follow")
+      .select("*", { count: "exact", head: true })
+      .eq("followed_userid", userId.value); // followed_userid 기준으로 팔로워 수를 조회
+
+    const { count: following_count } = await supabase
+      .from("follow")
+      .select("*", { count: "exact", head: true })
+      .eq("follower_userid", userId.value); // follower_userid 기준으로 팔로잉 수를 조회
+
+    userData.value = { ...data, posts_count, followers_count, following_count };
+  } catch (error) {
+    console.error("사용자 정보 로드 실패:", error.message);
+  }
+};
+
+// 팔로우 상태 확인
+const checkFollowStatus = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("follow")
+      .select("*")
+      .eq("follower_userid", loggedInUserId)
+      .eq("followed_userid", userId.value);
+
+    if (error) throw error;
+
+    isFollowing.value = data.length > 0;
+  } catch (error) {
+    console.error("팔로우 상태 확인 실패:", error.message);
+  }
+};
+
+// 팔로우 토글
+const toggleFollow = async () => {
+  try {
+    if (isFollowing.value) {
+      // 언팔로우 처리
+      const { error } = await supabase
+        .from("follow")
+        .delete()
+        .eq("follower_userid", loggedInUserId)
+        .eq("followed_userid", userId.value);
+
+      if (error) throw error;
+    } else {
+      // 팔로우 처리
+      const { error } = await supabase.from("follow").insert({
+        follower_userid: loggedInUserId,
+        followed_userid: userId.value,
+      });
+
+      if (error) throw error;
+    }
+
+    isFollowing.value = !isFollowing.value;
+    await fetchUserData(); // 팔로워 수 업데이트
+  } catch (error) {
+    console.error("팔로우 토글 실패:", error.message);
+  }
+};
+
+// 게시물 가져오기
+const fetchPosts = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("community")
+      .select("id, created_at, category") // category 추가
+      .eq("author_id", userId.value);
+
+    if (error) throw error;
+
+    // 이미지 URL 가져오기
+    const postsWithImages = await Promise.all(
+      data.map(async (post) => {
+        const { data: imageList, error: imageError } = await supabase.storage
+          .from("MongSang_Img")
+          .list(`community_img/${post.id}`);
+
+        if (imageError) {
+          console.error(
+            `Error fetching images for post ${post.id}:`,
+            imageError
+          );
+          return { ...post, img_url: null };
+        }
+
+        const imageUrl =
+          imageList.length > 0
+            ? supabase.storage
+                .from("MongSang_Img")
+                .getPublicUrl(`community_img/${post.id}/${imageList[0].name}`)
+                .data.publicUrl
+            : null;
+
+        return { ...post, img_url: imageUrl };
+      })
+    );
+
+    posts.value = postsWithImages.sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+  } catch (error) {
+    console.error("게시물 로드 실패:", error.message);
+  }
+};
+
+// 게시물 클릭 핸들러
+const goToPost = (postId, category) => {
+  router.push(`/${category}/${postId}`); // 게시물 상세 페이지로 이동
+};
+
+const handleFollowClick = (viewType) => {
+  router.push({
+    path: `/mypage/username/follow/${userId.value}`,
+    query: { viewType }, // type: 'followers' or 'following'
+  });
+};
+
+// 초기 데이터 로드
+onMounted(() => {
+  fetchUserData();
+  fetchPosts();
+  if (loggedInUserId !== userId.value) {
+    checkFollowStatus();
+  }
+});
+
+// 라우트 파라미터 변경 감지
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      userId.value = newId; // userId를 새 값으로 갱신
+      fetchUserData(); // 사용자 정보 다시 불러오기
+      fetchPosts(); // 게시물 다시 불러오기
+      if (loggedInUserId !== newId) {
+        checkFollowStatus(); // 팔로우 상태 다시 확인
+      }
+    }
+  }
+);
+</script>
+
+<template>
+  <div
+    class="w-full max-w-[1156px] mx-auto relative pt-[0px] sm:pt-[64px] sm:min-h-screen"
+  >
+    <!-- 프로필 섹션과 버튼을 묶는 컨테이너 -->
+    <div
+      class="w-full sm:border-[7px] border-hc-white/50 sm:rounded-[20px] bg-hc-white/30 overflow-y-auto no-scrollbar"
+      style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
+    >
+      <!-- 프로필 섹션 -->
+      <div
+        class="profile-container w-full sm:w-[830px] mx-auto pt-[48px] sm:pt-[138px] px-2 sm:px-0 flex flex-col xm:flex-row items-start gap-16 sm:gap-4"
+      >
+        <div class="profile-section flex gap-4 sm:gap-12 items-start">
+          <!-- 프로필 사진 -->
+          <img
+            :src="userData.profile_url"
+            class="w-[120px] sm:w-[160px] h-[120px] sm:h-[160px] rounded-full object-cover"
+          />
+          <!-- 프로필 정보 -->
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-4 sm:gap-8">
+              <p class="text-2xl sm:text-4xl font-semibold">
+                {{ userData?.username || "알 수 없음" }}
+              </p>
+            </div>
+            <p class="text-xm sm:text-[30px]">
+              {{ userData.profile_bio || "소개 없음" }}
+            </p>
+            <!-- 게시물, 팔로워, 팔로잉 섹션 -->
+            <div class="stats-container flex gap-6 text-xm sm:text-[30px]">
+              <div class="flex items-center gap-2">
+                <p>게시물</p>
+                <span class="font-semibold">{{ userData.posts_count }}</span>
+              </div>
+              <div
+                class="flex items-center gap-2 cursor-pointer"
+                @click="handleFollowClick('followers')"
+              >
+                <p>팔로워</p>
+                <span class="font-semibold w-[20px]">{{
+                  userData.followers_count
+                }}</span>
+              </div>
+              <div
+                class="flex items-center gap-2 cursor-pointer"
+                @click="handleFollowClick('following')"
+              >
+                <p>팔로잉</p>
+                <span class="font-semibold">{{
+                  userData.following_count
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 프로필 편집 버튼 -->
+        <div
+          class="edit-profile-btn w-full xm:w-auto flex justify-center items-center"
+        >
+          <template v-if="loggedInUserId === userId">
+            <router-link
+              to="/mypage/profile/edit"
+              class="w-full xm:w-auto block"
+            >
+              <Button
+                variant="custom"
+                size="md"
+                class="sm:text-hc-black text-hc-white text-xl sm:bg-hc-white bg-hc-blue w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px]"
+              >
+                프로필 편집
+              </Button>
+            </router-link>
+          </template>
+          <template v-else>
+            <Button
+              variant="custom"
+              size="md"
+              @click="toggleFollow"
+              class="px-6 py-2 w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px] text-xl"
+              :class="
+                isFollowing
+                  ? 'bg-hc-gray text-hc-white'
+                  : 'bg-hc-blue text-hc-white'
+              "
+            >
+              {{ isFollowing ? "팔로잉" : "팔로우" }}
+            </Button>
+          </template>
+        </div>
+      </div>
+
+      <!-- 구분선 및 게시물 헤더 -->
+      <div
+        class="w-full sm:w-[830px] mx-auto xm:mt-28 mt-16 relative px-4 sm:px-0"
+      >
+        <div class="border-t border-hc-blue mb-6 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <Icon icon="mdi:grid" width="24" height="24" class="text-hc-blue" />
+          <p class="text-xl sm:text-2xl">게시물</p>
+        </div>
+      </div>
+
+      <!-- 게시물 그리드 -->
+      <div
+        class="w-full sm:w-[830px] mx-auto mt-8 grid grid-cols-3 sm:gap-[10px] gap-[0px] pb-[0px] sm:pb-[128px] sm:px-4 px-0"
+        v-if="posts.length > 0"
+      >
+        <div
+          v-for="post in posts"
+          :key="post.id"
+          class="relative pt-[100%] cursor-pointer w-full rounded-none sm:rounded-[20px] overflow-hidden"
+          @click="goToPost(post.id, post.category)"
+        >
+          <img
+            :src="post.img_url || '/assets/imgs/img_placeholder.png'"
+            class="absolute top-0 left-0 w-full h-full object-cover"
+          />
+        </div>
+      </div>
+      <div v-else class="w-full sm:w-[830px] mx-auto text-center mt-20">
+        <p class="text-sm xm:text-base sm:text-xl text-gray-500 pb-32">
+          아직 게시물이 없습니다. 첫 게시물을 작성해보세요!
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+/* 반응형 스타일 */
+.profile-container {
+  display: flex;
+  flex-direction: column; /* 기본적으로 세로 배치 */
+  align-items: center; /* 내부 요소 가운데 정렬 */
+  gap: 36px; /* 더 작은 간격 */
+}
+
+@media (min-width: 768px) {
+  .profile-container {
+    flex-direction: row; /* 큰 화면에서는 가로 배치 */
+  }
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: row; /* 프로필 사진과 정보는 가로 정렬 */
+  align-items: flex-start;
+  gap: 42px; /* 사진과 정보 사이 간격 */
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: row; /* 게시물, 팔로워, 팔로잉을 가로 정렬 */
+  gap: 20px; /* 요소들 사이 간격 */
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* 스크롤바 숨기기 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+</style>
