@@ -12,9 +12,7 @@
         {{ modal.title }}
       </div>
       <!-- 내용 -->
-      <div class="text-[20px] text-center mb-6">
-        {{ modal.content }}
-      </div>
+      <div class="text-[20px] text-center mb-6" v-html="modal.content"></div>
       <!-- 버튼 -->
       <template v-if="modal.isOneBtn">
         <button
