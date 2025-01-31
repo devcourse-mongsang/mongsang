@@ -63,7 +63,11 @@ async function navigateToPost(notification) {
 // 프로필로 이동
 function navigateToProfile(notification) {
   const id = notification.sender_id;
-  router.push({ name: "userProfile", params: { id } });
+  if (!id) {
+    console.error("User ID is missing in notification:", notification);
+    return;
+  }
+  router.push(`/mypage/profile/${id}`);
 }
 
 // 알림 클릭 핸들러
