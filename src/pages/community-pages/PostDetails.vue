@@ -114,7 +114,9 @@ const shareKakao = () => {
     return;
   }
 
-  const shareUrl = `http://localhost:5173/${route.params.boardType}/${route.params.postId}`;
+  const shareUrl = `${import.meta.env.VITE_PUBLIC_URL}/${
+    route.params.boardType
+  }/${route.params.postId}`;
 
   window.Kakao.Share.sendDefault({
     objectType: "feed",
