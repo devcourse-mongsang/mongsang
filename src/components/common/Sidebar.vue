@@ -7,11 +7,46 @@ import { RouterLink } from "vue-router";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
-const sidebarStore = useSidebarStore(); // Pinia store 초기화
+const sidebarStore = useSidebarStore();
 const router = useRouter();
+
+const sidebarRef = ref(null);
+
+onClickOutside(sidebarRef, (event) => {
+  if (sidebarStore.isHamburgerOpen) {
+    sidebarStore.toggleHamburger(); // 사이드바 닫기
+    console.log("dawdaw")
+  }
+});
+
+// const handleClickOutside = (event) => {
+//   const sidebar = sidebarRef.value;
+//   const headers = headersRef.value?.headersElement;
+
+//   if (
+//     !sidebarStore.isHamburgerOpen ||
+//     (headers && !headers.contains(event.target))
+//   ) {
+//     return;
+//   }
+
+//   if (sidebar && !sidebar.contains(event.target)) {
+//     sidebarStore.toggleHamburger();
+//   }
+// };
+
+// onMounted(async () => {
+//   document.addEventListener("click", handleClickOutside);
+// });
+
+// onBeforeUnmount(() => {
+//   document.removeEventListener("click", handleClickOutside);
+// });
 
 async function handleLogout() {
   modalStore.addModal({
@@ -33,9 +68,10 @@ async function handleLogout() {
 
 <template>
   <!-- 상단 바 -->
-  <Headers />
+  <Headers ref="headersRef" />
   <!-- 사이드바 -->
   <div
+    ref="sidebarRef"
     id="sidebar"
     :class="{
       'left-0 shadow-[0px_0.25rem_4.675rem_#688FB69E,0px_0.25rem_4.375rem_#FFF_inset]':
@@ -105,6 +141,7 @@ async function handleLogout() {
               width="1.5rem"
               height="1.5rem"
               style="color: #ffffff"
+              class="cursor-pointer"
             />
           </div>
           <div class="flex gap-[10px]">
@@ -114,6 +151,7 @@ async function handleLogout() {
               width="1.5rem"
               height="1.5rem"
               style="color: #ffffff"
+              class="cursor-pointer"
             />
           </div>
         </div>
@@ -150,3 +188,11 @@ async function handleLogout() {
     <DropDownCommunity />
   </div>
 </template>
+<style scoped>
+#sidebar {
+  z-index: 10;
+}
+#headersRef {
+  z-index: 20; /* 이 부분은 필요에 따라 조정 */
+}
+</style>
