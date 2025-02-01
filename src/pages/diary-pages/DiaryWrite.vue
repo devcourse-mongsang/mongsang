@@ -159,7 +159,7 @@ onMounted(() => {
 
 <template>
   <div class="flex items-start justify-center p-4 xm:p-0">
-    <div class="w-full max-w-[710px] xm:w-full">
+    <div class="max-w-[710px] min-w-[376px] w-[90vw] md:w-full">
       <!-- 날짜 표시 및 상단 버튼들 -->
       <div class="flex justify-between gap-4 mb-5 xm:mb-0">
         <div class="flex items-center w-full sm:w-auto">
@@ -216,11 +216,11 @@ onMounted(() => {
         </div>
 
         <!-- 미리보기 섹션 -->
-        <div class="mt-6 xm:mt-11 xm:px-6">
+        <div class="mt-6 xm:mt-11 xm:px-6 w-[90vw] md:w-full">
           <p class="mb-2 text-lg font-semibold sm:text-xl">미리보기</p>
           <div class="space-y-4">
             <!-- 꿈 분석 -->
-            <div class="relative w-[620px]">
+            <div class="relative w-[75vw] min-w-[295px] max-w-[620px]">
               <p
                 class="inline-block mb-2 text-lg font-semibold sm:text-xl text-hc-blue"
               >
@@ -272,7 +272,7 @@ onMounted(() => {
             </div>
 
             <!-- 이미지와 ASMR -->
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap pt-[3vh] gap-4">
               <!-- 이미지 -->
               <div class="relative">
                 <p class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue">
