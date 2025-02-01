@@ -226,22 +226,18 @@ watch(
   <div
     class="w-full max-w-[1156px] mx-auto relative pt-[0px] sm:pt-[64px] sm:min-h-screen"
   >
-    <!-- 프로필 섹션과 버튼을 묶는 컨테이너 -->
     <div
       class="w-full sm:border-[7px] border-hc-white/50 sm:rounded-[20px] bg-hc-white/30 overflow-y-auto no-scrollbar"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
-      <!-- 프로필 섹션 -->
       <div
-        class="profile-container w-full sm:w-[830px] mx-auto pt-[48px] sm:pt-[138px] px-2 sm:px-0 flex flex-col xm:flex-row items-start gap-16 sm:gap-4"
+        class="profile-container w-full sm:w-[830px] mx-auto pt-[48px] sm:pt-[138px] px-2 sm:px-0 flex flex-col xm:flex-row items-start gap-16 sm:gap-4 sm:justify-between"
       >
         <div class="profile-section flex gap-4 sm:gap-12 items-start">
-          <!-- 프로필 사진 -->
           <img
             :src="userData.profile_url"
             class="w-[120px] sm:w-[160px] h-[120px] sm:h-[160px] rounded-full object-cover"
           />
-          <!-- 프로필 정보 -->
           <div class="flex flex-col gap-4">
             <div class="flex items-center gap-4 sm:gap-8">
               <p class="text-2xl sm:text-4xl font-semibold">
@@ -251,7 +247,6 @@ watch(
             <p class="text-xm sm:text-[30px]">
               {{ userData.profile_bio || "소개 없음" }}
             </p>
-            <!-- 게시물, 팔로워, 팔로잉 섹션 -->
             <div class="stats-container flex gap-6 text-xm sm:text-[30px]">
               <div class="flex items-center gap-2">
                 <p>게시물</p>
@@ -279,9 +274,8 @@ watch(
           </div>
         </div>
 
-        <!-- 프로필 편집 버튼 -->
         <div
-          class="edit-profile-btn w-full xm:w-auto flex justify-center items-center"
+          class="edit-profile-btn w-full xm:w-auto flex justify-center xm:justify-start items-center sm:justify-end"
         >
           <template v-if="loggedInUserId === userId">
             <router-link
@@ -305,7 +299,7 @@ watch(
               class="px-6 py-2 w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px] text-xl"
               :class="
                 isFollowing
-                  ? 'bg-hc-gray text-hc-white'
+                  ? 'bg-hc-white text-hc-blue'
                   : 'bg-hc-blue text-hc-white'
               "
             >
