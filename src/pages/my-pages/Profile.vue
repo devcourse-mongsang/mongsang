@@ -5,15 +5,17 @@ import { Icon } from "@iconify/vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
 import supabase from "@/config/supabase";
+import { useModalStore } from "@/store/modalStore";
 
 // 라우트에서 사용자 ID 가져오기
 const route = useRoute();
 const router = useRouter();
 const userId = ref(route.params.id); // URL에서 유저 ID 추출
+const modalStore = useModalStore();
 
 // 인증된 사용자 정보
 const authStore = useAuthStore();
-const loggedInUserId = authStore.profile.id;
+const loggedInUserId = authStore.profile?.id ?? null; // 로그인하지 않았을 때 null 설정
 
 // 사용자 데이터
 const userData = ref({
@@ -63,8 +65,10 @@ const fetchUserData = async () => {
   }
 };
 
-// 팔로우 상태 확인
+// 팔로우 상태 확인 (로그인한 경우만 실행)
 const checkFollowStatus = async () => {
+  if (!loggedInUserId) return;
+
   try {
     const { data, error } = await supabase
       .from("follow")
@@ -80,8 +84,23 @@ const checkFollowStatus = async () => {
   }
 };
 
-// 팔로우 토글
+// 팔로우 토글 (로그인 여부 체크)
 const toggleFollow = async () => {
+  if (!loggedInUserId) {
+    modalStore.addModal({
+      title: "로그인",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: false,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
+
+    return;
+  }
+
   try {
     if (isFollowing.value) {
       // 언팔로우 처리
@@ -127,10 +146,7 @@ const fetchPosts = async () => {
           .list(`community_img/${post.id}`);
 
         if (imageError) {
-          console.error(
-            `Error fetching images for post ${post.id}:`,
-            imageError
-          );
+          console.error(`이미지 가져오기 실패 (${post.id}):`, imageError);
           return { ...post, img_url: null };
         }
 
@@ -153,16 +169,31 @@ const fetchPosts = async () => {
     console.error("게시물 로드 실패:", error.message);
   }
 };
-
 // 게시물 클릭 핸들러
 const goToPost = (postId, category) => {
   router.push(`/${category}/${postId}`); // 게시물 상세 페이지로 이동
 };
 
 const handleFollowClick = (viewType) => {
+  if (!loggedInUserId) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "이 기능을 이용하려면 로그인이 필요합니다.",
+      btnText: "로그인",
+      isOneBtn: false,
+
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
+
+    return; // 로그인하지 않았으면 함수 종료 (페이지 이동 X)
+  }
+
   router.push({
     path: `/mypage/username/follow/${userId.value}`,
-    query: { viewType }, // type: 'followers' or 'following'
+    query: { viewType }, // 'followers' 또는 'following'
   });
 };
 
@@ -170,7 +201,7 @@ const handleFollowClick = (viewType) => {
 onMounted(() => {
   fetchUserData();
   fetchPosts();
-  if (loggedInUserId !== userId.value) {
+  if (loggedInUserId && loggedInUserId !== userId.value) {
     checkFollowStatus();
   }
 });
@@ -183,7 +214,7 @@ watch(
       userId.value = newId; // userId를 새 값으로 갱신
       fetchUserData(); // 사용자 정보 다시 불러오기
       fetchPosts(); // 게시물 다시 불러오기
-      if (loggedInUserId !== newId) {
+      if (loggedInUserId && loggedInUserId !== newId) {
         checkFollowStatus(); // 팔로우 상태 다시 확인
       }
     }
