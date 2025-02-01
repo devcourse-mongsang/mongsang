@@ -97,8 +97,8 @@ export default defineComponent({
     };
 
     const inputSize = {
-      xs: "w-[398px] h-[63px] text-[24px] pl-[40px]",
-      sm: "w-[480px] h-[63px] text-[24px] pl-[40px]",
+      xs: "w-[318px] sm:w-[398px] h-[63px] text-[20px] sm:text-[24px] pl-[40px]",
+      sm: "w-[400px] sm:w-[480px] h-[63px] text-[20px] sm:text-[24px] pl-[40px]",
       md: "w-[615px] h-[45px] text-[20px] pl-[16px]",
       lg: "w-[830px] h-[63px] text-[24px] pl-[40px]",
       xl: "w-[941px] h-[45px] text-[20px] pl-[16px]",
