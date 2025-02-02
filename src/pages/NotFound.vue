@@ -1,7 +1,6 @@
 <script setup>
-import { ChevronLeftIcon } from "@heroicons/vue/24/solid";
-import { HomeIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
+import { Icon } from "@iconify/vue";
 
 const router = useRouter();
 
@@ -19,11 +18,21 @@ function goHome() {
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
     >
       <button class="font-bold size-8 text-hc-blue ml-[30px]" @click="goBack">
-        <ChevronLeftIcon />
+        <Icon
+          icon="material-symbols:arrow-back-ios-new-rounded"
+          width="27"
+          height="27"
+          style="color: #729ecb"
+        />
       </button>
 
       <button class="font-bold size-8 text-hc-blue mr-[30px]" @click="goHome">
-        <HomeIcon />
+        <Icon
+          icon="material-symbols:home-outline-rounded"
+          width="32"
+          height="32"
+          style="color: #729ecb"
+        />
       </button>
     </div>
   </div>

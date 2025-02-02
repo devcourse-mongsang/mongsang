@@ -1,13 +1,12 @@
 <script setup>
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
-import { ChevronLeftIcon } from "@heroicons/vue/24/solid";
-import { HomeIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import supabase from "@/config/supabase";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
+import { Icon } from "@iconify/vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -105,24 +104,29 @@ function handleSocialLogin(platform) {
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
     >
       <button class="font-bold size-8 text-hc-blue ml-[30px]" @click="goBack">
-        <ChevronLeftIcon />
+        <Icon
+          icon="material-symbols:arrow-back-ios-new-rounded"
+          width="27"
+          height="27"
+          style="color: #729ecb"
+        />
       </button>
       <button class="font-bold size-8 text-hc-blue mr-[30px]" @click="goHome">
-        <HomeIcon />
+        <Icon
+          icon="material-symbols:home-outline-rounded"
+          width="32"
+          height="32"
+          style="color: #729ecb"
+        />
       </button>
     </div>
     <img
       src="/assets/imgs/big_logo.png"
       alt="Mongsang Logo"
-      class="w-[276px] mb-7"
+      class="w-[208px] sm:w-[276px] mb-7"
     />
     <div
-      class="rounded-xl shadow-blue w-full max-w-[641px] flex flex-col items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
-      style="
-        border-radius: 20px;
-        border: 7px solid rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.3);
-      "
+      class="sm:shadow-blue w-full max-w-[641px] flex flex-col items-center sm:rounded-[20px] sm:bg-hc-white/30 sm:border-[7px] border-hc-white/50 h-auto p-6 md:h-[602px] md:p-10 justify-center"
     >
       <form
         class="flex flex-col items-center w-full mb-[50px]"
@@ -158,7 +162,9 @@ function handleSocialLogin(platform) {
         <p v-if="loginError" class="text-red text-xm mb-5">
           {{ loginError }}
         </p>
-        <Button variant="shadowed" size="lg">로그인하기</Button>
+        <Button variant="shadowed" size="lg" class="w-[400px] sm:w-[480px]"
+          >로그인하기</Button
+        >
       </form>
       <div class="flex items-center justify-center space-x-4">
         <Button variant="custom" size="sm" @click="handleSocialLogin('google')">
