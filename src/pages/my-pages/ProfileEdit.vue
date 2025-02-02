@@ -204,14 +204,13 @@ const openConfirmationModal = () => {
 
 <template>
   <div
-    class="w-full min-h-screen flex justify-center items-start px-4 md:px-6 lg:px-8"
+    class="flex items-start justify-center w-full min-h-screen px-4 md:px-6 lg:px-8"
   >
     <!-- 메인 컨테이너 -->
     <div class="w-full max-w-[996px] relative">
       <!-- 카드 컨테이너 -->
       <div
-        class="w-full h-auto mx-auto mt-[100px] md:mt-[148px] border-[7px] border-hc-white/50 rounded-[20px] bg-hc-white/30 relative"
-        style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
+        class="w-full h-auto mx-auto mt-[100px] md:mt-[148px] border-[7px] border-hc-white/50 rounded-[20px] bg-hc-white/30 dark:bg-hc-beige/10 relative shadow-blue dark:shadow-dark-blue"
       >
         <!-- 프로필 섹션 -->
         <div
@@ -234,7 +233,9 @@ const openConfirmationModal = () => {
               />
               <!-- 이미지 업로드 -->
               <div class="text-center md:text-left">
-                <p class="text-lg md:text-3xl lg:text-4xl font-semibold mb-3">
+                <p
+                  class="mb-3 text-lg font-semibold md:text-3xl lg:text-4xl dark:text-hc-white"
+                >
                   @{{ userData.username }}
                 </p>
                 <input
@@ -246,7 +247,7 @@ const openConfirmationModal = () => {
                 />
                 <label
                   for="fileInput"
-                  class="text-sm md:text-2xl font-semibold text-hc-blue cursor-pointer underline mt-3 md:mt-3"
+                  class="mt-3 text-sm font-semibold underline cursor-pointer md:text-2xl text-hc-blue md:mt-3 dark:text-hc-dark-blue"
                 >
                   사진 변경
                 </label>
@@ -254,10 +255,10 @@ const openConfirmationModal = () => {
             </div>
             <!-- 저장 버튼 -->
             <Button
-              variant="custom"
+              variant="filled"
               size="xl"
               :class="[
-                'md:w-32 md:h-128 text-sm md:text-base rounded-[70px] shadow-blue',
+                'md:w-32 md:h-128 text-sm md:text-base rounded-[70px] shadow-blue dark:shadow-dark-blue',
                 isSaveDisabled
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-hc-blue text-hc-white',
@@ -276,7 +277,9 @@ const openConfirmationModal = () => {
         >
           <!-- 자기소개 변경 -->
           <div>
-            <p class="text-xl md:text-2xl font-semibold text-hc-blue mb-4">
+            <p
+              class="mb-4 text-xl font-semibold md:text-2xl text-hc-blue dark:text-hc-dark-blue"
+            >
               자기소개 변경
             </p>
             <div
@@ -296,7 +299,7 @@ const openConfirmationModal = () => {
             </div>
 
             <p
-              class="text-xs ml-5 mt-4"
+              class="mt-4 ml-5 text-xs"
               :class="{
                 'text-red': userData.profile_bio.length === 16,
                 'text-green': userData.profile_bio.length < 16,
@@ -308,7 +311,9 @@ const openConfirmationModal = () => {
 
           <!-- 비밀번호 변경 -->
           <div v-if="isEmailLogin">
-            <p class="text-xl md:text-2xl font-semibold text-hc-blue mb-4">
+            <p
+              class="mb-4 text-xl font-semibold md:text-2xl text-hc-blue dark:text-hc-dark-blue"
+            >
               비밀번호 변경
             </p>
             <div
@@ -324,14 +329,16 @@ const openConfirmationModal = () => {
                 :isProfilePage="true"
               />
             </div>
-            <p v-if="passwordError" class="text-red mt-4 text-xs ml-5">
+            <p v-if="passwordError" class="mt-4 ml-5 text-xs text-red">
               {{ passwordError }}
             </p>
           </div>
 
           <!-- 비밀번호 확인 -->
           <div v-if="isEmailLogin">
-            <p class="text-xl md:text-2xl font-semibold text-hc-blue mb-4">
+            <p
+              class="mb-4 text-xl font-semibold md:text-2xl text-hc-blue dark:text-hc-dark-blue"
+            >
               비밀번호 확인
             </p>
             <div
@@ -347,7 +354,7 @@ const openConfirmationModal = () => {
                 :isProfilePage="true"
               />
             </div>
-            <p v-if="confirmPasswordError" class="text-red mt-4 text-xs ml-5">
+            <p v-if="confirmPasswordError" class="mt-4 ml-5 text-xs text-red">
               {{ confirmPasswordError }}
             </p>
           </div>
