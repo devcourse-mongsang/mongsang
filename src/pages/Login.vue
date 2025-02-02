@@ -133,7 +133,7 @@ function handleSocialLogin(platform) {
       alt="Mongsang dark mode logo"
     />
     <div
-      class="rounded-xl shadow-blue w-full max-w-[641px] flex flex-col items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
+      class="rounded-xl shadow-blue w-full max-w-[641px] flex flex-col dark:shadow-dark-blue items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
       :style="{
         borderRadius: '20px',
         border: '7px solid rgba(255, 255, 255, 0.5)',
