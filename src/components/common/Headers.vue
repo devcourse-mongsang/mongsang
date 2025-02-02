@@ -53,19 +53,19 @@ onMounted(async () => {
         aria-label="메뉴 열기"
       >
         <span
-          class="block absolute w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none"
+          class="block absolute w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
           :class="{
             'rotate-45 translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
           }"
         ></span>
         <span
-          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none"
+          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
           :class="{
             'opacity-0': sidebarStore.isHamburgerOpen,
           }"
         ></span>
         <span
-          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none"
+          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
           :class="{
             '-rotate-45 -translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
           }"
@@ -96,8 +96,7 @@ onMounted(async () => {
             icon="material-symbols:notifications-outline"
             width="29"
             height="29"
-            style="color: #729ecb"
-            class="cursor-pointer"
+            class="cursor-pointer dark:text-hc-white text-hc-blue"
           />
           <!-- Red dot for unread notifications -->
           <span
@@ -114,7 +113,7 @@ onMounted(async () => {
             icon="material-symbols:home-outline-rounded"
             width="32"
             height="32"
-            style="color: #729ecb"
+            class="cursor-pointer dark:text-hc-white text-hc-blue"
           />
         </router-link>
       </div>
