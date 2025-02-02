@@ -252,12 +252,14 @@ const { isDark } = useDarkMode();
     </div>
 
     <div
-      class="rounded-xl shadow-blue w-[641px] flex flex-col items-center h-[790px] justify-center"
-      style="
-        border-radius: 20px;
-        border: 7px solid rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.3);
-      "
+      class="rounded-xl shadow-blue w-[641px] flex flex-col items-center h-[790px] justify-center dark:shadow-dark-blue"
+      :style="{
+        borderRadius: '20px',
+        border: '7px solid rgba(255, 255, 255, 0.5)',
+        background: isDark
+          ? 'rgba(253, 214, 175, 0.3)'
+          : 'rgba(255, 255, 255, 0.3)',
+      }"
     >
       <form
         class="flex flex-col items-center w-full mb-[50px] gap-y-5 mt-[38px]"
