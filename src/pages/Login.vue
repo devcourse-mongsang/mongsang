@@ -8,6 +8,7 @@ import { ref } from "vue";
 import supabase from "@/config/supabase";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
+import { useDarkMode } from "@/utils/darkMode";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -17,6 +18,8 @@ const password = ref("");
 
 // 로그인 오류 메시지 상태
 const loginError = ref("");
+
+const { isDark } = useDarkMode();
 
 function goBack() {
   router.back();
@@ -96,40 +99,56 @@ function handleSocialLogin(platform) {
   <div
     id="back-ground"
     class="flex flex-col items-center justify-center max-w-full min-h-screen mx-auto bg-center bg-no-repeat bg-cover"
-    style="
-      background-image: url('/assets/imgs/bg_circle 1.png');
-      background-position: center 25%;
-    "
+    :style="{
+      backgroundImage: isDark
+        ? 'url(/assets/imgs/bg_circle_dark.png)'
+        : 'url(/assets/imgs/bg_circle_light.png)',
+      backgroundPosition: 'center 25%',
+    }"
   >
     <div
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
     >
-      <button class="font-bold size-8 text-hc-blue ml-[30px]" @click="goBack">
+      <button
+        class="font-bold size-8 text-hc-blue ml-[30px] dark:text-hc-dark-blue"
+        @click="goBack"
+      >
         <ChevronLeftIcon />
       </button>
-      <button class="font-bold size-8 text-hc-blue mr-[30px]" @click="goHome">
+      <button
+        class="font-bold size-8 text-hc-blue mr-[30px] dark:text-hc-dark-blue"
+        @click="goHome"
+      >
         <HomeIcon />
       </button>
     </div>
     <img
       src="/assets/imgs/big_logo.png"
-      alt="Mongsang Logo"
-      class="w-[276px] mb-7"
+      alt="Mongsang light mode logo"
+      class="w-[276px] mb-7 block dark:hidden"
+    />
+    <img
+      class="w-[276px] mb-7 hidden dark:block"
+      src="/assets/imgs/big_logo_dark.png"
+      alt="Mongsang dark mode logo"
     />
     <div
       class="rounded-xl shadow-blue w-full max-w-[641px] flex flex-col items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
-      style="
-        border-radius: 20px;
-        border: 7px solid rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.3);
-      "
+      :style="{
+        borderRadius: '20px',
+        border: '7px solid rgba(255, 255, 255, 0.5)',
+        background: isDark
+          ? 'rgba(253, 214, 175, 0.3)'
+          : 'rgba(255, 255, 255, 0.3)',
+      }"
     >
       <form
         class="flex flex-col items-center w-full mb-[50px]"
         @submit.prevent="handleLogin"
       >
         <div class="mb-5">
-          <label class="block mb-1 ml-10 text-2xl font-semibold text-hc-blue"
+          <label
+            class="block mb-1 ml-10 text-2xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >이메일</label
           >
           <Input
@@ -142,7 +161,8 @@ function handleSocialLogin(platform) {
           />
         </div>
         <div class="mb-[50px]">
-          <label class="block mb-1 ml-10 text-2xl font-semibold text-hc-blue"
+          <label
+            class="block mb-1 ml-10 text-2xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >비밀번호</label
           >
           <Input
@@ -155,7 +175,7 @@ function handleSocialLogin(platform) {
           />
         </div>
         <!-- 로그인 오류 메시지 -->
-        <p v-if="loginError" class="text-red text-xm mb-5">
+        <p v-if="loginError" class="mb-5 text-red text-xm">
           {{ loginError }}
         </p>
         <Button variant="shadowed" size="lg">로그인하기</Button>
@@ -183,7 +203,9 @@ function handleSocialLogin(platform) {
           />
         </Button>
       </div>
-      <p class="mt-[38px] text-2xl text-hc-blue">
+      <p
+        class="mt-[38px] text-2xl text-hc-blue dark:text-hc-dark-blue font-semibold"
+      >
         <a href="/join" class="underline">회원가입</a>
       </p>
     </div>
