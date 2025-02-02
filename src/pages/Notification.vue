@@ -110,30 +110,38 @@ async function handleMarkAllRead() {
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center">
+  <div class="flex flex-col items-center justify-center">
     <!-- 로고 섹션 -->
     <div class="mb-8">
-      <img src="/assets/imgs/big_logo.png" alt="Logo" class="h-36" />
+      <img
+        src="/assets/imgs/big_logo.png"
+        alt="Logo"
+        class="block h-36 dark:hidden"
+      />
+      <img
+        src="/assets/imgs/big_logo_dark.png"
+        alt="Logo"
+        class="hidden h-36 dark:block"
+      />
     </div>
 
     <div
-      class="w-full sm:w-[642px] h-[900px] bg-hc-white/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-4 sm:p-8"
-      style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
+      class="w-full sm:w-[642px] h-[900px] bg-hc-white/30 dark:bg-hc-beige/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-4 sm:p-8 shadow-blue dark:shadow-dark-blue"
     >
       <div class="flex flex-col h-full">
         <!-- 알림 섹션 -->
-        <div class="flex items-center justify-between px-2 sm:px-4 mb-4">
+        <div class="flex items-center justify-between px-2 mb-4 sm:px-4">
           <!-- '모두 읽음' 버튼 (오른쪽 정렬) -->
           <button
             @click="handleMarkAllRead"
-            class="text-hc-black hover:text-hc-blue font-regular text-lg ml-auto"
+            class="ml-auto text-lg text-hc-black hover:text-hc-blue font-regular hover:dark:text-hc-dark-blue dark:text-hc-white"
           >
             모두 읽음
           </button>
         </div>
 
         <div
-          class="flex flex-col gap-2 overflow-y-auto no-scrollbar flex-grow"
+          class="flex flex-col flex-grow gap-2 overflow-y-auto no-scrollbar"
           style="max-height: 780px"
         >
           <template v-if="notificationsStore.notifications.length">
@@ -142,7 +150,7 @@ async function handleMarkAllRead() {
               :key="notification.id"
             >
               <div
-                class="notification-item group cursor-pointer bg-hc-white/50 rounded-lg px-6 sm:px-6 py-4"
+                class="px-6 py-4 rounded-lg cursor-pointer notification-item group bg-hc-white/50 sm:px-6"
                 @click="handleNotificationClick(notification)"
               >
                 <p
@@ -176,15 +184,15 @@ async function handleMarkAllRead() {
                   님이 회원의 게시글에 댓글을 남겼습니다.
                 </p>
                 <!-- 날짜 표시 -->
-                <p class="text-right text-2xs sm:text-2sm text-hc-gray mt-2">
+                <p class="mt-2 text-right text-2xs sm:text-2sm text-hc-gray">
                   {{ formatNotificationDate(notification.createdat) }}
                 </p>
               </div>
             </template>
           </template>
           <template v-else>
-            <div class="flex justify-center items-center h-full">
-              <p class="text-hc-gray text-lg">알림이 없습니다</p>
+            <div class="flex items-center justify-center h-full">
+              <p class="text-lg text-hc-gray">알림이 없습니다</p>
             </div>
           </template>
         </div>
@@ -199,7 +207,7 @@ async function handleMarkAllRead() {
           >
             <Icon
               icon="mdi:trash-can-outline"
-              class="w-6 h-6 transform items-center text-hc-white"
+              class="items-center w-6 h-6 transform text-hc-white"
             />
           </Button>
         </div>
@@ -218,7 +226,7 @@ async function handleMarkAllRead() {
 }
 
 .notification-item {
-  @apply hover:bg-hc-blue/50 hover:rounded-lg transition-all duration-300 ease-in-out;
+  @apply hover:bg-hc-blue/50 hover:rounded-lg transition-all duration-300 ease-in-out dark:hover:bg-hc-dark-teal/5;
 }
 
 .notification-item p {
