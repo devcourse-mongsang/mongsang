@@ -53,19 +53,19 @@ onMounted(async () => {
         aria-label="메뉴 열기"
       >
         <span
-          class="block absolute w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
+          class="block absolute w-[25px] h-[2.5px] bg-hc-blue rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
           :class="{
             'rotate-45 translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
           }"
         ></span>
         <span
-          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
+          class="block absolute top-1/2 w-[25px] h-[2.5px] bg-hc-blue rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
           :class="{
             'opacity-0': sidebarStore.isHamburgerOpen,
           }"
         ></span>
         <span
-          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-[#729ECB] rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
+          class="block absolute bottom-0 w-[25px] h-[2.5px] bg-hc-blue rounded-full transition-all duration-300 pointer-events-none dark:bg-hc-white"
           :class="{
             '-rotate-45 -translate-y-[10.5px]': sidebarStore.isHamburgerOpen,
           }"
@@ -76,7 +76,7 @@ onMounted(async () => {
     <!-- 알림 아이콘과 홈 바로가기 -->
     <div class="flex items-center space-x-4 cursor-pointer">
       <!-- 로그인 상태 노출 -->
-      <div class="text-[#18375B] font-semibold">
+      <div class="font-semibold text-hc-dark-blue">
         <div
           v-if="authStore.isLoggedIn && authStore.profile"
           @click="sendToMypage"
