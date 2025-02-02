@@ -131,7 +131,7 @@ onMounted(() => {
                 <img
                   :src="user.profile_url"
                   :alt="user.username"
-                  class="w-12 h-12 rounded-full"
+                  class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
                   <p class="text-xm sm:text-xl font-semibold">
@@ -191,7 +191,7 @@ onMounted(() => {
                 <img
                   :src="user.profile_url"
                   :alt="user.username"
-                  class="w-12 h-12 rounded-full"
+                  class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
                   <p class="text-xl font-semibold">@{{ user.username }}</p>
@@ -234,5 +234,9 @@ onMounted(() => {
   scrollbar-width: none; /* Firefox */
 }
 @media (min-width: 768px) {
+}
+
+.object-cover {
+  object-fit: cover;
 }
 </style>
