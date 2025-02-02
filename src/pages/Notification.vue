@@ -6,19 +6,30 @@ import { useNotificationsStore } from "@/store/notificationsStore";
 import supabase from "@/config/supabase";
 import { Icon } from "@iconify/vue";
 import Button from "@/components/common/Button.vue";
+import { useModalStore } from "@/store/modalStore";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const notificationsStore = useNotificationsStore();
+const modalStore = useModalStore();
 
 const currentUserId = computed(() => authStore.user?.id);
 
 // 알림 삭제 핸들러
 async function handleDeleteAllNotifications() {
-  if (confirm("모든 알림을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
-    await notificationsStore.deleteAllNotifications(currentUserId.value);
-  }
+  modalStore.addModal({
+    title: "알림 삭제",
+    content: "모든 알림을 삭제하시겠습니까?<br>이 작업은 되돌릴 수 없습니다.",
+    btnText: "확인",
+    cancelBtnText: "취소",
+    isOneBtn: false,
+    onClick: async () => {
+      await notificationsStore.deleteAllNotifications(currentUserId.value);
+      modalStore.modals = []; // Close the modal after deletion
+    },
+  });
 }
+
 // Function to format date
 function formatNotificationDate(dateString) {
   const date = new Date(dateString);
@@ -63,7 +74,11 @@ async function navigateToPost(notification) {
 // 프로필로 이동
 function navigateToProfile(notification) {
   const id = notification.sender_id;
-  router.push({ name: "userProfile", params: { id } });
+  if (!id) {
+    console.error("User ID is missing in notification:", notification);
+    return;
+  }
+  router.push(`/mypage/profile/${id}`);
 }
 
 // 알림 클릭 핸들러

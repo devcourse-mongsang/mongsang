@@ -175,7 +175,7 @@ onMounted(fetchPosts);
             <div class="flex flex-col sm:gap-7 xm:gap-6">
               <span class="flex items-center gap-[10px]">
                 <img
-                  class="aspect-square xm:w-[30px] sm:w-[50px] rounded-full"
+                  class="aspect-square xm:w-[30px] sm:w-[50px] rounded-full object-cover"
                   :src="
                     authorCache[post.author_id]?.profile_url || imgPlaceholder
                   "
@@ -195,7 +195,7 @@ onMounted(fetchPosts);
               </span>
             </div>
             <img
-              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px]"
+              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover"
               :src="
                 Object.keys(postImgs[post.id] || {}).length === 0
                   ? imgPlaceholder
@@ -262,5 +262,9 @@ input {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+}
+
+.object-cover {
+  object-fit: cover;
 }
 </style>

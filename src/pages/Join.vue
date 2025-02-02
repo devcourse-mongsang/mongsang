@@ -2,11 +2,10 @@
 import { ref, watch } from "vue";
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
-import { ChevronLeftIcon } from "@heroicons/vue/24/solid";
-import { HomeIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
 import supabase from "@/config/supabase";
 import { useModalStore } from "@/store/modalStore";
+import { Icon } from "@iconify/vue";
 
 const modalStore = useModalStore();
 
@@ -233,20 +232,25 @@ const register = async () => {
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
     >
       <button class="font-bold size-8 text-hc-blue ml-[30px]" @click="goBack">
-        <ChevronLeftIcon />
+        <Icon
+          icon="material-symbols:arrow-back-ios-new-rounded"
+          width="27"
+          height="27"
+          style="color: #729ecb"
+        />
       </button>
       <button class="font-bold size-8 text-hc-blue mr-[30px]" @click="goHome">
-        <HomeIcon />
+        <Icon
+          icon="material-symbols:home-outline-rounded"
+          width="32"
+          height="32"
+          style="color: #729ecb"
+        />
       </button>
     </div>
 
     <div
-      class="rounded-xl shadow-blue w-[641px] flex flex-col items-center h-[790px] justify-center"
-      style="
-        border-radius: 20px;
-        border: 7px solid rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.3);
-      "
+      class="sm:shadow-blue w-[641px] sm:rounded-[20px] sm:bg-hc-white/30 sm:border-[7px] border-hc-white/50 flex flex-col items-center h-[790px] justify-center"
     >
       <form
         class="flex flex-col items-center w-full mb-[50px] gap-y-5 mt-[38px]"
@@ -374,7 +378,12 @@ const register = async () => {
           </p>
         </div>
 
-        <Button variant="shadowed" size="lg" class="mt-[15px]">회원가입</Button>
+        <Button
+          variant="shadowed"
+          size="lg"
+          class="mt-[15px] w-[400px] sm:w-[480px]"
+          >회원가입</Button
+        >
       </form>
     </div>
   </div>

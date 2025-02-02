@@ -5,15 +5,17 @@ import { Icon } from "@iconify/vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/authStore";
 import supabase from "@/config/supabase";
+import { useModalStore } from "@/store/modalStore";
 
 // 라우트에서 사용자 ID 가져오기
 const route = useRoute();
 const router = useRouter();
 const userId = ref(route.params.id); // URL에서 유저 ID 추출
+const modalStore = useModalStore();
 
 // 인증된 사용자 정보
 const authStore = useAuthStore();
-const loggedInUserId = authStore.profile.id;
+const loggedInUserId = authStore.profile?.id ?? null; // 로그인하지 않았을 때 null 설정
 
 // 사용자 데이터
 const userData = ref({
@@ -63,8 +65,10 @@ const fetchUserData = async () => {
   }
 };
 
-// 팔로우 상태 확인
+// 팔로우 상태 확인 (로그인한 경우만 실행)
 const checkFollowStatus = async () => {
+  if (!loggedInUserId) return;
+
   try {
     const { data, error } = await supabase
       .from("follow")
@@ -80,8 +84,23 @@ const checkFollowStatus = async () => {
   }
 };
 
-// 팔로우 토글
+// 팔로우 토글 (로그인 여부 체크)
 const toggleFollow = async () => {
+  if (!loggedInUserId) {
+    modalStore.addModal({
+      title: "로그인",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: false,
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
+
+    return;
+  }
+
   try {
     if (isFollowing.value) {
       // 언팔로우 처리
@@ -127,10 +146,7 @@ const fetchPosts = async () => {
           .list(`community_img/${post.id}`);
 
         if (imageError) {
-          console.error(
-            `Error fetching images for post ${post.id}:`,
-            imageError
-          );
+          console.error(`이미지 가져오기 실패 (${post.id}):`, imageError);
           return { ...post, img_url: null };
         }
 
@@ -153,16 +169,31 @@ const fetchPosts = async () => {
     console.error("게시물 로드 실패:", error.message);
   }
 };
-
 // 게시물 클릭 핸들러
 const goToPost = (postId, category) => {
   router.push(`/${category}/${postId}`); // 게시물 상세 페이지로 이동
 };
 
 const handleFollowClick = (viewType) => {
+  if (!loggedInUserId) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "이 기능을 이용하려면 로그인이 필요합니다.",
+      btnText: "로그인",
+      isOneBtn: false,
+
+      onClick: () => {
+        modalStore.modals = []; // 모든 모달 닫기
+        router.push({ name: "login" });
+      },
+    });
+
+    return; // 로그인하지 않았으면 함수 종료 (페이지 이동 X)
+  }
+
   router.push({
     path: `/mypage/username/follow/${userId.value}`,
-    query: { viewType }, // type: 'followers' or 'following'
+    query: { viewType }, // 'followers' 또는 'following'
   });
 };
 
@@ -170,7 +201,7 @@ const handleFollowClick = (viewType) => {
 onMounted(() => {
   fetchUserData();
   fetchPosts();
-  if (loggedInUserId !== userId.value) {
+  if (loggedInUserId && loggedInUserId !== userId.value) {
     checkFollowStatus();
   }
 });
@@ -183,7 +214,7 @@ watch(
       userId.value = newId; // userId를 새 값으로 갱신
       fetchUserData(); // 사용자 정보 다시 불러오기
       fetchPosts(); // 게시물 다시 불러오기
-      if (loggedInUserId !== newId) {
+      if (loggedInUserId && loggedInUserId !== newId) {
         checkFollowStatus(); // 팔로우 상태 다시 확인
       }
     }
@@ -195,22 +226,18 @@ watch(
   <div
     class="w-full max-w-[1156px] mx-auto relative pt-[0px] sm:pt-[64px] sm:min-h-screen"
   >
-    <!-- 프로필 섹션과 버튼을 묶는 컨테이너 -->
     <div
       class="w-full sm:border-[7px] border-hc-white/50 sm:rounded-[20px] bg-hc-white/30 overflow-y-auto no-scrollbar"
       style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
     >
-      <!-- 프로필 섹션 -->
       <div
-        class="profile-container w-full sm:w-[830px] mx-auto pt-[48px] sm:pt-[138px] px-2 sm:px-0 flex flex-col xm:flex-row items-start gap-16 sm:gap-4"
+        class="profile-container w-full sm:w-[830px] mx-auto pt-[48px] sm:pt-[138px] px-2 sm:px-0 flex flex-col xm:flex-row items-start gap-16 sm:gap-4 sm:justify-between"
       >
         <div class="profile-section flex gap-4 sm:gap-12 items-start">
-          <!-- 프로필 사진 -->
           <img
             :src="userData.profile_url"
             class="w-[120px] sm:w-[160px] h-[120px] sm:h-[160px] rounded-full object-cover"
           />
-          <!-- 프로필 정보 -->
           <div class="flex flex-col gap-4">
             <div class="flex items-center gap-4 sm:gap-8">
               <p class="text-2xl sm:text-4xl font-semibold">
@@ -220,7 +247,6 @@ watch(
             <p class="text-xm sm:text-[30px]">
               {{ userData.profile_bio || "소개 없음" }}
             </p>
-            <!-- 게시물, 팔로워, 팔로잉 섹션 -->
             <div class="stats-container flex gap-6 text-xm sm:text-[30px]">
               <div class="flex items-center gap-2">
                 <p>게시물</p>
@@ -248,9 +274,8 @@ watch(
           </div>
         </div>
 
-        <!-- 프로필 편집 버튼 -->
         <div
-          class="edit-profile-btn w-full xm:w-auto flex justify-center items-center"
+          class="edit-profile-btn w-full xm:w-auto flex justify-center xm:justify-start items-center sm:justify-end"
         >
           <template v-if="loggedInUserId === userId">
             <router-link
@@ -274,7 +299,7 @@ watch(
               class="px-6 py-2 w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px] text-xl"
               :class="
                 isFollowing
-                  ? 'bg-hc-gray text-hc-white'
+                  ? 'bg-hc-white text-hc-blue'
                   : 'bg-hc-blue text-hc-white'
               "
             >

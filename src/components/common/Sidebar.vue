@@ -67,7 +67,7 @@ async function handleLogout() {
               :to="`/mypage/profile/${authStore.user.id}`"
             >
               <img
-                class="w-10 h-10 rounded-full"
+                class="w-10 h-10 rounded-full object-cover"
                 :src="authStore.profile.profile_url"
                 alt="사용자의 프로필 이미지입니다."
               />
@@ -171,5 +171,9 @@ async function handleLogout() {
 }
 #headersRef {
   z-index: 20;
+}
+
+.object-cover {
+  object-fit: cover;
 }
 </style>

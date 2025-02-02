@@ -106,7 +106,7 @@ const toggleModal = () => {
       </div>
 
       <div class="flex items-center gap-8">
-        <p class="text-xl">{{ formattedDate }}</p>
+        <p class="text-lg sm:text-xl">{{ formattedDate }}</p>
 
         <div class="flex items-center gap-2 justify-end ml-auto">
           <p class="text-xl xm:hidden sm:block">오늘의 기분</p>
