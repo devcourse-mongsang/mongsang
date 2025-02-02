@@ -47,8 +47,14 @@ const selectIcon = (icon) => {
         class="w-16 h-[45px] bg-hc-white/70 rounded-[20px] flex items-center justify-around px-2"
       >
         <!-- 선택된 아이콘 -->
-        <Icon :icon="selectedIcon" class="w-6 h-6 text-hc-blue" />
-        <ChevronDownIcon class="-mr-1 text-hc-blue size-5" aria-hidden="true" />
+        <Icon
+          :icon="selectedIcon"
+          class="w-6 h-6 text-hc-blue dark:text-hc-dark-blue"
+        />
+        <ChevronDownIcon
+          class="-mr-1 text-hc-blue size-5 dark:text-hc-dark-blue"
+          aria-hidden="true"
+        />
       </MenuButton>
     </div>
 
@@ -64,7 +70,7 @@ const selectIcon = (icon) => {
       <MenuItems
         class="absolute right-0 z-10 mt-2 origin-top-right rounded-md shadow-lg bg-hc-white ring-1 ring-black/5 focus:outline-none"
       >
-        <div class="py-1 flex flex-col items-center gap-2 p-2">
+        <div class="flex flex-col items-center gap-2 p-2 py-1">
           <!-- 아이콘 리스트 -->
           <MenuItem v-for="icon in icons" :key="icon" v-slot="{ active }">
             <div
@@ -74,7 +80,7 @@ const selectIcon = (icon) => {
                 'flex items-center justify-center w-12 h-12 rounded-full cursor-pointer',
               ]"
             >
-              <Icon :icon="icon.icon" class="w-6 h-6 text-hc-blue" />
+              <Icon :icon="icon.icon" class="w-6 h-6 text-hc-blue dark:text-hc-dark-blue" />
             </div>
           </MenuItem>
         </div>
