@@ -24,7 +24,17 @@ import Sidebar from "../components/common/Sidebar.vue";
 
 @media (min-width: 768px) {
   #back-ground {
-    background-image: url("/assets/imgs/bg_circle 1.png");
+    background-image: url("/assets/imgs/bg_circle_light.png");
+  }
+}
+
+.dark #back-ground {
+  background-image: url("/assets/imgs/bg_circle_dark_mobile.png");
+}
+
+@media (min-width: 768px) {
+  .dark #back-ground {
+    background-image: url("/assets/imgs/bg_circle_dark.png");
   }
 }
 </style>
