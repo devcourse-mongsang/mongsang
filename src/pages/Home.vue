@@ -54,23 +54,30 @@ const getRandomVideos = (arr, n) => {
     <!-- 로고 -->
     <div class="flex justify-center w-2/3 max-w-lg">
       <img
-        class="sm:w-full xm:w-[231px]"
-        src="../../public/assets/imgs/big_logo.png"
-        alt="로고 이미지입니다."
+        class="sm:w-full xm:w-[231px] block dark:hidden"
+        src="/assets/imgs/big_logo.png"
+        alt="라이트 모드 로고"
+      />
+      <img
+        class="sm:w-full xm:w-[231px] hidden dark:block"
+        src="/assets/imgs/big_logo_dark.png"
+        alt="다크 모드 로고"
       />
     </div>
 
     <!-- 소개 섹션 -->
     <div class="flex flex-col items-center mt-8 space-y-4 text-center">
-      <h1 class="font-semibold sm:text-[24px] md:text-[32px] text-base">
+      <h1
+        class="font-semibold sm:text-[24px] md:text-[32px] text-base dark:text-hc-white"
+      >
         꿈을 기록하는 몽상가가 되어보세요
       </h1>
       <div class="hidden mt-[10px] mb-6 text-xl md:flex md:flex-col">
-        <h2>
+        <h2 class="dark:text-hc-white">
           꿈에 담긴 감정을 AI로 시각화하고 분석된 심리 상태에 맞는 ASMR로 마음을
           어루만지세요.
         </h2>
-        <h2>
+        <h2 class="dark:text-hc-white">
           몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.
         </h2>
       </div>
@@ -94,7 +101,7 @@ const getRandomVideos = (arr, n) => {
       class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
-        <h3 class="text-2xl font-semibold">
+        <h3 class="text-2xl font-semibold dark:text-hc-white">
           당신의 꿈에 귀 기울이는 순간, ASMR 추천
         </h3>
         <Button
