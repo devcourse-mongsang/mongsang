@@ -7,6 +7,7 @@ import { HomeIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
 import supabase from "@/config/supabase";
 import { useModalStore } from "@/store/modalStore";
+import { useDarkMode } from "@/utils/darkMode";
 
 const modalStore = useModalStore();
 
@@ -218,24 +219,34 @@ const register = async () => {
     console.error("회원가입 중 예외 발생:", error.message);
   }
 };
+
+const { isDark } = useDarkMode();
 </script>
 
 <template>
   <div
     id="back-ground"
     class="flex flex-col items-center justify-center max-w-full min-h-screen mx-auto bg-center bg-no-repeat bg-cover"
-    style="
-      background-image: url('/assets/imgs/bg_circle 1.png');
-      background-position: center 25%;
-    "
+    :style="{
+      backgroundImage: isDark
+        ? 'url(/assets/imgs/bg_circle_dark.png)'
+        : 'url(/assets/imgs/bg_circle_light.png)',
+      backgroundPosition: 'center 25%',
+    }"
   >
     <div
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
     >
-      <button class="font-bold size-8 text-hc-blue ml-[30px]" @click="goBack">
+      <button
+        class="font-bold size-8 text-hc-blue ml-[30px] dark:text-hc-dark-blue"
+        @click="goBack"
+      >
         <ChevronLeftIcon />
       </button>
-      <button class="font-bold size-8 text-hc-blue mr-[30px]" @click="goHome">
+      <button
+        class="font-bold size-8 text-hc-blue mr-[30px] dark:text-hc-dark-blue"
+        @click="goHome"
+      >
         <HomeIcon />
       </button>
     </div>
@@ -253,7 +264,8 @@ const register = async () => {
         @submit.prevent="register"
       >
         <div>
-          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
+          <label
+            class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >이메일</label
           >
           <div class="flex items-center">
@@ -274,16 +286,17 @@ const register = async () => {
               확인
             </Button>
           </div>
-          <p v-if="emailError" class="text-red mt-2 text-xs ml-10">
+          <p v-if="emailError" class="mt-2 ml-10 text-xs text-red">
             {{ emailError }}
           </p>
-          <p v-else-if="emailAvailable" class="text-green text-xs ml-10 mt-2">
+          <p v-else-if="emailAvailable" class="mt-2 ml-10 text-xs text-green">
             사용가능한 이메일입니다.
           </p>
         </div>
 
         <div>
-          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
+          <label
+            class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >닉네임</label
           >
           <div class="flex items-center">
@@ -304,19 +317,21 @@ const register = async () => {
               확인
             </Button>
           </div>
-          <p v-if="usernameError" class="text-red mt-2 text-xs ml-10">
+          <p v-if="usernameError" class="mt-2 ml-10 text-xs text-red">
             {{ usernameError }}
           </p>
           <p
             v-else-if="usernameAvailable"
-            class="text-green text-xs ml-10 mt-2"
+            class="mt-2 ml-10 text-xs text-green"
           >
             사용가능한 닉네임입니다.
           </p>
         </div>
 
         <div>
-          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue">
+          <label
+            class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
+          >
             자기소개
           </label>
           <Input
@@ -331,7 +346,7 @@ const register = async () => {
           />
 
           <p
-            class="text-xs ml-10 mt-2"
+            class="mt-2 ml-10 text-xs"
             :class="{
               'text-red': registerCredentials.profile_bio.length === 16,
               'text-green': registerCredentials.profile_bio.length < 16,
@@ -341,7 +356,8 @@ const register = async () => {
           </p>
         </div>
         <div>
-          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
+          <label
+            class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >비밀번호</label
           >
           <Input
@@ -352,13 +368,14 @@ const register = async () => {
             size="sm"
             borderRadius="lg"
           />
-          <p v-if="passwordError" class="text-red mt-2 text-xs ml-10">
+          <p v-if="passwordError" class="mt-2 ml-10 text-xs text-red">
             {{ passwordError }}
           </p>
         </div>
 
         <div>
-          <label class="block mb-1 ml-10 text-xl font-semibold text-hc-blue"
+          <label
+            class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >비밀번호 확인</label
           >
           <Input
@@ -369,7 +386,7 @@ const register = async () => {
             size="sm"
             borderRadius="lg"
           />
-          <p v-if="confirmPasswordError" class="text-red mt-2 text-xs ml-10">
+          <p v-if="confirmPasswordError" class="mt-2 ml-10 text-xs text-red">
             {{ confirmPasswordError }}
           </p>
         </div>
