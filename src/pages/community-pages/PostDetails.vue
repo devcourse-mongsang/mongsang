@@ -178,7 +178,7 @@ register();
             alt="작성자 프로필 사진입니다."
             class="w-[40px] h-[40px] rounded-full"
           />
-          <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
+          <p class="font-bold text-hc-dark-blue">{{ author?.username }}</p>
         </div>
       </RouterLink>
       <div v-if="isLoggedIn">
@@ -235,12 +235,12 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] xm:px-4 sm:px-0">
+        <div class="mt-[45px] xm:px-4 sm:px-0 dark:text-hc-white">
           <div class="flex items-center">
-            <h1 class="font-semibold xm:text-xl sm:text-2xl w-11/12 sm:px-3">
+            <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
             </h1>
-            <div class="w-1/12 flex justify-end px-0">
+            <div class="flex justify-end w-1/12 px-0">
               <LikesCounter
                 :postId="postId || null"
                 :authorId="post.author_id"
@@ -249,28 +249,29 @@ register();
           </div>
 
           <div class="flex items-start mt-2">
-            <p class="text-lg sm:text-xl w-11/12 sm:px-3 break-words">
+            <p class="w-11/12 text-lg break-words sm:text-xl sm:px-3">
               {{ post.content }}
             </p>
-            <div class="w-1/12 flex justify-end px-0">
+            <div class="flex justify-end w-1/12 px-0">
               <Icon
-                class="cursor-pointer"
+                class="cursor-pointer text-hc-blue dark:text-hc-dark-blue"
                 icon="mdi:share-variant"
                 width="35"
                 height="35"
                 @click="shareKakao"
-                style="color: #729ecb"
               />
             </div>
           </div>
 
-          <p class="text-sm text-gray-500 mt-2 sm:px-3">
+          <p class="mt-2 text-sm text-gray-500 sm:px-3">
             {{ dateConverter(post.created_at) }}
           </p>
         </div>
       </div>
 
-      <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
+      <div
+        class="h-[1px] w-full bg-hc-blue mb-[10px] dark:bg-hc-dark-blue"
+      ></div>
 
       <div class="flex flex-col">
         <Comment :postId="postId" :authorId="post.author_id" />
