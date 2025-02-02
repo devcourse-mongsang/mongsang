@@ -15,6 +15,8 @@ import { useRoute, onBeforeRouteLeave } from "vue-router";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
 import { checkDiaryExists } from "@/api/api-record/api";
+import { useDarkMode } from "@/utils/darkMode";
+
 const diaryStore = useDiaryStore();
 
 const isDiaryWritten = ref(false);
@@ -36,6 +38,8 @@ const isGeneratingImage = ref(false);
 const emotion = ref("");
 const asmrVideo = ref(null);
 const isFetching = ref(false);
+
+const { isDark } = useDarkMode();
 
 //일기 작성 페이지를 제외한 다른 페이지 이동 시 데이터 초기화
 const route = useRoute();
@@ -350,7 +354,7 @@ onMounted(async () => {
           <Button
             v-if="!isListening"
             variant="regular"
-            class="text-hc-pink"
+            class="text-hc-pink dark:text-hc-dark-cocoa"
             size="xs"
             @click="startListening"
           >
@@ -478,9 +482,15 @@ onMounted(async () => {
       >
         <img
           src="/assets/imgs/big_logo.png"
-          alt="Mongsang Logo"
-          class="w-[108px] mb-[35px] mt-[38px]"
+          alt="Mongsang light mode logo"
+          class="w-[108px] mb-[35px] mt-[38px] dark:hidden block"
         />
+        <img
+          src="/assets/imgs/big_logo_dark.png"
+          alt="Mongsang dark mode logo"
+          class="w-[108px] mb-[35px] mt-[38px] dark:block hidden"
+        />
+
         <!-- 분석 결과 -->
         <div class="w-full analysis">
           <h3 class="text-xl">
@@ -512,7 +522,9 @@ onMounted(async () => {
 
       <!-- ai 그림 생성 -->
       <div class="relative">
-        <p class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0">
+        <p
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+        >
           AI 그림 생성
         </p>
 
@@ -526,7 +538,13 @@ onMounted(async () => {
           v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
-          class="w-full h-fit md:rounded-3xl"
+          class="w-full h-fit md:rounded-3xl dark:hidden"
+        />
+        <img
+          v-if="!diaryStore.imgUrl"
+          src="/public/assets/imgs/img_placeholder_dark.png"
+          alt="AI 그림"
+          class="hidden w-full h-fit md:rounded-3xl dark:block"
         />
 
         <Button
@@ -550,7 +568,9 @@ onMounted(async () => {
 
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
-        <p class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0">
+        <p
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+        >
           추천 ASMR
         </p>
         <div
@@ -569,7 +589,13 @@ onMounted(async () => {
             v-else
             src="/public/assets/imgs/youtube_placeholder.png"
             alt="ASMR 비디오"
-            class="absolute top-0 left-0 w-full h-full"
+            class="absolute top-0 left-0 block w-full h-full dark:hidden"
+          />
+          <img
+            v-if="!asmrVideo"
+            src="/public/assets/imgs/youtube_placeholder_dark.png"
+            alt="ASMR 비디오"
+            class="absolute top-0 left-0 hidden w-full h-full dark:block"
           />
         </div>
       </div>
