@@ -9,7 +9,7 @@ export default {
       },
       boxShadow: {
         blue: "-4px 4px 50px 0px rgba(114, 158, 203, 0.70)",
-        "dark-blue": "-4px 4px 50px 0px rgba(12, 59, 81, 0.70)",
+        "dark-blue": "-4px 4px 50px 0px rgba(12, 59, 81, 0.40)",
       },
     },
     screens: {
