@@ -1,7 +1,9 @@
 <script setup>
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
+import imgPlaceholderDark from "../../../public/assets/imgs/img_placeholder_dark.png";
 import { getPostByCategory } from "@/api/api-community/api";
 import dateConverter from "@/utils/dateConveter";
+
 import "@mdi/font/css/materialdesignicons.css";
 
 import { computed, onMounted, ref, watch } from "vue";
@@ -199,10 +201,19 @@ onMounted(fetchPosts);
               </span>
             </div>
             <img
-              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover"
+              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover dark:hidden block"
               :src="
                 Object.keys(postImgs[post.id] || {}).length === 0
                   ? imgPlaceholder
+                  : postImgs[post.id]
+              "
+              alt="Post image"
+            />
+            <img
+              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover hidden dark:block"
+              :src="
+                Object.keys(postImgs[post.id] || {}).length === 0
+                  ? imgPlaceholderDark
                   : postImgs[post.id]
               "
               alt="Post image"
