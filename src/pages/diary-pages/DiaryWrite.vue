@@ -20,6 +20,8 @@ const props = defineProps({
   },
 });
 
+const { isDark } = useDarkMode();
+
 const emit = defineEmits(["submit"]);
 
 const selectedDate = ref(new Date());
@@ -60,6 +62,9 @@ const handleCheckButtonClick = async () => {
     content: content.value,
     condition: condition.value,
     weather: weather.value,
+    dream_analysis: diaryStore.dreamAnalysis,
+    img_url: diaryStore.imgUrl,
+    youtube_url: diaryStore.youtubeUrl,
   };
 
   if (props.isUpdateMode) {
@@ -68,9 +73,6 @@ const handleCheckButtonClick = async () => {
     const diary = {
       author_id: authStore.profile.id,
       ...diaryData,
-      dream_analysis: diaryStore.dreamAnalysis,
-      img_url: diaryStore.imgUrl,
-      youtube_url: diaryStore.youtubeUrl,
     };
 
     try {
@@ -156,8 +158,6 @@ onMounted(() => {
     }
   }
 });
-
-const { isDark } = useDarkMode();
 </script>
 
 <template>
