@@ -9,42 +9,42 @@ import { mdiReload } from "@mdi/js";
 const videos = ref([]);
 const isLoading = ref(true); // 로딩 상태 추가
 
-const fetchASMRVideos = async () => {
-  videos.value = [];
-  isLoading.value = true; // 로딩 상태 시작
-  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-  const keyword = "asmr ambience";
-  const maxResults = 24;
+// const fetchASMRVideos = async () => {
+//   videos.value = [];
+//   isLoading.value = true; // 로딩 상태 시작
+//   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+//   const keyword = "asmr ambience";
+//   const maxResults = 24;
 
-  try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
-    );
-    const data = await response.json();
+//   try {
+//     const response = await fetch(
+//       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
+//     );
+//     const data = await response.json();
 
-    if (data.items && data.items.length > 0) {
-      const randomVideos = getRandomVideos(data.items, 4);
-      videos.value = randomVideos;
-    } else {
-      console.error("ASMR 영상이 없습니다.");
-    }
-  } catch (error) {
-    console.error("Error fetching ASMR videos:", error);
-  } finally {
-    isLoading.value = false; // 로딩 상태 종료
-  }
-};
+//     if (data.items && data.items.length > 0) {
+//       const randomVideos = getRandomVideos(data.items, 4);
+//       videos.value = randomVideos;
+//     } else {
+//       console.error("ASMR 영상이 없습니다.");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching ASMR videos:", error);
+//   } finally {
+//     isLoading.value = false; // 로딩 상태 종료
+//   }
+// };
 
-const getRandomVideos = (arr, n) => {
-  const mixed = arr.slice(0);
-  for (let i = mixed.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
-  }
-  return mixed.slice(0, n);
-};
+// const getRandomVideos = (arr, n) => {
+//   const mixed = arr.slice(0);
+//   for (let i = mixed.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
+//   }
+//   return mixed.slice(0, n);
+// };
 
-fetchASMRVideos();
+// fetchASMRVideos();
 </script>
 
 <template>
@@ -100,7 +100,7 @@ fetchASMRVideos();
 
     <!-- AI 추천 ASMR -->
     <div
-      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
+      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] dark:bg-hc-beige/20 border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
         <h3 class="text-2xl font-semibold dark:text-hc-white">

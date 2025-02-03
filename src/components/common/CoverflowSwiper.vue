@@ -105,7 +105,7 @@ register();
     <swiper-slide
       v-for="post in posts"
       :key="post.id"
-      class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
+      class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%] dark:bg-hc-beige/20"
     >
       <RouterLink :to="`/${post.category}/${post.id}`">
         <img
