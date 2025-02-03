@@ -73,7 +73,7 @@ async function handleLogout() {
                 :src="authStore.profile.profile_url"
                 alt="사용자의 프로필 이미지입니다."
               />
-              <div class="text-hc-white dark:text-hc-dark-blue">
+              <div class="transition-all duration-300 text-hc-white dark:text-hc-dark-blue">
                 <p
                   class="font-semibold"
                   :style="{ fontSize: 'clamp(16px, 2.5vw, 20px)' }"
@@ -81,7 +81,7 @@ async function handleLogout() {
                   @{{ authStore.profile.username }}
                 </p>
                 <p
-                  class="text-hc-black dark:text-hc-white"
+                  class="transition-all duration-300 text-hc-black dark:text-hc-white"
                   :style="{ fontSize: 'clamp(10px, 2vw, 13px)' }"
                 >
                   {{ authStore.profile.profile_bio }}
@@ -154,7 +154,7 @@ async function handleLogout() {
             icon="material-symbols:edit-outline"
             width="1.5rem"
             height="1.5rem"
-            class="text-hc-blue dark:text-hc-dark-blue"
+            class="transition-all duration-300 text-hc-blue dark:text-hc-dark-blue"
           />
         </RouterLink>
         <RouterLink
@@ -165,7 +165,7 @@ async function handleLogout() {
             icon="material-symbols:book-2-outline"
             width="1.5rem"
             height="1.5rem"
-            class="text-hc-blue dark:text-hc-dark-blue"
+            class="transition-all duration-300 text-hc-blue dark:text-hc-dark-blue"
           />
         </RouterLink>
       </div>

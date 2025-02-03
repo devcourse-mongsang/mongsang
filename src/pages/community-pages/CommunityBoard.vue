@@ -139,7 +139,9 @@ onMounted(fetchPosts);
     <div
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
-      <h1 class="text-2xl font-semibold dark:text-hc-white">
+      <h1
+        class="text-2xl font-semibold transition-colors duration-300 dark:text-hc-white"
+      >
         {{ currentBoard.title }}
       </h1>
       <DropDownPostList
@@ -188,11 +190,15 @@ onMounted(fetchPosts);
                   "
                   alt="User profile image"
                 />
-                <p class="font-semibold lg:text-xl dark:text-hc-white">
+                <p
+                  class="font-semibold transition-colors duration-300 lg:text-xl dark:text-hc-white"
+                >
                   {{ authorCache[post.author_id]?.username || "@anonymous" }}
                 </p>
               </span>
-              <span class="flex flex-col dark:text-hc-white">
+              <span
+                class="flex flex-col transition-colors duration-300 dark:text-hc-white"
+              >
                 <h2 class="font-semibold sm:text-xl lg:text-2xl">
                   {{ post.title }}
                 </h2>
@@ -240,13 +246,13 @@ onMounted(fetchPosts);
       :to="`/${route.params.boardType}/create-post`"
     >
       <div
-        class="fixed bottom-[-30px] right-[-40px] z-30 m-[80px] bg-hc-white aspect-square w-[60px] flex justify-center items-center rounded-full hover:scale-105 shadow-lg"
+        class="fixed bottom-[-30px] right-[-40px] z-30 m-[80px] bg-hc-white dark:bg-hc-dark-blue transition-colors duration-300 aspect-square w-[3rem] flex justify-center items-center rounded-full hover:scale-105 shadow-lg ease-in-out"
       >
         <Icon
           icon="material-symbols:edit-outline"
-          width="30px"
-          height="30px"
-          class="text-hc-blue dark:text-hc-dark-blue"
+          width="24px"
+          height="24px"
+          class="text-hc-blue dark:text-hc-white"
         />
       </div>
     </RouterLink>
@@ -260,7 +266,7 @@ onMounted(fetchPosts);
         icon="material-symbols:edit-outline"
         width="1.5rem"
         height="1.5rem"
-        class="text-hc-blue dark:text-hc-dark-blue"
+        class="transition-colors duration-300 text-hc-blue dark:text-hc-white"
       />
     </v-fab>
     <div class="text-xs-center" v-if="!isLoading">

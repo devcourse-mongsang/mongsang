@@ -256,7 +256,7 @@ register();
 
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white">
+        <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white transition-colors duration-300">
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
@@ -275,7 +275,7 @@ register();
             </p>
             <div class="flex justify-end w-1/12 px-0">
               <Icon
-                class="cursor-pointer text-hc-blue dark:text-hc-dark-blue"
+                class="transition-colors duration-300 cursor-pointer text-hc-blue dark:text-hc-dark-blue"
                 icon="mdi:share-variant"
                 width="35"
                 height="35"

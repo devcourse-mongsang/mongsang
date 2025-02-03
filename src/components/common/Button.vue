@@ -40,11 +40,11 @@ export default defineComponent({
   setup(props, { attrs }) {
     const buttonVar = {
       filled:
-        "bg-hc-blue text-hc-white dark:bg-hc-dark-blue  dark:text-hc-white",
+        "bg-hc-blue text-hc-white dark:bg-hc-dark-blue  dark:text-hc-white transition-all duration-300",
       regular:
-        "text-hc-blue bg-hc-white dark:text-hc-dark-blue dark:bg-hc-white",
+        "text-hc-blue bg-hc-white dark:text-hc-dark-blue dark:bg-hc-white transition-all duration-300",
       shadowed:
-        "shadow-blue bg-hc-blue text-hc-white dark:shadow-dark-blue dark:bg-hc-dark-blue ",
+        "shadow-blue bg-hc-blue text-hc-white dark:shadow-dark-blue dark:bg-hc-dark-blue transition-all duration-300",
       custom: "",
     };
 

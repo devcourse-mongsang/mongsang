@@ -76,11 +76,11 @@ const isLoading = ref(true); // 로딩 상태 추가
         되어보세요
       </h1>
       <div class="hidden mt-[10px] mb-6 text-xl md:flex md:flex-col">
-        <h2 class="dark:text-hc-white">
+        <h2 class="transition-all duration-300 dark:text-hc-white">
           꿈에 담긴 감정을 AI로 시각화하고 분석된 심리 상태에 맞는 ASMR로 마음을
           어루만지세요.
         </h2>
-        <h2 class="dark:text-hc-white">
+        <h2 class="transition-all duration-300 dark:text-hc-white">
           몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.
         </h2>
       </div>
@@ -103,7 +103,7 @@ const isLoading = ref(true); // 로딩 상태 추가
       class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] dark:bg-hc-beige/20 border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
-        <h3 class="font-semibold xm:text-base sm:text-2xl dark:text-hc-white">
+        <h3 class="font-semibold transition-all duration-300 xm:text-base sm:text-2xl dark:text-hc-white">
           당신의 꿈에 귀 기울이는 순간, ASMR 추천
         </h3>
         <Button

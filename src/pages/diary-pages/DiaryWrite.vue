@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useDarkMode } from "@/utils/darkMode";
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import imgPlaceholderDark from "../../../public/assets/imgs/img_placeholder_dark.png";
+import { useModalStore } from "@/store/modalStore";
 
 const props = defineProps({
   initialData: {
@@ -37,6 +38,7 @@ const condition = ref(props.initialData?.condition || "satisfied");
 const weather = ref(props.initialData?.weather || "sunny");
 
 const content = ref("");
+const modalStore = useModalStore();
 
 watch(
   () => diaryStore.content,
@@ -59,6 +61,31 @@ const updateWeather = (newWeather) => {
   weather.value = newWeather;
 };
 const handleCheckButtonClick = async () => {
+  if (!title.value) {
+    modalStore.addModal({
+      title: "알림",
+      content: "제목을 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: async () => {
+        modalStore.modals = []; // 모든 모달 닫기
+      },
+    });
+    return;
+  }
+  if (!content.value) {
+    modalStore.addModal({
+      title: "알림",
+      content: "내용을 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: async () => {
+        modalStore.modals = []; // 모든 모달 닫기
+      },
+    });
+    return;
+  }
+
   const diaryData = {
     title: title.value,
     content: content.value,

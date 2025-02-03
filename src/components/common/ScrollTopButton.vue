@@ -40,9 +40,14 @@ onUnmounted(() => {
   <div
     v-show="showButton"
     @click="scrollToTop"
-    class="fixed z-30 m-[80px] bg-hc-white aspect-square w-[60px] flex justify-center items-center rounded-full hover:scale-105 shadow-lg"
+    class="fixed z-30 m-[80px] bg-hc-white aspect-square w-[3rem] flex justify-center items-center rounded-full hover:scale-105 shadow-lg dark:bg-hc-dark-blue transition-colors duration-300"
     :style="{ bottom, right }"
   >
-    <Icon icon="ic:round-arrow-upward" width="30px" height="30px" class="text-hc-blue" />
+    <Icon
+      icon="ic:round-arrow-upward"
+      width="30px"
+      height="30px"
+      class="transition-colors duration-300 text-hc-blue dark:text-hc-white"
+    />
   </div>
 </template>
