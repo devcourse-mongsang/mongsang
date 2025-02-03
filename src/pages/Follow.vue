@@ -141,7 +141,7 @@ onMounted(() => {
                 <img
                   :src="user.profile_url"
                   :alt="user.username"
-                  class="w-12 h-12 rounded-full"
+                  class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
                   <p
@@ -207,7 +207,7 @@ onMounted(() => {
                 <img
                   :src="user.profile_url"
                   :alt="user.username"
-                  class="w-12 h-12 rounded-full"
+                  class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
                   <p class="text-xl font-semibold dark:text-hc-dark-blue">
@@ -254,5 +254,9 @@ onMounted(() => {
   scrollbar-width: none; /* Firefox */
 }
 @media (min-width: 768px) {
+}
+
+.object-cover {
+  object-fit: cover;
 }
 </style>

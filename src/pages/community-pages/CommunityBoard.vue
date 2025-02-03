@@ -136,7 +136,7 @@ onMounted(fetchPosts);
     <div
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
-      <h1 class="text-4xl font-semibold dark:text-hc-white">
+      <h1 class="text-2xl font-semibold dark:text-hc-white">
         {{ currentBoard.title }}
       </h1>
       <DropDownPostList
@@ -176,10 +176,10 @@ onMounted(fetchPosts);
       <li v-for="post in paginationedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
-            <div class="flex flex-col sm:gap-7 xm:gap-6">
+            <div class="flex flex-col gap-6 sm:gap-7">
               <span class="flex items-center gap-[10px]">
                 <img
-                  class="aspect-square xm:w-[30px] sm:w-[50px] rounded-full"
+                  class="aspect-square w-[30px] xm:w-[30px] sm:w-[50px] rounded-full object-cover"
                   :src="
                     authorCache[post.author_id]?.profile_url || imgPlaceholder
                   "
@@ -199,7 +199,7 @@ onMounted(fetchPosts);
               </span>
             </div>
             <img
-              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px]"
+              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover"
               :src="
                 Object.keys(postImgs[post.id] || {}).length === 0
                   ? imgPlaceholder
@@ -268,5 +268,9 @@ input {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+}
+
+.object-cover {
+  object-fit: cover;
 }
 </style>

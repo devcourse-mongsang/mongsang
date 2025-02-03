@@ -1,14 +1,13 @@
 <script setup>
 import Button from "@/components/common/Button.vue";
 import Input from "@/components/common/Input.vue";
-import { ChevronLeftIcon } from "@heroicons/vue/24/solid";
-import { HomeIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import supabase from "@/config/supabase";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
 import { useDarkMode } from "@/utils/darkMode";
+import { Icon } from "@iconify/vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -110,33 +109,41 @@ function handleSocialLogin(platform) {
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
     >
       <button
-        class="font-bold size-8 text-hc-blue ml-[30px] dark:text-hc-dark-blue"
+        class="font-bold size-8 text-hc-blue ml-[30px] dark:shadow-dark-blue"
         @click="goBack"
       >
-        <ChevronLeftIcon />
+        <Icon
+          icon="material-symbols:arrow-back-ios-new-rounded"
+          width="27"
+          height="27"
+          style="color: #729ecb"
+        />
       </button>
       <button
-        class="font-bold size-8 text-hc-blue mr-[30px] dark:text-hc-dark-blue"
+        class="font-bold size-8 text-hc-blue mr-[30px] dark:shadow-dark-blue"
         @click="goHome"
       >
-        <HomeIcon />
+        <Icon
+          icon="material-symbols:home-outline-rounded"
+          width="32"
+          height="32"
+          style="color: #729ecb"
+        />
       </button>
     </div>
     <img
       src="/assets/imgs/big_logo.png"
       alt="Mongsang light mode logo"
-      class="w-[276px] mb-7 block dark:hidden"
+      class="w-[276px] sm:w-[276px] mb-7 block dark:hidden"
     />
     <img
-      class="w-[276px] mb-7 hidden dark:block"
+      class="w-[276px] sm:w-[276px] mb-7 hidden dark:block"
       src="/assets/imgs/big_logo_dark.png"
       alt="Mongsang dark mode logo"
     />
     <div
-      class="rounded-xl shadow-blue w-full max-w-[641px] flex flex-col dark:shadow-dark-blue items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
+      class="sm:rounded-[20px] sm:shadow-blue w-full max-w-[641px] flex flex-col sm:dark:shadow-dark-blue sm:bg-hc-white/30 sm:border-[7px] border-hc-white/50 items-center h-auto p-6 md:h-[602px] md:p-10 justify-center"
       :style="{
-        borderRadius: '20px',
-        border: '7px solid rgba(255, 255, 255, 0.5)',
         background: isDark
           ? 'rgba(253, 214, 175, 0.3)'
           : 'rgba(255, 255, 255, 0.3)',
@@ -178,7 +185,9 @@ function handleSocialLogin(platform) {
         <p v-if="loginError" class="mb-5 text-red text-xm">
           {{ loginError }}
         </p>
-        <Button variant="shadowed" size="lg">로그인하기</Button>
+        <Button variant="shadowed" size="lg" class="w-[400px] sm:w-[480px]"
+          >로그인하기</Button
+        >
       </form>
       <div class="flex items-center justify-center space-x-4">
         <Button variant="custom" size="sm" @click="handleSocialLogin('google')">

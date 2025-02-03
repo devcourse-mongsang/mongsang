@@ -20,7 +20,7 @@ const springs = [
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
+  <div class="flex justify-center items-center mt-[10vh]">
     <GlassBox
       class="w-[100vw] lg:w-[52.375rem] h-full flex flex-col items-center pb-6"
     >

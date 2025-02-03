@@ -106,7 +106,7 @@ const toggleModal = () => {
       </div>
 
       <div class="flex items-center gap-8">
-        <p class="text-xl dark:text-hc-white">{{ formattedDate }}</p>
+        <p class="text-xl dark:text-hc-white sm:text-xl">{{ formattedDate }}</p>
 
         <div class="flex items-center justify-end gap-2 ml-auto">
           <p class="text-xl xm:hidden sm:block dark:text-hc-white">

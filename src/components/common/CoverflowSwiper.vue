@@ -89,7 +89,7 @@ register();
   <swiper-container
     v-if="posts.length > 0"
     navigation="true"
-    class="mySwiper"
+    class="scale-75 sm:scale-90 lg:scale-100"
     initial-slide="0"
     pagination="true"
     effect="coverflow"

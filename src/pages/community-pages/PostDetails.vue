@@ -170,7 +170,7 @@ register();
 
 <template>
   <div v-if="!isLoading && post">
-    <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
+    <div class="flex items-center justify-between px-4 mb-3 md:px-0">
       <RouterLink :to="`/mypage/profile/${author?.id}`">
         <div class="flex items-center gap-[10px]">
           <img
@@ -235,7 +235,7 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] xm:px-4 sm:px-0 dark:text-hc-white">
+        <div class="mt-[45px] px-4 sm:px-0 dark:text-hc-white">
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
