@@ -43,7 +43,7 @@ watch(deletedCommentId, (newId) => {
 </script>
 
 <template>
-  <div class="xm:px-4 sm:px-[0px]">
+  <div class="px-4 sm:px-[0px]">
     <div
       class="mt-10 ml-2 pb-2 border-b-[1px] border-hc-blue flex justify-between"
     >

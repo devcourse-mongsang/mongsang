@@ -152,7 +152,7 @@ onMounted(() => {
   <div class="flex gap-[10px] items-center my-[10px]">
     <div
       v-if="isLoggedIn"
-      class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px] w-full"
+      class="flex gap-[10px] items-center mx-4 sm:mx-[0px] w-full"
     >
       <img
         :src="authStore.profile.profile_url || unknownUser"
@@ -177,7 +177,7 @@ onMounted(() => {
     </div>
     <div
       v-else
-      class="flex gap-[10px] items-center xm:mx-4 sm:mx-[0px] w-full cursor-pointer"
+      class="flex gap-[10px] items-center mx-4 sm:mx-[0px] w-full cursor-pointer"
       @click.stop="onIsloggedOut"
     >
       <img
