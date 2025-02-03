@@ -21,6 +21,7 @@ import Comment from "./Comment.vue";
 import LikesCounter from "@/components/common/LikesCounter.vue";
 import { useModalStore } from "@/store/modalStore";
 import { useFollowStore } from "@/store/followStore";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -306,5 +307,6 @@ register();
         목록으로
       </Button>
     </div>
+    <ScrollTopButton bottom="-20px" />
   </div>
 </template>

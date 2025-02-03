@@ -148,7 +148,7 @@ async function handleLogout() {
       <div class="flex gap-4 py-3 xm:flex-col xm:py-[25%]">
         <RouterLink
           to="/record"
-          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
+          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center hover:scale-105"
         >
           <Icon
             icon="material-symbols:edit-outline"
@@ -159,7 +159,7 @@ async function handleLogout() {
         </RouterLink>
         <RouterLink
           to="/diary"
-          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
+          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center hover:scale-105"
         >
           <Icon
             icon="material-symbols:book-2-outline"
