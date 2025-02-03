@@ -348,7 +348,7 @@ onMounted(async () => {
         class="w-full p-16 text-xl resize-none md:rounded-3xl focus:outline-none"
       ></textarea>
 
-      <div class="flex justify-between xm:mx-4 md:mx-0 mt-[10px]">
+      <div class="flex justify-between mx-4 md:mx-0 mt-[10px]">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
           <Button
@@ -474,7 +474,7 @@ onMounted(async () => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[640px] lg:ml-[760px] xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
+      class="flex flex-col mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[640px] lg:ml-[760px] xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
         class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px]"
