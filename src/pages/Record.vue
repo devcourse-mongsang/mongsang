@@ -333,10 +333,10 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
+  <div class="flex flex-col xl:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
     <div
-      class="md:ml-[70px] h-full md:fixed md:w-[480px] lg:w-[560px] xl:w-[640px] 2xl:w-[700px] 3xl:w-[760px]"
+      class="xl:ml-[70px] h-full xl:fixed xl:w-[640px] 2xl:w-[700px] 3xl:w-[760px]"
     >
       <textarea
         v-model="diaryStore.content"
@@ -345,10 +345,10 @@ onMounted(async () => {
         maxlength="1600"
         placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
         style="background-color: rgba(255, 255, 255, 0.7); aspect-ratio: 1 / 1"
-        class="w-full p-16 text-xl resize-none md:rounded-3xl focus:outline-none"
+        class="w-full p-16 text-xl resize-none xl:rounded-3xl focus:outline-none"
       ></textarea>
 
-      <div class="flex justify-between mx-4 md:mx-0 mt-[10px]">
+      <div class="flex justify-between mx-4 xl:mx-0 mt-[10px]">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
           <Button
@@ -474,10 +474,10 @@ onMounted(async () => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[640px] lg:ml-[760px] xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
+      class="flex flex-col mt-[37px] xl:mt-0 xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] xl:mr-[70px] overflow-y-auto xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
-        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px]"
+        class="flex flex-col items-center w-full xl:rounded-3xl px-[65px] relative pb-[78px]"
         style="background-color: rgba(255, 255, 255, 0.7)"
       >
         <img
@@ -523,7 +523,7 @@ onMounted(async () => {
       <!-- ai 그림 생성 -->
       <div class="relative">
         <p
-          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 xl:pl-0 dark:text-hc-white"
         >
           AI 그림 생성
         </p>
@@ -532,19 +532,19 @@ onMounted(async () => {
           v-if="diaryStore.imgUrl"
           :src="diaryStore.imgUrl"
           alt="AI 생성 이미지"
-          class="w-full h-fit md:rounded-3xl"
+          class="w-full h-fit xl:rounded-3xl"
         />
         <img
           v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
-          class="w-full h-fit md:rounded-3xl dark:hidden"
+          class="w-full h-fit xl:rounded-3xl dark:hidden"
         />
         <img
           v-if="!diaryStore.imgUrl"
           src="/public/assets/imgs/img_placeholder_dark.png"
           alt="AI 그림"
-          class="hidden w-full h-fit md:rounded-3xl dark:block"
+          class="hidden w-full h-fit xl:rounded-3xl dark:block"
         />
 
         <Button
@@ -569,12 +569,12 @@ onMounted(async () => {
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
         <p
-          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 xl:pl-0 dark:text-hc-white"
         >
           추천 ASMR
         </p>
         <div
-          class="relative w-full overflow-hidden md:rounded-3xl"
+          class="relative w-full overflow-hidden xl:rounded-3xl"
           style="padding-top: 56.25%"
         >
           <iframe
