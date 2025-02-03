@@ -5,7 +5,11 @@
         'text-hc-gray bg-hc-white focus:outline-none flex items-center justify-center',
         isProfilePage ? 'w-full' : '',
         inputVar[variant],
-        isProfilePage ? profileInputSize[size] : inputSize[size],
+        isProfilePage
+          ? profileInputSize[size]
+          : isPasswordInput
+          ? passwordInputSize[size]
+          : inputSize[size],
         inputBorderRadius[borderRadius],
         className,
       ]"
@@ -72,9 +76,13 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    isPasswordInput: {
+      type: Boolean,
+      default: false,
+    },
     maxlength: {
       type: Number,
-      default: null, // 필요 시 기본값 설정
+      default: null,
     },
   },
   setup(props, { attrs }) {
@@ -97,8 +105,8 @@ export default defineComponent({
     };
 
     const inputSize = {
-      xs: "w-[318px] sm:w-[398px] h-[63px] text-[20px] sm:text-[24px] pl-[40px]",
-      sm: "w-[400px] sm:w-[480px] h-[63px] text-[20px] sm:text-[24px] pl-[40px]",
+      xs: "w-[198px] sm:w-[398px] h-[43px] sm:h-[63px] text-[16px] sm:text-[24px] pl-[40px]",
+      sm: "w-[250px] sm:w-[480px] h-[53px] sm:h-[63px] text-[16px] sm:text-[24px] pl-[40px]",
       md: "w-[615px] h-[45px] text-[20px] pl-[16px]",
       lg: "w-[830px] h-[63px] text-[24px] pl-[40px]",
       xl: "w-[941px] h-[45px] text-[20px] pl-[16px]",
@@ -112,6 +120,15 @@ export default defineComponent({
       xl: "h-[45px] md:h-[45px] text-sm md:text-lg pl-4 md:pl-[16px]",
     };
 
+    // 새로 추가한 비밀번호 입력 필드용 스타일
+    const passwordInputSize = {
+      xs: "w-[248px] sm:w-[398px] h-[43px] sm:h-[63px] text-[16px] sm:text-[24px] pl-[40px]",
+      sm: "w-[300px] sm:w-[480px] h-[43px] sm:h-[63px] text-[16px] sm:text-[24px] pl-[40px]",
+      md: "w-[615px] h-[45px] text-[20px] pl-[16px]",
+      lg: "w-[830px] h-[63px] text-[24px] pl-[40px]",
+      xl: "w-[941px] h-[45px] text-[20px] pl-[16px]",
+    };
+
     const inputBorderRadius = {
       md: "rounded-[20px]",
       lg: "rounded-[70px]",
@@ -121,6 +138,7 @@ export default defineComponent({
       inputVar,
       inputSize,
       profileInputSize,
+      passwordInputSize,
       inputBorderRadius,
       otherProps: attrs,
       isPasswordVisible,
