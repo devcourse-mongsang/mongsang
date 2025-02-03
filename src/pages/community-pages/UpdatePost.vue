@@ -77,6 +77,32 @@ const fetchUpdatedImage = async (postId) => {
 };
 
 const fetchUpdatedData = async () => {
+  if (!postData.value.title.trim()) {
+    modalStore.addModal({
+      title: "알림",
+      content: "제목을 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: async () => {
+        modalStore.modals = []; // 모든 모달 닫기
+      },
+    });
+    return;
+  }
+
+  if (!postData.value.content.trim()) {
+    modalStore.addModal({
+      title: "알림",
+      content: "내용을 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: async () => {
+        modalStore.modals = []; // 모든 모달 닫기
+      },
+    });
+    return;
+  }
+
   modalStore.addModal({
     title: "알림",
     content: "게시글 수정을 완료하시겠습니까?",
@@ -196,12 +222,14 @@ onMounted(() => {
       >
         <div
           class="flex items-center justify-center w-full h-full"
-          @click="fetchUpdatedData(
-            postData.title,
-            postData.content,
-            postData.author_id,
-            postData.category
-          )"
+          @click="
+            fetchUpdatedData(
+              postData.title,
+              postData.content,
+              postData.author_id,
+              postData.category
+            )
+          "
         >
           <Icon
             icon="ic:round-arrow-forward"
@@ -211,8 +239,6 @@ onMounted(() => {
           />
         </div>
       </div>
-
-      
     </div>
   </div>
 </template>

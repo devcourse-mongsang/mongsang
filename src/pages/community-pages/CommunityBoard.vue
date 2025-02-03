@@ -110,7 +110,7 @@ const onIsLoggedout = () => {
     title: "",
     content: "로그인 후 이용해주세요.",
     btnText: "로그인",
-    isOneBtn: true,
+    isOneBtn: false,
     onClick: () => {
       modalStore.modals = []; // 모든 모달 닫기
       router.push({ name: "login" });
@@ -237,8 +237,11 @@ onMounted(fetchPosts);
     </ul>
 
     <!-- 게시글 없음 메시지 -->
-    <p v-else class="dark:text-hc-white">게시글이 없습니다.</p>
-
+    <div v-else class="flex justify-center py-10 h-[500px] items-center">
+      <p class="text-lg transition-colors duration-300 dark:text-hc-white">
+        아직 게시글이 없습니다.
+      </p>
+    </div>
     <!-- 글 작성 버튼 -->
 
     <RouterLink
@@ -256,19 +259,19 @@ onMounted(fetchPosts);
         />
       </div>
     </RouterLink>
-    <v-fab
+
+    <div
       v-show="!isLoggedIn"
-      icon="$mdi-plus"
-      class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      class="fixed bottom-[-30px] right-[-40px] z-30 m-[80px] bg-hc-white dark:bg-hc-dark-blue transition-colors duration-300 aspect-square w-[3rem] flex justify-center items-center rounded-full hover:scale-105 shadow-lg ease-in-out"
       @click="onIsLoggedout"
     >
       <Icon
         icon="material-symbols:edit-outline"
-        width="1.5rem"
-        height="1.5rem"
-        class="transition-colors duration-300 text-hc-blue dark:text-hc-white"
+        width="24px"
+        height="24px"
+        class="text-hc-blue dark:text-hc-white"
       />
-    </v-fab>
+    </div>
     <div class="text-xs-center" v-if="!isLoading">
       <v-pagination
         v-model="page"
