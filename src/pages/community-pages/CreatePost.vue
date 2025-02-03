@@ -152,12 +152,11 @@ const createNewPost = async () => {
     },
   });
 };
-
 </script>
 
 <template>
   <div class="flex flex-col w-full gap-[10px] sm:mt-[-100px]">
-    <div class="flex xm:px-4 sm:px-[0px]">
+    <div class="flex px-4 sm:px-[0px]">
       <DropDownNewPost
         :items="menuItems"
         :buttonText="dropdownStore.currentCategory"
@@ -172,14 +171,14 @@ const createNewPost = async () => {
           id="newPostTitle"
           placeholder="제목 없음"
           type="text"
-          class="w-full text-2xl outline-none"
+          class="w-full text-lg outline-none sm:text-2xl"
           v-model="title"
         />
         <textarea
           placeholder="여기에 글을 작성해주세요"
           name="포스팅 내용"
           id="newPostContent"
-          class="w-full min-h-[462px] h-auto outline-none resize-none"
+          class="w-full min-h-[462px] h-auto outline-none text-sm sm:text-base resize-none"
           v-model="content"
         ></textarea>
       </div>
@@ -205,7 +204,7 @@ const createNewPost = async () => {
           />
           <label
             for="fileInput"
-            class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px] dark:bg-hc-dark-blue"
+            class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px] dark:bg-hc-dark-blue transition-all duration-300"
           >
             <div
               class="px-4 py-2 text-center text-white bg-blue-500 rounded hover:bg-blue-600"
@@ -241,14 +240,21 @@ const createNewPost = async () => {
       </div>
     </div>
   </div>
-  <v-fab
-    icon="$mdi-plus"
-    class="fixed bottom-[50px] right-[70px] scale-[110%] z-30"
-    color="#729ECB"
-    @click="createNewPost"
+  <div
+    class="fixed bottom-[20px] right-[10px] z-30 bg-hc-white dark:bg-hc-dark-blue aspect-square w-[3.5rem] rounded-full shadow-lg hover:scale-105 transition-colors duration-300"
   >
-    <Icon icon="ic:round-arrow-forward" width="24" height="24" />
-  </v-fab>
+    <div
+      class="flex items-center justify-center w-full h-full"
+      @click="createNewPost"
+    >
+      <Icon
+        icon="ic:round-arrow-forward"
+        width="30"
+        height="30"
+        class="text-hc-blue dark:text-hc-white"
+      />
+    </div>
+  </div>
 </template>
 
 <style scoped>

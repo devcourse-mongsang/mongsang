@@ -118,20 +118,20 @@ onMounted(() => {
     <button @click="onLikeButtonClick">
       <Icon
         v-if="!isLiked"
-        class="cursor-pointer text-hc-blue dark:text-hc-dark-blue"
+        class="transition-colors duration-300 cursor-pointer text-hc-blue dark:text-hc-dark-blue"
         icon="stash:heart-light"
         width="35"
         height="35"
       />
       <Icon
         v-else
-        class="cursor-pointer dark:text-hc-dark-blue text-hc-blue"
+        class="transition-colors duration-300 cursor-pointer dark:text-hc-dark-blue text-hc-blue"
         icon="stash:heart-solid"
         width="35"
         height="35"
       />
     </button>
-    <p class="text-lg font-semibold text-hc-blue dark:text-hc-dark-blue">
+    <p class="text-lg font-semibold transition-colors duration-300 text-hc-blue dark:text-hc-dark-blue">
       {{ likesDisplay }}
     </p>
   </div>

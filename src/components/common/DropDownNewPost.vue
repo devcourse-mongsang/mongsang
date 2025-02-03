@@ -2,6 +2,7 @@
 import { defineProps } from "vue";
 import { Icon } from "@iconify/vue";
 import { useDropDownStore } from "@/store/dropDownStore";
+import { useDarkMode } from "@/utils/darkMode";
 
 // items와 buttonText를 props로 선언
 defineProps({
@@ -18,7 +19,7 @@ defineProps({
 });
 
 const dropdownStore = useDropDownStore();
-
+const { isDark } = useDarkMode();
 const changeCategory = (category) => {
   dropdownStore.setCategory(category);
 };
@@ -39,7 +40,7 @@ const changeCategory = (category) => {
             width="30"
             height="30"
             class="transition-transform duration-300 hover:rotate-180"
-            style="color: #729ecb"
+            :style="{ color: isDark ? '#0D3B51' : '#729ecb' }"
           />
         </v-btn>
       </template>

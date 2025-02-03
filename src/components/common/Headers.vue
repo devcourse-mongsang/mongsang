@@ -116,7 +116,7 @@ onUnmounted(() => {
             icon="material-symbols:notifications-outline"
             width="29"
             height="29"
-            class="cursor-pointer dark:text-hc-white text-hc-blue"
+            class="transition-all duration-300 cursor-pointer dark:text-hc-white text-hc-blue"
           />
           <!-- Red dot for unread notifications -->
           <span
@@ -133,7 +133,7 @@ onUnmounted(() => {
             icon="material-symbols:home-outline-rounded"
             width="32"
             height="32"
-            class="cursor-pointer dark:text-hc-white text-hc-blue"
+            class="transition-all duration-300 cursor-pointer dark:text-hc-white text-hc-blue"
           />
         </router-link>
       </div>
