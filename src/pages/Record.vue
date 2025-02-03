@@ -14,9 +14,8 @@ import { ref, onMounted } from "vue";
 import { useRoute, onBeforeRouteLeave } from "vue-router";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
-import { checkDiaryExists } from "@/api/api-record/api";
+import { checkDiaryExists, uploadDiaryImage } from "@/api/api-record/api";
 import { useDarkMode } from "@/utils/darkMode";
-
 const diaryStore = useDiaryStore();
 
 const isDiaryWritten = ref(false);
@@ -155,55 +154,50 @@ const generateImage = async () => {
         {
           role: "system",
           content:
-            "You are a creative assistant that generates detailed and visually descriptive prompts for image generation.",
+            "You are an expert at writing highly detailed and visually descriptive prompts for generating high-quality AI images.",
         },
         {
           role: "user",
-          content: `다음 꿈을 바탕으로 귀엽고 서정적인 일러스트를 생성할 수 있는 프롬프트를 만들어 줘. 카툰 스타일. 부드러운 톤. 꿈 내용 : "${diaryStore.content}" `,
-        },
-      ],
+          content: `아래 꿈을 바탕으로 매우 구체적인 일러스트 프롬프트를 만들어 줘. 
 
-      functions: [
-        {
-          name: "generate_image",
-          parameters: {
-            type: "object",
-            properties: {
-              prompt: { type: "string" },
-              size: {
-                type: "string",
-                enum: ["256x256", "512x512", "1024x1024"],
-              },
-            },
-            required: ["prompt", "size"],
-          },
+      - **스타일**: 카툰 스타일, Studio Ghibli 스타일, 따뜻한 색감
+      - **분위기**: 부드럽고 평온한 느낌, 몽환적이고 신비로운 분위기
+      - **배경**: 꿈에서 나타난 장소를 구체적으로 표현
+      - **조명**: 은은한 조명, 부드러운 빛, 따뜻한 색감
+      - **구성 요소**: 주요 등장 인물, 동물, 자연 요소 등
+      - **색상 팔레트**: 파스텔톤, 부드러운 블루, 핑크, 오렌지 계열
+
+      꿈 내용: "${diaryStore.content}"
+      
+      이 내용을 반영해서 DALL·E에서 고퀄리티의 일러스트를 생성할 수 있도록 최적화된 영어 프롬프트를 작성해줘. 문장은 간결하고 직관적으로 해줘.`,
         },
       ],
-      function_call: { name: "generate_image" },
     });
-    //이미지 생성 요청
-    const functionCall = response.choices[0]?.message?.function_call;
 
-    if (!functionCall || !functionCall.arguments) {
-      throw new Error("프롬프트 생성 응답이 유효하지 않습니다.");
-    }
-
-    const { prompt, size } = JSON.parse(functionCall.arguments);
+    const prompt = response.choices[0].message.content;
 
     const imageResponse = await openai.images.generate({
       prompt,
       n: 1,
-      size,
+      size: "512x512",
+      response_format: "b64_json", // Base64 형식으로 응답받음
     });
 
-    if (imageResponse.data && imageResponse.data.length > 0) {
-      diaryStore.setImgUrl(imageResponse.data[0].url);
-    } else {
-      throw new Error("이미지 생성에 실패했습니다.");
+    if (!imageResponse.data || imageResponse.data.length === 0) {
+      throw new Error("이미지 생성 실패");
     }
+
+    const base64Image = `data:image/png;base64,${imageResponse.data[0].b64_json}`;
+
+    //Supabase Storage에 업로드
+    const diaryId = diaryStore.currentDiaryId || Date.now(); // 임시 ID
+    const imgUrl = await uploadDiaryImage(diaryId, base64Image);
+
+    //`dream_journal.img_url` 업데이트
+    diaryStore.setImgUrl(imgUrl);
   } catch (error) {
-    console.error("❌ 이미지 생성 에러 발생", error);
-    alert("이미지 생성 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+    console.error("이미지 생성 오류:", error);
+    alert("이미지 생성 중 문제가 발생했습니다. 다시 시도해주세요.");
   } finally {
     isGeneratingImage.value = false;
   }
