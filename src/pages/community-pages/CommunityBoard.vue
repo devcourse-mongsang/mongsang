@@ -219,7 +219,9 @@ onMounted(fetchPosts);
     </ul>
 
     <!-- 게시글 없음 메시지 -->
-    <p v-else class="dark:text-hc-white">게시글이 없습니다.</p>
+    <div v-else class="flex justify-center py-10 h-[500px] items-center">
+      <p class="text-lg dark:text-hc-white">아직 게시글이 없습니다.</p>
+    </div>
 
     <!-- 글 작성 버튼 -->
     <RouterLink
