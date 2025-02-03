@@ -18,11 +18,13 @@ import { useModalStore } from "@/store/modalStore";
 import { useAuthStore } from "@/store/authStore";
 import { checkDiaryExists, uploadDiaryImage } from "@/api/api-record/api";
 import { useDarkMode } from "@/utils/darkMode";
-const diaryStore = useDiaryStore();
-const modalStore = useModalStore();
+
+
 const authStore = useAuthStore();
 const router = useRouter();
 
+const diaryStore = useDiaryStore();
+const modalStore = useModalStore();
 const isDiaryWritten = ref(false);
 const today = new Date().toISOString().split("T")[0];
 
@@ -74,7 +76,12 @@ const startListening = () => {
   if (isListening.value) return;
 
   if (!("webkitSpeechRecognition" in window)) {
-    alert("⚠️음성 입력을 지원하지 않는 브라우저입니다.");
+    modalStore.addModal({
+      title: "오류",
+      content: "음성 입력을 지원하지 않는 브라우저입니다.",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     return;
   }
 
@@ -95,7 +102,12 @@ const startListening = () => {
 
   speechRecognition.onerror = (event) => {
     console.error("❌ 음성 인식 에러 발생:", event.error);
-    alert("음성 인식 중 에러가 발생했습니다!");
+    modalStore.addModal({
+      title: "오류",
+      content: "음성 입력 중 오류가 발생했습니다.",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     stopListening();
   };
 
@@ -119,7 +131,12 @@ const stopListening = () => {
 //꿈 분석
 const analyzeDream = async () => {
   if (!diaryStore.content.trim()) {
-    alert("꿈이 입력 되지 않았습니다 😢 꿈을 입력해주세요!");
+    modalStore.addModal({
+      title: "꿈이 입력 되지 않았습니다😢",
+      content: "꿈을 입력해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     return;
   }
 
@@ -143,7 +160,12 @@ const analyzeDream = async () => {
     diaryStore.setDreamAnalysis(response.choices[0].message.content);
   } catch (error) {
     console.error("❌Open AI API 호출 에러", error);
-    alert("꿈 분석 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+    modalStore.addModal({
+      title: "꿈 분석 중 에러가 발생했습니다😢",
+      content: "다시 시도해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isAnalyzing.value = false;
   }
@@ -154,12 +176,23 @@ const copyAnalysis = () => {
   navigator.clipboard
     .writeText(diaryStore.dreamAnalysis)
     .then(() => {
-      alert("분석 결과가 복사되었습니다! 📋");
+      modalStore.addModal({
+        title: "완료",
+        content: "분석 결과가 복사되었습니다! 📋",
+        btnText: "확인",
+        isOneBtn: true,
+      });
+
       console.log("분석 결과: ", diaryStore.dreamAnalysis);
     })
     .catch(() => {
       console.error("❌ 분석 결과 복사에 실패했습니다.", error);
-      alert("분석 결과 복사에 실패했습니다. 다시 시도해주세요!");
+      modalStore.addModal({
+        title: "복사 실패",
+        content: "다시 시도해주세요!",
+        btnText: "확인",
+        isOneBtn: true,
+      });
     });
 };
 
@@ -217,7 +250,12 @@ const generateImage = async () => {
     diaryStore.setImgUrl(imgUrl);
   } catch (error) {
     console.error("이미지 생성 오류:", error);
-    alert("이미지 생성 중 문제가 발생했습니다. 다시 시도해주세요.");
+    modalStore.addModal({
+      title: "이미지 생성 실패",
+      content: "다시 시도해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isGeneratingImage.value = false;
   }
@@ -324,7 +362,12 @@ const recommendASMR = async (dreamAnalysis) => {
     }
   } catch (error) {
     console.error("❌ASMR 추천 중 에러 발생", error);
-    alert("ASMR 추천 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+    modalStore.addModal({
+      title: "ASMR 추천 중 에러가 발생했습니다😢",
+      content: "다시 시도해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isFetching.value = false;
   }

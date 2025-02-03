@@ -105,7 +105,12 @@ const handleProfileBioInput = (event) => {
 const handleImageChange = (event) => {
   const file = event.target.files[0];
   if (!file) {
-    alert("이미지를 선택해주세요!");
+    modalStore.addModal({
+      title: "알림",
+      content: "이미지를 선택해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     return;
   }
   selectedFile.value = file; // 선택된 파일 저장
@@ -126,7 +131,12 @@ const sanitizeFileName = (fileName) => {
 // 프로필 저장 로직
 const handleSave = async () => {
   if (isSaveDisabled.value) {
-    alert("비밀번호를 올바르게 입력해주세요.");
+    modalStore.addModal({
+      title: "알림",
+      content: "비밀번호를 올바르게 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     return;
   }
 
@@ -181,7 +191,13 @@ const handleSave = async () => {
 
     await authStore.setUser(authStore.user.id);
   } catch (err) {
-    alert(`저장 중 오류가 발생했습니다: ${err.message}`);
+    console.error(err);
+    modalStore.addModal({
+      title: "오류",
+      content: "저장 중 오류가 발생했습니다.",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isUpdating.value = false;
   }
