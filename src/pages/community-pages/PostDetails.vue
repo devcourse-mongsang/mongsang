@@ -192,8 +192,7 @@ register();
       <div v-if="isLoggedIn">
         <Button
           v-if="author?.id !== authStore.profile.id"
-          size="md"
-          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          class-name="w-[80px] h-[35px] text-xs px-[6px] py-2 md:w-[100px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base rounded-[20px]"
           @click="onfollowButtonClick(author)"
           :variant="
             followStore.isUserFollowed(author?.id) ? 'regular' : 'filled'
@@ -278,7 +277,7 @@ register();
       </div>
 
       <div
-        class="h-[1px] border-b-[1px] w-full  border-hc-blue dark:border-hc-blue"
+        class="h-[1px] border-b-[1px] w-full border-hc-blue dark:border-hc-blue"
       ></div>
 
       <div class="flex flex-col">
