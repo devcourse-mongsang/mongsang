@@ -168,7 +168,7 @@ const register = async () => {
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
   if (!passwordRegExp.test(password)) {
     passwordError.value =
-      "비밀번호는 8~16자로, 특수문자와 숫자를 최소 1개씩 포함해야 합니다.";
+      "비밀번호는 8~16자로, \n특수문자와 숫자를 최소 1개씩 포함해야 합니다.";
     return;
   }
 
@@ -226,12 +226,11 @@ const { isDark } = useDarkMode();
   <div
     id="back-ground"
     class="flex flex-col items-center justify-center max-w-full min-h-screen mx-auto bg-center bg-no-repeat bg-cover"
-    :style="{
-      backgroundImage: isDark
-        ? 'url(/assets/imgs/bg_circle_dark.png)'
-        : 'url(/assets/imgs/bg_circle_light.png)',
-      backgroundPosition: 'center 25%',
+    :class="{
+      'bg-[url(/assets/imgs/bg_circle_dark.png)]': isDark,
+      'bg-[url(/assets/imgs/bg_circle_light.png)]': !isDark,
     }"
+    style="background-position: center 25%"
   >
     <div
       class="fixed top-0 flex content-center justify-between w-full pt-[30px]"
@@ -244,7 +243,7 @@ const { isDark } = useDarkMode();
           icon="material-symbols:arrow-back-ios-new-rounded"
           width="27"
           height="27"
-          style="color: #729ecb"
+          class="dark:text-hc-white text-hc-blue"
         />
       </button>
       <button
@@ -255,13 +254,13 @@ const { isDark } = useDarkMode();
           icon="material-symbols:home-outline-rounded"
           width="32"
           height="32"
-          style="color: #729ecb"
+          class="dark:text-hc-white text-hc-blue"
         />
       </button>
     </div>
 
     <div
-      class="sm:shadow-blue w-[641px] sm:rounded-[20px] sm:bg-hc-white/30 dark:shadow-dark-blue sm:border-[7px] border-hc-white/50 flex flex-col items-center h-[790px] justify-center"
+      class="sm:shadow-blue w-full max-w-[641px] sm:rounded-[20px] sm:bg-hc-white/30 dark:sm:shadow-dark-blue sm:border-[7px] border-hc-white/50 flex flex-col items-center h-auto p-6 mt-10 md:h-[790px] md:p-10 justify-center"
     >
       <form
         class="flex flex-col items-center w-full mb-[50px] gap-y-5 mt-[38px]"
@@ -280,20 +279,24 @@ const { isDark } = useDarkMode();
               variant="shadowed"
               size="xs"
               borderRadius="lg"
+              :isPasswordInput="true"
             />
             <Button
               variant="filled"
               size="sm"
-              class="ml-4 text-xl font-semibold"
+              class="ml-2 text-sm sm:text-xl font-semibold w-[43px] h-[43px] sm:w-[63px] sm:h-[63px]"
               @click.prevent="checkEmail"
             >
               확인
             </Button>
           </div>
-          <p v-if="emailError" class="mt-2 ml-10 text-xs text-red">
+          <p v-if="emailError" class="mt-2 mx-10 text-xs sm:text-sm text-red">
             {{ emailError }}
           </p>
-          <p v-else-if="emailAvailable" class="mt-2 ml-10 text-xs text-green">
+          <p
+            v-else-if="emailAvailable"
+            class="mt-2 mx-10 text-xs sm:text-sm text-green"
+          >
             사용가능한 이메일입니다.
           </p>
         </div>
@@ -303,33 +306,40 @@ const { isDark } = useDarkMode();
             class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >닉네임</label
           >
-          <div class="flex items-center">
-            <Input
-              type="text"
-              placeholder="4-12자"
-              v-model="registerCredentials.username"
-              variant="shadowed"
-              size="xs"
-              borderRadius="lg"
-            />
-            <Button
-              variant="filled"
-              size="sm"
-              class="ml-4 text-xl font-semibold"
-              @click.prevent="checkUsername"
+          <div class="w-[300px] sm:w-[480px]">
+            <!-- 고정 너비 컨테이너 추가 -->
+            <div class="flex items-center">
+              <Input
+                type="text"
+                placeholder="4-12자"
+                v-model="registerCredentials.username"
+                variant="shadowed"
+                size="xs"
+                borderRadius="lg"
+                :isPasswordInput="true"
+              />
+              <Button
+                variant="filled"
+                size="sm"
+                class="ml-2 text-sm sm:text-xl font-semibold w-[43px] h-[43px] sm:w-[63px] sm:h-[63px]"
+                @click.prevent="checkUsername"
+              >
+                확인
+              </Button>
+            </div>
+            <p
+              v-if="usernameError"
+              class="mx-10 mt-2 text-xs sm:text-sm text-red"
             >
-              확인
-            </Button>
+              {{ usernameError }}
+            </p>
+            <p
+              v-else-if="usernameAvailable"
+              class="mt-2 ml-10 text-xs sm:text-sm text-green"
+            >
+              사용가능한 닉네임입니다.
+            </p>
           </div>
-          <p v-if="usernameError" class="mt-2 ml-10 text-xs text-red">
-            {{ usernameError }}
-          </p>
-          <p
-            v-else-if="usernameAvailable"
-            class="mt-2 ml-10 text-xs text-green"
-          >
-            사용가능한 닉네임입니다.
-          </p>
         </div>
 
         <div>
@@ -347,10 +357,11 @@ const { isDark } = useDarkMode();
             variant="shadowed"
             size="sm"
             borderRadius="lg"
+            :isPasswordInput="true"
           />
 
           <p
-            class="mt-2 ml-10 text-xs"
+            class="mt-2 ml-10 text-xs sm:text-sm"
             :class="{
               'text-red': registerCredentials.profile_bio.length === 16,
               'text-green': registerCredentials.profile_bio.length < 16,
@@ -364,17 +375,25 @@ const { isDark } = useDarkMode();
             class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >비밀번호</label
           >
-          <Input
-            type="passwordToggle"
-            placeholder="8-16자 (특문, 숫자 각 1개 이상 포함)"
-            v-model="registerCredentials.password"
-            variant="shadowed"
-            size="sm"
-            borderRadius="lg"
-          />
-          <p v-if="passwordError" class="mt-2 ml-10 text-xs text-red">
-            {{ passwordError }}
-          </p>
+          <div class="w-[300px] sm:w-[480px]">
+            <!-- 고정 너비 컨테이너 추가 -->
+            <Input
+              type="passwordToggle"
+              placeholder="8-16자 (특문, 숫자 각 1개 이상 포함)"
+              v-model="registerCredentials.password"
+              variant="shadowed"
+              size="sm"
+              borderRadius="lg"
+              :isPasswordInput="true"
+              class="w-full"
+            />
+            <p
+              v-if="passwordError"
+              class="mx-10 mt-2 text-xs sm:text-sm text-red"
+            >
+              {{ passwordError }}
+            </p>
+          </div>
         </div>
 
         <div>
@@ -389,8 +408,12 @@ const { isDark } = useDarkMode();
             variant="shadowed"
             size="sm"
             borderRadius="lg"
+            :isPasswordInput="true"
           />
-          <p v-if="confirmPasswordError" class="mt-2 ml-10 text-xs text-red">
+          <p
+            v-if="confirmPasswordError"
+            class="mt-2 ml-10 text-xs sm:text-sm text-red"
+          >
             {{ confirmPasswordError }}
           </p>
         </div>
@@ -398,7 +421,7 @@ const { isDark } = useDarkMode();
         <Button
           variant="shadowed"
           size="lg"
-          class="mt-[15px] w-[400px] sm:w-[480px]"
+          class="mt-[15px] w-[300px] sm:w-[480px] h-[53px] sm:h-[63px]"
           >회원가입</Button
         >
       </form>
