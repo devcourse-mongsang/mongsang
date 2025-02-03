@@ -52,9 +52,10 @@ async function handleLogout() {
     <div
       id="sidebar"
       :class="{
-        'left-0 shadow-[0px_0.25rem_4.675rem_#688FB69E,0px_0.25rem_4.375rem_#FFF_inset]':
-          sidebarStore.isHamburgerOpen,
+        'left-0': sidebarStore.isHamburgerOpen,
         'left-[-20rem]': !sidebarStore.isHamburgerOpen,
+        'shadow-[0px_0.25rem_4.675rem_#688FB69E,0px_0.25rem_4.375rem_#FFF_inset]':
+          !sidebarStore.isDarkMode && sidebarStore.isHamburgerOpen,
       }"
       class="w-[20rem] h-screen fixed top-0 z-10 transition-all ease-in-out duration-[0.45s] pt-[6.5625rem] backdrop-blur-[0.6875rem] text-white flex flex-col gap-[0.125rem] rounded-[0_1.875rem_1.875rem_0] bg-gradient-to-b from-[rgba(34,193,233,0.5)] to-[rgba(184,58,155,0.4)] dark:from-[#A6B1B7] dark:to-[#C6858D] px-[2.5rem]"
     >
@@ -73,7 +74,7 @@ async function handleLogout() {
                 :src="authStore.profile.profile_url"
                 alt="사용자의 프로필 이미지입니다."
               />
-              <div class="text-hc-white">
+              <div class="text-hc-white dark:text-hc-dark-blue">
                 <p
                   class="font-semibold"
                   :style="{ fontSize: 'clamp(16px, 2.5vw, 20px)' }"
@@ -81,7 +82,7 @@ async function handleLogout() {
                   @{{ authStore.profile.username }}
                 </p>
                 <p
-                  class="text-hc-black dark:text-hc-dark-blue"
+                  class="text-hc-black dark:text-hc-white"
                   :style="{ fontSize: 'clamp(10px, 2vw, 13px)' }"
                 >
                   {{ authStore.profile.profile_bio }}
