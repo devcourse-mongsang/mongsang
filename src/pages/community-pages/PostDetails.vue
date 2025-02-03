@@ -198,7 +198,7 @@ register();
           <img
             :src="author?.profile_url || imgPlaceholder"
             alt="작성자 프로필 사진입니다."
-            class="w-[40px] h-[40px] rounded-full"
+            class="w-[40px] h-[40px] rounded-full object-cover"
           />
           <p class="font-bold text-hc-dark-blue">{{ author?.username }}</p>
         </div>
@@ -240,23 +240,26 @@ register();
         slides-per-view="1"
         speed="450"
       >
-      <swiper-slide
-  v-for="(postImg, index) in postImgs"
-  :key="index"
-  class="md:rounded-[20px] bg-hc-white/50 overflow-hidden"
->
-  <div class="flex items-center justify-center w-full h-full aspect-square">
-    <img
-      class="object-contain max-w-full max-h-full w-full h-full rounded-[20px]"
-      :src="postImg"
-      alt="Post Image"
-    />
-  </div>
-</swiper-slide>
-
+        <swiper-slide
+          v-for="(postImg, index) in postImgs"
+          :key="index"
+          class="md:rounded-[20px] bg-hc-white/50 overflow-hidden"
+        >
+          <div
+            class="flex items-center justify-center w-full h-full aspect-square"
+          >
+            <img
+              class="object-contain max-w-full max-h-full w-full h-full rounded-[20px]"
+              :src="postImg"
+              alt="Post Image"
+            />
+          </div>
+        </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white transition-colors duration-300">
+        <div
+          class="mt-[30px] px-4 sm:px-0 dark:text-hc-white transition-colors duration-300"
+        >
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
@@ -310,3 +313,9 @@ register();
     <ScrollTopButton bottom="-20px" />
   </div>
 </template>
+
+<style scoped>
+.object-cover {
+  object-fit: cover;
+}
+</style>
