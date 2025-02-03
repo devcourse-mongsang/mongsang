@@ -184,7 +184,9 @@ const createNewPost = async () => {
         ></textarea>
       </div>
       <div class="m-[25px] flex flex-col gap-[10px]">
-        <p class="pl-2 text-xl font-semibold">이미지 업로드</p>
+        <p class="pl-2 text-xl font-semibold dark:text-hc-white">
+          이미지 업로드
+        </p>
 
         <div
           @drop="handleDrop"
@@ -203,7 +205,7 @@ const createNewPost = async () => {
           />
           <label
             for="fileInput"
-            class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px]"
+            class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px] dark:bg-hc-dark-blue"
           >
             <div
               class="px-4 py-2 text-center text-white bg-blue-500 rounded hover:bg-blue-600"
