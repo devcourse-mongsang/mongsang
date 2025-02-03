@@ -136,7 +136,9 @@ onMounted(fetchPosts);
     <div
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
-      <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
+      <h1 class="text-2xl font-semibold dark:text-hc-white">
+        {{ currentBoard.title }}
+      </h1>
       <DropDownPostList
         @select="
           (selected) => {
@@ -145,7 +147,9 @@ onMounted(fetchPosts);
         "
       />
     </div>
-    <div class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden"></div>
+    <div
+      class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden dark:bg-hc-dark-blue"
+    ></div>
 
     <!-- 검색창 -->
     <div class="flex justify-center mx-4 mb-[35px]">
@@ -172,24 +176,24 @@ onMounted(fetchPosts);
       <li v-for="post in paginationedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
-            <div class="flex flex-col sm:gap-7 xm:gap-6">
+            <div class="flex flex-col gap-6 sm:gap-7">
               <span class="flex items-center gap-[10px]">
                 <img
-                  class="aspect-square xm:w-[30px] sm:w-[50px] rounded-full object-cover"
+                  class="aspect-square w-[30px] xm:w-[30px] sm:w-[50px] rounded-full object-cover"
                   :src="
                     authorCache[post.author_id]?.profile_url || imgPlaceholder
                   "
                   alt="User profile image"
                 />
-                <p class="font-semibold lg:text-xl">
+                <p class="font-semibold lg:text-xl dark:text-hc-white">
                   {{ authorCache[post.author_id]?.username || "@anonymous" }}
                 </p>
               </span>
-              <span class="flex flex-col">
+              <span class="flex flex-col dark:text-hc-white">
                 <h2 class="font-semibold sm:text-xl lg:text-2xl">
                   {{ post.title }}
                 </h2>
-                <p class="text-[#757575] xm:text-xs sm:text-base">
+                <p class="text-hc-gray xm:text-xs sm:text-base">
                   {{ dateConverter(post.created_at) }}
                 </p>
               </span>
@@ -206,14 +210,16 @@ onMounted(fetchPosts);
           </div>
 
           <div class="sm:px-4">
-            <div class="h-[1px] w-full mb-[27px] bg-hc-blue"></div>
+            <div
+              class="h-[1px] w-full mb-[27px] bg-hc-blue dark:bg-hc-dark-blue"
+            ></div>
           </div>
         </RouterLink>
       </li>
     </ul>
 
     <!-- 게시글 없음 메시지 -->
-    <p v-else>게시글이 없습니다.</p>
+    <p v-else class="dark:text-hc-white">게시글이 없습니다.</p>
 
     <!-- 글 작성 버튼 -->
     <RouterLink
@@ -228,7 +234,7 @@ onMounted(fetchPosts);
           icon="material-symbols:edit-outline"
           width="1.5rem"
           height="1.5rem"
-          style="color: #729ecb"
+          class="text-hc-blue dark:text-hc-dark-blue"
         />
       </v-fab>
     </RouterLink>
@@ -242,7 +248,7 @@ onMounted(fetchPosts);
         icon="material-symbols:edit-outline"
         width="1.5rem"
         height="1.5rem"
-        style="color: #729ecb"
+        class="text-hc-blue dark:text-hc-dark-blue"
       />
     </v-fab>
     <div class="text-xs-center" v-if="!isLoading">

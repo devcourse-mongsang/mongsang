@@ -74,7 +74,9 @@ register();
   <div
     class="font-semibold max-w-[1141px] mx-auto px-4 md:px-8 lg:px-11 xm:mt-[60px] sm:mt-[128px] flex flex-col gap-5"
   >
-    <h2 class="xm:text-base sm:text-2xl md:text-[32px]">실시간 인기글 TOP 5</h2>
+    <h2 class="xm:text-base sm:text-2xl md:text-[32px] dark:text-hc-white">
+      실시간 인기글 TOP 5
+    </h2>
     <CommunityChips />
   </div>
 
@@ -87,7 +89,7 @@ register();
   <swiper-container
     v-if="posts.length > 0"
     navigation="true"
-    class="mySwiper"
+    class="scale-75 sm:scale-90 lg:scale-100"
     initial-slide="0"
     pagination="true"
     effect="coverflow"
@@ -103,7 +105,7 @@ register();
     <swiper-slide
       v-for="post in posts"
       :key="post.id"
-      class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%]"
+      class="p-[10px] bg-hc-white/50 rounded-[20px] border-[7px] border-hc-white/30 hover:scale-[105%] dark:bg-hc-beige/20"
     >
       <RouterLink :to="`/${post.category}/${post.id}`">
         <img
@@ -111,10 +113,12 @@ register();
           :src="post.images[0] || imgPlaceholder"
           alt="Post Image"
         />
-        <div class="text-xl mt-[24px] leading-tight">
+        <div class="text-xl mt-[24px] leading-tight dark:text-hc-dark-blue">
           <p class="text-base">{{ post.categoryTitle }}</p>
           <div class="flex justify-between">
-            <h3 class="font-semibold">{{ post.title || "제목 없음" }}</h3>
+            <h3 class="font-semibold dark:te">
+              {{ post.title || "제목 없음" }}
+            </h3>
             <div class="flex items-center gap-1 pr-2">
               <Icon
                 class="cursor-pointer"

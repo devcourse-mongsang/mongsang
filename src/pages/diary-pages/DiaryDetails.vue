@@ -101,26 +101,30 @@ const toggleModal = () => {
           class="absolute right-7 top-[89px] text-2xl text-justify text-black whitespace-nowrap"
         >
           <span class="font-semibold">{{ diaryData.username }}</span>
-          <span> 의 꿈 일기</span>
+          <span>의 꿈 일기</span>
         </p>
       </div>
 
       <div class="flex items-center gap-8">
-        <p class="text-lg sm:text-xl">{{ formattedDate }}</p>
+        <p class="text-xl dark:text-hc-white sm:text-xl">{{ formattedDate }}</p>
 
-        <div class="flex items-center gap-2 justify-end ml-auto">
-          <p class="text-xl xm:hidden sm:block">오늘의 기분</p>
+        <div class="flex items-center justify-end gap-2 ml-auto">
+          <p class="text-xl xm:hidden sm:block dark:text-hc-white">
+            오늘의 기분
+          </p>
           <Icon
             :icon="getIconByName(faceIcons, diaryData.condition)"
-            class="w-6 h-6 text-hc-blue"
+            class="w-6 h-6 text-hc-blue dark:text-hc-dark-blue"
           />
         </div>
 
-        <div class="flex items-center gap-2 justify-end">
-          <p class="text-xl xm:hidden sm:block">오늘의 날씨</p>
+        <div class="flex items-center justify-end gap-2">
+          <p class="text-xl xm:hidden sm:block dark:text-hc-white">
+            오늘의 날씨
+          </p>
           <Icon
             :icon="getIconByName(weatherIcons, diaryData.weather)"
-            class="w-6 h-6 text-hc-blue"
+            class="w-6 h-6 text-hc-blue dark:text-hc-dark-blue"
           />
         </div>
 
@@ -129,24 +133,26 @@ const toggleModal = () => {
           <button class="flex items-center gap-2" @click="toggleModal">
             <Icon
               icon="mdi:dots-horizontal"
-              class="w-6 h-6 text-hc-blue cursor-pointer"
+              class="w-6 h-6 cursor-pointer text-hc-blue dark:text-hc-white"
             />
           </button>
 
           <!-- 모달 -->
           <div
             v-if="isModalOpen"
-            class="absolute right-0 mt-2 w-[191px] rounded-[20px] bg-hc-white shadow-blue z-50"
+            class="absolute right-0 mt-2 w-[191px] rounded-[20px] bg-hc-white shadow-blue z-50 dark:shadow-dark-blue"
           >
-            <div class="py-5 px-4">
+            <div class="px-4 py-5">
               <RouterLink :to="`/diary/${diaryId}/update-diary`">
                 <button
-                  class="w-full text-base text-center text-hc-black hover:opacity-60 mb-3"
+                  class="w-full mb-3 text-base text-center text-hc-black hover:opacity-60"
                 >
                   일기 수정
                 </button>
               </RouterLink>
-              <hr class="border-hc-blue border-1 mb-3" />
+              <hr
+                class="mb-3 border-hc-blue border-1 dark:border-hc-dark-blue"
+              />
               <button
                 class="w-full text-base text-center text-hc-coral hover:opacity-70"
                 @click="handleDeleteDiary"
@@ -161,37 +167,56 @@ const toggleModal = () => {
 
     <!-- 일기장 이미지 -->
     <img
-      :src="diaryData.imgUrl || '/assets/imgs/img_placeholder.png'"
+      v-if="diaryData.imgUrl"
+      :src="diaryData.imgUrl"
       alt="Dream"
       class="w-full rounded-[0px] object-cover mb-8 xm:h-auto sm:rounded-[20px]"
     />
+    <img
+      v-else
+      src="/assets/imgs/img_placeholder.png"
+      alt="Dream"
+      class="w-full rounded-[0px] object-cover mb-8 xm:h-auto sm:rounded-[20px] dark:hidden"
+    />
+    <img
+      v-if="!diaryData.imgUrl"
+      src="/assets/imgs/img_placeholder_dark.png"
+      alt="Dream"
+      class="hidden w-full rounded-[0px] object-cover mb-8 xm:h-auto sm:rounded-[20px] dark:block"
+    />
 
     <!-- 꿈 일기 제목과 내용 -->
-    <h2 class="text-2xl font-semibold mb-4 xm:text-xl xm:px-4 sm:px-[0px]">
+    <h2
+      class="text-2xl font-semibold mb-4 xm:text-xl xm:px-4 sm:px-[0px] dark:text-hc-white"
+    >
       {{ diaryData.title }}
     </h2>
-    <p class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px]">
+    <p
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white"
+    >
       {{ diaryData.content }}
     </p>
     <!-- 구분선 -->
-    <hr class="border-hc-blue my-8" />
+    <hr class="my-8 border-hc-blue dark:border-hc-dark-blue" />
 
     <!-- 꿈 분석 -->
     <h3
-      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px]"
+      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px] dark:text-hc-dark-blue"
     >
       꿈 분석
     </h3>
-    <p class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px]">
+    <p
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white"
+    >
       {{ diaryData.dreamAnalysis }}
     </p>
 
     <!-- 구분선 -->
-    <hr class="border-hc-blue my-8" />
+    <hr class="my-8 border-hc-blue dark:border-hc-dark-blue" />
 
     <!-- ASMR 섹션 -->
     <h3
-      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px]"
+      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px] dark:text-hc-dark-blue"
     >
       ASMR
     </h3>
@@ -217,7 +242,7 @@ const toggleModal = () => {
           icon="material-symbols:book-2-outline"
           width="1.5rem"
           height="1.5rem"
-          style="color: #729ecb"
+          class="text-hc-blue dark:text-hc-dark-blue"
         />
       </v-fab>
     </RouterLink>

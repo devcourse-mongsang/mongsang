@@ -35,14 +35,14 @@ const isLoading = ref(true); // 로딩 상태 추가
 //   }
 // };
 
-const getRandomVideos = (arr, n) => {
-  const mixed = arr.slice(0);
-  for (let i = mixed.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
-  }
-  return mixed.slice(0, n);
-};
+// const getRandomVideos = (arr, n) => {
+//   const mixed = arr.slice(0);
+//   for (let i = mixed.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
+//   }
+//   return mixed.slice(0, n);
+// };
 
 // fetchASMRVideos();
 </script>
@@ -54,23 +54,32 @@ const getRandomVideos = (arr, n) => {
     <!-- 로고 -->
     <div class="flex justify-center w-2/3 max-w-lg">
       <img
-        class="sm:w-full xm:w-[231px]"
-        src="../../public/assets/imgs/big_logo.png"
-        alt="로고 이미지입니다."
+        class="sm:w-full xm:w-[231px] block dark:hidden"
+        src="/assets/imgs/big_logo.png"
+        alt="라이트 모드 로고"
+      />
+      <img
+        class="sm:w-full xm:w-[231px] hidden dark:block"
+        src="/assets/imgs/big_logo_dark.png"
+        alt="다크 모드 로고"
       />
     </div>
 
     <!-- 소개 섹션 -->
     <div class="flex flex-col items-center mt-8 space-y-4 text-center">
-      <h1 class="font-semibold sm:text-[24px] md:text-[32px] text-base">
-        꿈을 기록하는 몽상가가 되어보세요
+      <h1
+        class="font-semibold sm:text-[24px] md:text-[32px] text-base dark:text-hc-white"
+      >
+        꿈을 기록하는
+        <span class="text-hc-blue dark:text-hc-dark-blue">몽상가</span>가
+        되어보세요
       </h1>
       <div class="hidden mt-[10px] mb-6 text-xl md:flex md:flex-col">
-        <h2>
+        <h2 class="dark:text-hc-white">
           꿈에 담긴 감정을 AI로 시각화하고 분석된 심리 상태에 맞는 ASMR로 마음을
           어루만지세요.
         </h2>
-        <h2>
+        <h2 class="dark:text-hc-white">
           몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.
         </h2>
       </div>
@@ -78,7 +87,7 @@ const getRandomVideos = (arr, n) => {
         ><Button
           variant="shadowed"
           size="lg"
-          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] xm:w-[192px] xm:text-[14px] sm:text-2xl xm:h-[47px] sm:h-[63px]"
+          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] w-[192px] text-[14px] sm:text-2xl h-[47px] sm:h-[63px] mb-[100px] xm:mb-[0px]"
         >
           꿈 기록하러 가기
         </Button></RouterLink
@@ -91,10 +100,10 @@ const getRandomVideos = (arr, n) => {
 
     <!-- AI 추천 ASMR -->
     <div
-      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
+      class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] dark:bg-hc-beige/20 border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
-        <h3 class="text-2xl font-semibold">
+        <h3 class="text-2xl font-semibold dark:text-hc-white">
           당신의 꿈에 귀 기울이는 순간, ASMR 추천
         </h3>
         <Button
@@ -102,6 +111,7 @@ const getRandomVideos = (arr, n) => {
           size="xs"
           @click="fetchASMRVideos"
           style="background-color: rgba(255, 255, 255, 0.5)"
+          class="dark:text-hc-dark-blue"
         >
           <v-icon>
             <svg
@@ -123,7 +133,7 @@ const getRandomVideos = (arr, n) => {
             class="w-full max-h-[300px] object-cover"
           ></v-skeleton-loader>
         </li>
-        <!-- <li v-for="video in videos" :key="video.id.videoId" v-else>
+        <li v-for="video in videos" :key="video.id.videoId" v-else>
           <iframe
             :src="'https://www.youtube.com/embed/' + video.id.videoId"
             frameborder="0"
@@ -132,7 +142,7 @@ const getRandomVideos = (arr, n) => {
             class="w-full max-h-[300px] rounded-[20px] object-cover h-auto"
             style="aspect-ratio: 16 / 9"
           ></iframe>
-        </li> -->
+        </li>
       </ul>
     </div>
   </div>

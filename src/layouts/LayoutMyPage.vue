@@ -4,8 +4,7 @@ import Sidebar from "@/components/common/Sidebar.vue";
 <template>
   <div
     id="back-ground"
-    class="max-w-full mx-auto min-h-screen bg-cover bg-center bg-no-repeat relative overflow-y-auto z-[-10px]"
-    style="background-image: url('/assets/imgs/bg_circle 1.png')"
+    class="max-w-full mx-auto min-h-screen bg-cover bg-center bg-no-repeat relative overflow-y-auto z-[-10px] bg-[url('/assets/imgs/bg_circle_light.png')] dark:bg-[url('/assets/imgs/bg_circle_dark.png')]"
   >
     <Sidebar />
     <div class="pt-[70px]">

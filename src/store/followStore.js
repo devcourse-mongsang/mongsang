@@ -11,6 +11,7 @@ export const useFollowStore = defineStore("followStore", {
   actions: {
     // 로그인한 사용자가 팔로우 중인 목록 가져오기
     async fetchLoggedInUserFollowing(loggedInUserId) {
+      if (!loggedInUserId) return;
       const { data, error } = await supabase
         .from("follow")
         .select("followed_userid(id, username, profile_bio, profile_url)")

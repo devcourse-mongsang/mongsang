@@ -23,3 +23,32 @@ export const checkDiaryExists = async (date) => {
     return false;
   }
 };
+export const uploadDiaryImage = async (diaryId, base64Image) => {
+  try {
+    const fileName = `${diaryId}.png`; // 일기 ID 기반 파일명
+    const filePath = `dream_img/${diaryId}/${fileName}`; // 폴더 경로
+
+    // Base64 -> Blob 변환
+    const blob = await (await fetch(base64Image)).blob();
+
+    // Supabase Storage에 업로드
+    const { data, error } = await supabase.storage
+      .from("MongSang_Img")
+      .upload(filePath, blob, {
+        contentType: "image/png",
+        upsert: true,
+      });
+
+    if (error) throw new Error(error.message);
+
+    // 업로드된 이미지의 URL 가져오기
+    const { data: publicUrlData } = supabase.storage
+      .from("MongSang_Img")
+      .getPublicUrl(filePath);
+
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error("이미지 업로드 실패:", error.message);
+    throw error;
+  }
+};

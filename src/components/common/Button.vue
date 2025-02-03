@@ -6,6 +6,7 @@
       buttonSize[size],
       'hover:scale-105 active:scale-95',
       className,
+      'dark:hover:scale-105 dark:active:scale-95',
     ]"
     v-bind="otherProps"
   >
@@ -38,9 +39,12 @@ export default defineComponent({
   },
   setup(props, { attrs }) {
     const buttonVar = {
-      filled: "bg-hc-blue text-hc-white",
-      regular: "text-hc-blue bg-hc-white",
-      shadowed: "shadow-blue bg-hc-blue text-hc-white",
+      filled:
+        "bg-hc-blue text-hc-white dark:bg-hc-dark-blue  dark:text-hc-white",
+      regular:
+        "text-hc-blue bg-hc-white dark:text-hc-dark-blue dark:bg-hc-white",
+      shadowed:
+        "shadow-blue bg-hc-blue text-hc-white dark:shadow-dark-blue dark:bg-hc-dark-blue ",
       custom: "",
     };
 
