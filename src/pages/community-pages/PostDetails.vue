@@ -52,11 +52,20 @@ const fetchAuthor = async (userId) => {
 };
 
 const fetchDeletePost = async (postId) => {
-  if (postId) {
-    await deletePost(postId);
-    await deleteImagesFromFolder(postId);
-    router.push({ name: "communityBoard" });
-  }
+  modalStore.addModal({
+    title: "알림",
+    content: "정말 게시물을 삭제하시겠습니까?",
+    btnText: "삭제",
+    isOneBtn: false,
+    onClick: async () => {
+      modalStore.modals = [];
+      if (postId) {
+        await deletePost(postId);
+        await deleteImagesFromFolder(postId);
+        router.push({ name: "communityBoard" });
+      }
+    },
+  });
 };
 
 const fetchImg = async (postId) => {
@@ -106,6 +115,10 @@ const onfollowButtonClick = async (followed_user) => {
   } else {
     await followStore.toggleFollow(authStore.profile.id, followed_user);
   }
+};
+
+const onRedirectButtonClick = () => {
+  router.push({ name: "communityBoard" });
 };
 
 postId.value = route.params.postId;
@@ -160,13 +173,13 @@ onMounted(() => {
 });
 const menuItems = computed(() => [
   {
-    label: "Edit Post",
+    label: "게시글 수정",
     icon: "material-symbols:edit-square-outline-rounded",
     link: `/${category.value}/${post.value.id}/update-post`,
     color: "#757575",
   },
   {
-    label: "Delete Post",
+    label: "게시글 삭제",
     icon: "mdi:delete",
     action: () => fetchDeletePost(post.value.id),
     color: "#ed4848",
@@ -283,6 +296,15 @@ register();
       <div class="flex flex-col">
         <Comment :postId="postId" :authorId="post.author_id" />
       </div>
+    </div>
+    <div class="flex justify-end pt-5">
+      <Button
+        variant="regular"
+        class-name="w-[100px] h-[30px] rounded-[20px]"
+        @click="onRedirectButtonClick"
+      >
+        목록으로
+      </Button>
     </div>
   </div>
 </template>
