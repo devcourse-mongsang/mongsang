@@ -136,7 +136,7 @@ onMounted(fetchPosts);
     <div
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
-      <h1 class="text-4xl font-semibold">{{ currentBoard.title }}</h1>
+      <h1 class="text-2xl font-semibold">{{ currentBoard.title }}</h1>
       <DropDownPostList
         @select="
           (selected) => {
@@ -172,10 +172,10 @@ onMounted(fetchPosts);
       <li v-for="post in paginationedPosts" :key="post.id">
         <RouterLink :to="`/${route.params.boardType}/${post.id}`" class="mb-7">
           <div class="flex items-center justify-between mx-4 mb-7">
-            <div class="flex flex-col sm:gap-7 xm:gap-6">
+            <div class="flex flex-col gap-6 sm:gap-7">
               <span class="flex items-center gap-[10px]">
                 <img
-                  class="aspect-square xm:w-[30px] sm:w-[50px] rounded-full object-cover"
+                  class="aspect-square w-[30px] xm:w-[30px] sm:w-[50px] rounded-full object-cover"
                   :src="
                     authorCache[post.author_id]?.profile_url || imgPlaceholder
                   "

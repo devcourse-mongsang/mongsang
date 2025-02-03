@@ -78,7 +78,7 @@ const getRandomVideos = (arr, n) => {
         ><Button
           variant="shadowed"
           size="lg"
-          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] xm:w-[192px] xm:text-[14px] sm:text-2xl xm:h-[47px] sm:h-[63px]"
+          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] w-[192px] text-[14px] sm:text-2xl h-[47px] sm:h-[63px] mb-[100px] xm:mb-[0px]"
         >
           꿈 기록하러 가기
         </Button></RouterLink

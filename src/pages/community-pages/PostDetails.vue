@@ -170,7 +170,7 @@ register();
 
 <template>
   <div v-if="!isLoading && post">
-    <div class="flex items-center justify-between mb-3 xm:px-4 md:px-0">
+    <div class="flex items-center justify-between px-4 mb-3 md:px-0">
       <RouterLink :to="`/mypage/profile/${author?.id}`">
         <div class="flex items-center gap-[10px]">
           <img
@@ -235,12 +235,12 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] xm:px-4 sm:px-0">
+        <div class="mt-[45px] px-4 sm:px-0">
           <div class="flex items-center">
-            <h1 class="font-semibold xm:text-xl sm:text-2xl w-11/12 sm:px-3">
+            <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
             </h1>
-            <div class="w-1/12 flex justify-end px-0">
+            <div class="flex justify-end w-1/12 px-0">
               <LikesCounter
                 :postId="postId || null"
                 :authorId="post.author_id"
@@ -249,10 +249,10 @@ register();
           </div>
 
           <div class="flex items-start mt-2">
-            <p class="text-lg sm:text-xl w-11/12 sm:px-3 break-words">
+            <p class="w-11/12 text-lg break-words sm:text-xl sm:px-3">
               {{ post.content }}
             </p>
-            <div class="w-1/12 flex justify-end px-0">
+            <div class="flex justify-end w-1/12 px-0">
               <Icon
                 class="cursor-pointer"
                 icon="mdi:share-variant"
@@ -264,7 +264,7 @@ register();
             </div>
           </div>
 
-          <p class="text-sm text-gray-500 mt-2 sm:px-3">
+          <p class="mt-2 text-sm text-gray-500 sm:px-3">
             {{ dateConverter(post.created_at) }}
           </p>
         </div>
