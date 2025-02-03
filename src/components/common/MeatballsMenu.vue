@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import { Icon } from "@iconify/vue";
 
 defineProps(["menuItems"]);
 
@@ -39,38 +38,25 @@ onUnmounted(() => {
 
     <div
       v-if="isOpen"
-      class="absolute right-0 z-50 w-40 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg"
+      class="absolute right-0 z-50 w-[190px] mt-2 bg-white border border-gray-200 rounded-[20px] shadow-lg"
     >
-      <ul class="py-1">
+      <ul class="py-5">
         <li
           v-for="item in menuItems"
           :key="item.label"
           @click="item.action && item.action()"
-          class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-hc-gray/20"
+          class="flex items-center justify-center gap-2 text-center text-gray-700 cursor-pointer"
         >
           <RouterLink
             v-if="item.link"
             :to="item.link"
-            class="flex items-center w-full gap-2 text-left"
+            class="flex items-center justify-center gap-2 mx-auto text-left border-b-[1px] border-hc-blue w-[150px] pb-3"
           >
-            <Icon
-              v-if="item.icon"
-              :icon="item.icon"
-              :width="item.width || 20"
-              :height="item.height || 20"
-              :color="item.color || '#757575'"
-            />
-            <span>{{ item.label }}</span>
+            <span class="hover:text-hc-gray/60">{{ item.label }}</span>
           </RouterLink>
-          <div v-else class="flex items-center gap-2">
-            <Icon
-              v-if="item.icon"
-              :icon="item.icon"
-              :width="item.width || 20"
-              :height="item.height || 20"
-              :color="item.color || '#757575'"
-            />
-            <span>{{ item.label }}</span>
+
+          <div v-else class="flex items-center gap-2 text-hc-coral">
+            <span class="pt-3 hover:text-hc-coral/60">{{ item.label }}</span>
           </div>
         </li>
       </ul>

@@ -100,8 +100,12 @@ const toggleModal = () => {
         <p
           class="absolute right-7 top-[89px] text-2xl text-justify text-black whitespace-nowrap"
         >
+          <span class="font-semibold dark:text-hc-white">{{
+            diaryData.username
+          }}</span>
+          <span class="dark:text-hc-white">의 꿈 일기</span>
           <span class="font-semibold">{{ diaryData.username }}</span>
-          <span> 의 꿈 일기</span>
+          <span>의 꿈 일기</span>
         </p>
       </div>
 
@@ -145,7 +149,7 @@ const toggleModal = () => {
             <div class="px-4 py-5">
               <RouterLink :to="`/diary/${diaryId}/update-diary`">
                 <button
-                  class="w-full mb-3 text-base text-center text-hc-black hover:opacity-60"
+                  class="w-full mb-3 text-base text-center text-hc-black hover:scale-105"
                 >
                   일기 수정
                 </button>
@@ -154,7 +158,7 @@ const toggleModal = () => {
                 class="mb-3 border-hc-blue border-1 dark:border-hc-dark-blue"
               />
               <button
-                class="w-full text-base text-center text-hc-coral hover:opacity-70"
+                class="w-full text-base text-center text-hc-coral hover:scale-105"
                 @click="handleDeleteDiary"
               >
                 일기 삭제
@@ -206,9 +210,16 @@ const toggleModal = () => {
       꿈 분석
     </h3>
     <p
+      v-if="diaryData.dreamAnalysis"
       class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white"
     >
       {{ diaryData.dreamAnalysis }}
+    </p>
+    <p
+      v-else
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] text-hc-gray dark:text-hc-white"
+    >
+      분석된 꿈이 없습니다.
     </p>
 
     <!-- 구분선 -->
@@ -232,6 +243,12 @@ const toggleModal = () => {
         class="w-full aspect-video"
       ></iframe>
     </div>
+    <p
+      v-else
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] text-hc-gray dark:text-hc-white"
+    >
+      추천 영상이 없습니다.
+    </p>
 
     <RouterLink to="/diary">
       <v-fab

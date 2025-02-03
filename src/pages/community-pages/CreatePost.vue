@@ -4,6 +4,7 @@ import { uploadImagesToSupabase } from "@/api/api-community/imgsApi";
 import DropDownNewPost from "@/components/common/DropDownNewPost.vue";
 import { useAuthStore } from "@/store/authStore";
 import { useDropDownStore } from "@/store/dropDownStore";
+import { useModalStore } from "@/store/modalStore";
 import { Icon } from "@iconify/vue";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -20,6 +21,7 @@ const menuItems = [
 ];
 const router = useRouter();
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 const dropdownStore = useDropDownStore();
 const imageFiles = ref([]);
 const imageUrls = ref([]);
@@ -87,34 +89,70 @@ const removeImage = (index) => {
   imageFiles.value.splice(index, 1);
 };
 
-const createNewPost = async () => {
-  try {
-    if (authStore.isLoggedIn && authStore.profile) {
-      const newPostData = {
-        title: title.value,
-        content: content.value,
-        author_id: authStore.profile.id,
-        category: selectedCategory.value,
-      };
-      const postResponse = await createPost(newPostData);
-      const postId = postResponse[0].id;
-
-      if (postId) {
-        console.log(imageFiles.value);
-        const uploadedImageUrls = await uploadImagesToSupabase(
-          imageFiles.value,
-          postId
-        );
-        console.log("Uploaded image URLs:", uploadedImageUrls); // 업로드된 이미지 URL 로그 출력
-
-        router.push({ name: "communityBoard" });
-      }
-    }
-  } catch (error) {
-    alert("이미지 업로드에 실패하였습니다.");
-    console.error(error);
+const validateInput = () => {
+  if (!title.value.trim()) {
+    showAlertModal("제목을 입력해 주세요.");
+    return false;
   }
+  if (!content.value.trim()) {
+    showAlertModal("내용을 입력해 주세요.");
+    return false;
+  }
+  return true;
 };
+
+const showAlertModal = (message) => {
+  modalStore.addModal({
+    title: "알림",
+    content: message,
+    btnText: "확인",
+    isOneBtn: true,
+    onClick: () => {
+      modalStore.modals = [];
+    },
+  });
+};
+
+const createNewPost = async () => {
+  if (!validateInput()) return;
+
+  modalStore.addModal({
+    title: "알림",
+    content: "게시물 작성을 마치시겠습니까?",
+    btnText: "포스팅",
+    isOneBtn: false,
+    onClick: async () => {
+      modalStore.modals = [];
+      try {
+        if (authStore.isLoggedIn && authStore.profile) {
+          const newPostData = {
+            title: title.value,
+            content: content.value,
+            author_id: authStore.profile.id,
+            category: selectedCategory.value,
+          };
+          const postResponse = await createPost(newPostData);
+          const postId = postResponse[0].id;
+
+          if (postId) {
+            console.log(imageFiles.value);
+            const uploadedImageUrls = await uploadImagesToSupabase(
+              imageFiles.value,
+              postId
+            );
+            console.log("Uploaded image URLs:", uploadedImageUrls);
+
+            router.push({ name: "communityBoard" });
+          }
+        }
+      } catch (error) {
+        alert("이미지 업로드에 실패하였습니다.");
+        console.error(error);
+      }
+    },
+  });
+};
+
 </script>
 
 <template>
@@ -146,7 +184,9 @@ const createNewPost = async () => {
         ></textarea>
       </div>
       <div class="m-[25px] flex flex-col gap-[10px]">
-        <p class="pl-2 text-xl font-semibold">이미지 업로드</p>
+        <p class="pl-2 text-xl font-semibold dark:text-hc-white">
+          이미지 업로드
+        </p>
 
         <div
           @drop="handleDrop"
@@ -165,7 +205,7 @@ const createNewPost = async () => {
           />
           <label
             for="fileInput"
-            class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px]"
+            class="mt-4 rounded-md cursor-pointer bg-hc-blue hover:scale-[105%] w-[100px] dark:bg-hc-dark-blue"
           >
             <div
               class="px-4 py-2 text-center text-white bg-blue-500 rounded hover:bg-blue-600"

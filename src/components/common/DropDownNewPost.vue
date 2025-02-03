@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue";
 import { useDropDownStore } from "@/store/dropDownStore";
 
 // items와 buttonText를 props로 선언
-defineProps({     
+defineProps({
   items: {
     type: Array,
     required: true,

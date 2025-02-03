@@ -29,7 +29,7 @@ import Sidebar from "../components/common/Sidebar.vue";
 }
 
 .dark #back-ground {
-  background-image: url("/assets/imgs/bg_circle_dark_mobile.png");
+  background-image: url("/assets/imgs/bg_circle_mobile_dark.png");
 }
 
 @media (min-width: 768px) {

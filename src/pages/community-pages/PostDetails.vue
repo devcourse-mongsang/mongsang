@@ -21,6 +21,7 @@ import Comment from "./Comment.vue";
 import LikesCounter from "@/components/common/LikesCounter.vue";
 import { useModalStore } from "@/store/modalStore";
 import { useFollowStore } from "@/store/followStore";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -52,11 +53,20 @@ const fetchAuthor = async (userId) => {
 };
 
 const fetchDeletePost = async (postId) => {
-  if (postId) {
-    await deletePost(postId);
-    await deleteImagesFromFolder(postId);
-    router.push({ name: "communityBoard" });
-  }
+  modalStore.addModal({
+    title: "알림",
+    content: "정말 게시물을 삭제하시겠습니까?",
+    btnText: "삭제",
+    isOneBtn: false,
+    onClick: async () => {
+      modalStore.modals = [];
+      if (postId) {
+        await deletePost(postId);
+        await deleteImagesFromFolder(postId);
+        router.push({ name: "communityBoard" });
+      }
+    },
+  });
 };
 
 const fetchImg = async (postId) => {
@@ -67,19 +77,27 @@ const fetchImg = async (postId) => {
 };
 
 const fetchAllData = async () => {
-  if (postId.value) {
-    try {
-      loadingStore.startLoading();
-      await Promise.all([fetchPostItem(postId.value), fetchImg(postId.value)]);
-      if (post.value.author_id) {
-        await fetchAuthor(post.value.author_id);
-      }
-      await followStore.fetchLoggedInUserFollowing(authStore.profile.id);
-    } catch (error) {
-      console.error("Error during data fetch:", error);
-    } finally {
-      loadingStore.stopLoading();
+  if (!postId.value) return;
+
+  try {
+    loadingStore.startLoading();
+
+    // post 데이터를 먼저 가져옴
+    await fetchPostItem(postId.value);
+
+    // post.value가 갱신될 때까지 기다린 후 확인
+    if (post.value?.author_id) {
+      await fetchAuthor(post.value.author_id);
     }
+
+    await Promise.all([
+      fetchImg(postId.value),
+      followStore.fetchLoggedInUserFollowing(authStore.profile?.id),
+    ]);
+  } catch (error) {
+    console.error("❌ Error during data fetch:", error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -98,6 +116,10 @@ const onfollowButtonClick = async (followed_user) => {
   } else {
     await followStore.toggleFollow(authStore.profile.id, followed_user);
   }
+};
+
+const onRedirectButtonClick = () => {
+  router.push({ name: "communityBoard" });
 };
 
 postId.value = route.params.postId;
@@ -152,13 +174,13 @@ onMounted(() => {
 });
 const menuItems = computed(() => [
   {
-    label: "Edit Post",
+    label: "게시글 수정",
     icon: "material-symbols:edit-square-outline-rounded",
     link: `/${category.value}/${post.value.id}/update-post`,
     color: "#757575",
   },
   {
-    label: "Delete Post",
+    label: "게시글 삭제",
     icon: "mdi:delete",
     action: () => fetchDeletePost(post.value.id),
     color: "#ed4848",
@@ -184,8 +206,7 @@ register();
       <div v-if="isLoggedIn">
         <Button
           v-if="author?.id !== authStore.profile.id"
-          size="md"
-          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          class-name="w-[80px] h-[35px] text-xs px-[6px] py-2 md:w-[100px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base rounded-[20px]"
           @click="onfollowButtonClick(author)"
           :variant="
             followStore.isUserFollowed(author?.id) ? 'regular' : 'filled'
@@ -213,29 +234,29 @@ register();
     <div>
       <swiper-container
         navigation="true"
-        class="mySwiper"
         initial-slide="0"
         pagination="true"
         centered-slides="true"
         slides-per-view="1"
         speed="450"
       >
-        <swiper-slide
-          v-for="(postImg, index) in postImgs"
-          :key="index"
-          class="bg-hc-white/50"
-        >
-          <div class="flex items-center aspect-square">
-            <img
-              class="object-contain w-full aspect-square"
-              :src="postImg"
-              alt="Post Image"
-            />
-          </div>
-        </swiper-slide>
+      <swiper-slide
+  v-for="(postImg, index) in postImgs"
+  :key="index"
+  class="md:rounded-[20px] bg-hc-white/50 overflow-hidden"
+>
+  <div class="flex items-center justify-center w-full h-full aspect-square">
+    <img
+      class="object-contain max-w-full max-h-full w-full h-full rounded-[20px]"
+      :src="postImg"
+      alt="Post Image"
+    />
+  </div>
+</swiper-slide>
+
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] px-4 sm:px-0 dark:text-hc-white">
+        <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white">
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
@@ -270,12 +291,22 @@ register();
       </div>
 
       <div
-        class="h-[1px] w-full bg-hc-blue mb-[10px] dark:bg-hc-dark-blue"
+        class="h-[1px] border-b-[1px] w-full border-hc-blue dark:border-hc-blue"
       ></div>
 
       <div class="flex flex-col">
         <Comment :postId="postId" :authorId="post.author_id" />
       </div>
     </div>
+    <div class="flex justify-end pt-5">
+      <Button
+        variant="regular"
+        class-name="w-[100px] h-[30px] rounded-[20px]"
+        @click="onRedirectButtonClick"
+      >
+        목록으로
+      </Button>
+    </div>
+    <ScrollTopButton bottom="-20px" />
   </div>
 </template>

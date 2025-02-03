@@ -14,9 +14,8 @@ import { ref, onMounted } from "vue";
 import { useRoute, onBeforeRouteLeave } from "vue-router";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
-import { checkDiaryExists } from "@/api/api-record/api";
+import { checkDiaryExists, uploadDiaryImage } from "@/api/api-record/api";
 import { useDarkMode } from "@/utils/darkMode";
-
 const diaryStore = useDiaryStore();
 
 const isDiaryWritten = ref(false);
@@ -155,55 +154,50 @@ const generateImage = async () => {
         {
           role: "system",
           content:
-            "You are a creative assistant that generates detailed and visually descriptive prompts for image generation.",
+            "You are an expert at writing highly detailed and visually descriptive prompts for generating high-quality AI images.",
         },
         {
           role: "user",
-          content: `다음 꿈을 바탕으로 귀엽고 서정적인 일러스트를 생성할 수 있는 프롬프트를 만들어 줘. 카툰 스타일. 부드러운 톤. 꿈 내용 : "${diaryStore.content}" `,
-        },
-      ],
+          content: `아래 꿈을 바탕으로 매우 구체적인 일러스트 프롬프트를 만들어 줘. 
 
-      functions: [
-        {
-          name: "generate_image",
-          parameters: {
-            type: "object",
-            properties: {
-              prompt: { type: "string" },
-              size: {
-                type: "string",
-                enum: ["256x256", "512x512", "1024x1024"],
-              },
-            },
-            required: ["prompt", "size"],
-          },
+      - **스타일**: 카툰 스타일, Studio Ghibli 스타일, 따뜻한 색감
+      - **분위기**: 부드럽고 평온한 느낌, 몽환적이고 신비로운 분위기
+      - **배경**: 꿈에서 나타난 장소를 구체적으로 표현
+      - **조명**: 은은한 조명, 부드러운 빛, 따뜻한 색감
+      - **구성 요소**: 주요 등장 인물, 동물, 자연 요소 등
+      - **색상 팔레트**: 파스텔톤, 부드러운 블루, 핑크, 오렌지 계열
+
+      꿈 내용: "${diaryStore.content}"
+      
+      이 내용을 반영해서 DALL·E에서 고퀄리티의 일러스트를 생성할 수 있도록 최적화된 영어 프롬프트를 작성해줘. 문장은 간결하고 직관적으로 해줘.`,
         },
       ],
-      function_call: { name: "generate_image" },
     });
-    //이미지 생성 요청
-    const functionCall = response.choices[0]?.message?.function_call;
 
-    if (!functionCall || !functionCall.arguments) {
-      throw new Error("프롬프트 생성 응답이 유효하지 않습니다.");
-    }
-
-    const { prompt, size } = JSON.parse(functionCall.arguments);
+    const prompt = response.choices[0].message.content;
 
     const imageResponse = await openai.images.generate({
       prompt,
       n: 1,
-      size,
+      size: "512x512",
+      response_format: "b64_json", // Base64 형식으로 응답받음
     });
 
-    if (imageResponse.data && imageResponse.data.length > 0) {
-      diaryStore.setImgUrl(imageResponse.data[0].url);
-    } else {
-      throw new Error("이미지 생성에 실패했습니다.");
+    if (!imageResponse.data || imageResponse.data.length === 0) {
+      throw new Error("이미지 생성 실패");
     }
+
+    const base64Image = `data:image/png;base64,${imageResponse.data[0].b64_json}`;
+
+    //Supabase Storage에 업로드
+    const diaryId = diaryStore.currentDiaryId || Date.now(); // 임시 ID
+    const imgUrl = await uploadDiaryImage(diaryId, base64Image);
+
+    //`dream_journal.img_url` 업데이트
+    diaryStore.setImgUrl(imgUrl);
   } catch (error) {
-    console.error("❌ 이미지 생성 에러 발생", error);
-    alert("이미지 생성 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+    console.error("이미지 생성 오류:", error);
+    alert("이미지 생성 중 문제가 발생했습니다. 다시 시도해주세요.");
   } finally {
     isGeneratingImage.value = false;
   }
@@ -333,10 +327,10 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
+  <div class="flex flex-col xl:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
     <div
-      class="md:ml-[70px] h-full md:fixed md:w-[480px] lg:w-[560px] xl:w-[640px] 2xl:w-[700px] 3xl:w-[760px]"
+      class="xl:ml-[70px] h-full xl:fixed xl:w-[640px] 2xl:w-[700px] 3xl:w-[760px]"
     >
       <textarea
         v-model="diaryStore.content"
@@ -345,10 +339,10 @@ onMounted(async () => {
         maxlength="1600"
         placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
         style="background-color: rgba(255, 255, 255, 0.7); aspect-ratio: 1 / 1"
-        class="w-full p-16 text-xl resize-none md:rounded-3xl focus:outline-none"
+        class="w-full p-16 text-xl resize-none xl:rounded-3xl focus:outline-none"
       ></textarea>
 
-      <div class="flex justify-between xm:mx-4 md:mx-0 mt-[10px]">
+      <div class="flex justify-between mx-4 xl:mx-0 mt-[10px]">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
           <Button
@@ -474,10 +468,10 @@ onMounted(async () => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[640px] lg:ml-[760px] xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
+      class="flex flex-col mt-[37px] xl:mt-0 xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] xl:mr-[70px] overflow-y-auto xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
-        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px]"
+        class="flex flex-col items-center w-full xl:rounded-3xl px-[65px] relative pb-[78px]"
         style="background-color: rgba(255, 255, 255, 0.7)"
       >
         <img
@@ -523,7 +517,7 @@ onMounted(async () => {
       <!-- ai 그림 생성 -->
       <div class="relative">
         <p
-          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 xl:pl-0 dark:text-hc-white"
         >
           AI 그림 생성
         </p>
@@ -532,19 +526,19 @@ onMounted(async () => {
           v-if="diaryStore.imgUrl"
           :src="diaryStore.imgUrl"
           alt="AI 생성 이미지"
-          class="w-full h-fit md:rounded-3xl"
+          class="w-full h-fit xl:rounded-3xl"
         />
         <img
           v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
-          class="w-full h-fit md:rounded-3xl dark:hidden"
+          class="w-full h-fit xl:rounded-3xl dark:hidden"
         />
         <img
           v-if="!diaryStore.imgUrl"
           src="/public/assets/imgs/img_placeholder_dark.png"
           alt="AI 그림"
-          class="hidden w-full h-fit md:rounded-3xl dark:block"
+          class="hidden w-full h-fit xl:rounded-3xl dark:block"
         />
 
         <Button
@@ -569,12 +563,12 @@ onMounted(async () => {
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
         <p
-          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 xl:pl-0 dark:text-hc-white"
         >
           추천 ASMR
         </p>
         <div
-          class="relative w-full overflow-hidden md:rounded-3xl"
+          class="relative w-full overflow-hidden xl:rounded-3xl"
           style="padding-top: 56.25%"
         >
           <iframe
