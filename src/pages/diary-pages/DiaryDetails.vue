@@ -101,7 +101,7 @@ const toggleModal = () => {
           class="absolute right-7 top-[89px] text-2xl text-justify text-black whitespace-nowrap"
         >
           <span class="font-semibold">{{ diaryData.username }}</span>
-          <span> 의 꿈 일기</span>
+          <span>의 꿈 일기</span>
         </p>
       </div>
 
