@@ -89,7 +89,33 @@ const removeImage = (index) => {
   imageFiles.value.splice(index, 1);
 };
 
+const validateInput = () => {
+  if (!title.value.trim()) {
+    showAlertModal("제목을 입력해 주세요.");
+    return false;
+  }
+  if (!content.value.trim()) {
+    showAlertModal("내용을 입력해 주세요.");
+    return false;
+  }
+  return true;
+};
+
+const showAlertModal = (message) => {
+  modalStore.addModal({
+    title: "알림",
+    content: message,
+    btnText: "확인",
+    isOneBtn: true,
+    onClick: () => {
+      modalStore.modals = [];
+    },
+  });
+};
+
 const createNewPost = async () => {
+  if (!validateInput()) return;
+
   modalStore.addModal({
     title: "알림",
     content: "게시물 작성을 마치시겠습니까?",
@@ -114,7 +140,7 @@ const createNewPost = async () => {
               imageFiles.value,
               postId
             );
-            console.log("Uploaded image URLs:", uploadedImageUrls); // 업로드된 이미지 URL 로그 출력
+            console.log("Uploaded image URLs:", uploadedImageUrls);
 
             router.push({ name: "communityBoard" });
           }
@@ -126,6 +152,7 @@ const createNewPost = async () => {
     },
   });
 };
+
 </script>
 
 <template>
