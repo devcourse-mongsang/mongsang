@@ -146,7 +146,12 @@ const createNewPost = async () => {
           }
         }
       } catch (error) {
-        alert("이미지 업로드에 실패하였습니다.");
+        modalStore.addModal({
+          title: "실패",
+          content: "이미지 업로드에 실패하였습니다.",
+          btnText: "확인",
+          isOneBtn: true,
+        });
         console.error(error);
       }
     },

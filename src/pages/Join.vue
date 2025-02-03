@@ -180,7 +180,12 @@ const register = async () => {
     });
 
     if (error) {
-      alert("회원가입 실패: " + error.message);
+      modalStore.addModal({
+        title: "회원가입 실패",
+        content: "회원가입 중 오류가 발생했습니다.",
+        btnText: "확인",
+        isOneBtn: true,
+      });
       return;
     }
 
@@ -196,7 +201,12 @@ const register = async () => {
         .eq("id", userId);
 
       if (profileError) {
-        alert("프로필 업데이트 실패: " + profileError.message);
+        modalStore.addModal({
+          title: "프로필 업데이트 실패",
+          content: "프로필 업데이트 중 오류가 발생했습니다.",
+          btnText: "확인",
+          isOneBtn: true,
+        });
         return;
       }
 
