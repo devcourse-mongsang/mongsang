@@ -8,6 +8,8 @@ import { useDiaryStore } from "@/store/diaryStore";
 import { createDiary } from "@/api/api-diary/api.js";
 import { useAuthStore } from "@/store/authStore";
 import { useDarkMode } from "@/utils/darkMode";
+import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
+import imgPlaceholderDark from "../../../public/assets/imgs/img_placeholder_dark.png";
 
 const props = defineProps({
   initialData: {
@@ -242,7 +244,7 @@ onMounted(() => {
                 <button
                   v-if="diaryStore.dreamAnalysis"
                   @click="deleteDreamAnalysis"
-                  class="absolute z-10 -top-2 -right-2"
+                  class="absolute z-10 -top-2 -right-2 hover:scale-105"
                 >
                   <div
                     class="flex justify-start items-center w-[30px] h-[30px] relative gap-2.5 p-[3px] rounded-[15px] bg-[#757575]"
@@ -267,7 +269,8 @@ onMounted(() => {
                 >
                   <button
                     @click="toggleDreamAnalysis"
-                    class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    :disabled="!diaryStore.dreamAnalysis"
+                    class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hover:scale-105"
                   >
                     <Icon
                       icon="material-symbols:notes-rounded"
@@ -298,7 +301,7 @@ onMounted(() => {
                   <button
                     v-if="diaryStore.imgUrl"
                     @click="deleteImage"
-                    class="absolute z-10 -top-2 -right-2"
+                    class="absolute z-10 -top-2 -right-2 hover:scale-105"
                   >
                     <div
                       class="flex justify-start items-center w-[30px] h-[30px] relative gap-2.5 p-[3px] rounded-[15px] bg-[#757575]"
@@ -311,9 +314,15 @@ onMounted(() => {
                   </button>
                   <img
                     v-if="showAiImage"
-                    :src="diaryStore.imgUrl"
-                    class="w-20 h-20 sm:w-[90px] sm:h-[90px] object-cover rounded-[20px]"
-                    alt="AI Image"
+                    :src="diaryStore.imgUrl || imgPlaceholder"
+                    class="w-20 h-20 sm:w-[90px] sm:h-[90px] object-cover rounded-[20px] dark:hidden block"
+                    alt="Light AI Image"
+                  />
+                  <img
+                    v-if="showAiImage"
+                    :src="diaryStore.imgUrl || imgPlaceholderDark"
+                    class="w-20 h-20 sm:w-[90px] sm:h-[90px] object-cover rounded-[20px] dark:block hidden"
+                    alt="Dark AI Image"
                   />
                   <div
                     v-else
@@ -321,7 +330,7 @@ onMounted(() => {
                   >
                     <button
                       @click="toggleAiImage"
-                      class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                      class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hover:scale-105"
                     >
                       <Icon
                         icon="material-symbols:photo-library-rounded"
@@ -352,7 +361,7 @@ onMounted(() => {
                   <button
                     v-if="diaryStore.youtubeUrl"
                     @click="deleteAsmr"
-                    class="absolute z-10 -top-2 -right-2"
+                    class="absolute z-10 -top-2 -right-2 hover:scale-105"
                   >
                     <div
                       class="flex justify-start items-center w-[30px] h-[30px] relative gap-2.5 p-[3px] rounded-[15px] bg-[#757575]"
@@ -377,7 +386,8 @@ onMounted(() => {
                   >
                     <button
                       @click="toggleAsmrImage"
-                      class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                      :disabled="!diaryStore.youtubeUrl"
+                      class="w-[50px] h-[50px] rounded-full bg-hc-white/30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hover:scale-105"
                     >
                       <Icon
                         icon="material-symbols:slideshow-outline-rounded"
@@ -395,7 +405,7 @@ onMounted(() => {
       <!-- 하단 동그라미 버튼 -->
       <div class="flex justify-end mt-4">
         <button
-          class="w-[50px] h-[50px] bg-hc-blue rounded-full relative dark:bg-hc-dark-blue"
+          class="w-[50px] h-[50px] bg-hc-blue rounded-full relative dark:bg-hc-dark-blue hover:scale-105"
           @click="handleCheckButtonClick"
         >
           <Icon
