@@ -21,6 +21,7 @@ import { getPostLike } from "@/api/api-like/api";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
 import router from "@/router";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 // 페이지네이션
 const page = ref(1);
@@ -233,21 +234,21 @@ onMounted(fetchPosts);
     <p v-else class="dark:text-hc-white">게시글이 없습니다.</p>
 
     <!-- 글 작성 버튼 -->
+
     <RouterLink
       v-show="isLoggedIn"
       :to="`/${route.params.boardType}/create-post`"
     >
-      <v-fab
-        icon="$mdi-plus"
-        class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      <div
+        class="fixed bottom-[-30px] right-[-40px] z-30 m-[80px] bg-hc-white aspect-square w-[60px] flex justify-center items-center rounded-full hover:scale-105 shadow-lg"
       >
         <Icon
           icon="material-symbols:edit-outline"
-          width="1.5rem"
-          height="1.5rem"
+          width="30px"
+          height="30px"
           class="text-hc-blue dark:text-hc-dark-blue"
         />
-      </v-fab>
+      </div>
     </RouterLink>
     <v-fab
       v-show="!isLoggedIn"
@@ -270,6 +271,8 @@ onMounted(fetchPosts);
         next-icon="mdi-menu-right"
       ></v-pagination>
     </div>
+
+    <ScrollTopButton bottom="50px" right="-40px" />
   </div>
 </template>
 

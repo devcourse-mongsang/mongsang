@@ -4,8 +4,10 @@ import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
 import { computed, ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import { deleteComment } from "@/api/api-community/commentsApi";
+import { useModalStore } from "@/store/modalStore";
 
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 const userProfile = computed(() => authStore.profile);
 const deletedCommentId = ref();
 const { comments } = defineProps({
@@ -23,12 +25,21 @@ const sortedComments = computed(() => {
 });
 
 const onDeleteButtonClick = async (commentId) => {
-  try {
-    const deletedComment = await deleteComment(commentId);
-    deletedCommentId.value = deletedComment[0].id;
-  } catch (error) {
-    console.error("댓글 삭제 중 오류 발생:", error);
-  }
+  modalStore.addModal({
+    title: "알림",
+    content: "정말 댓글을 삭제하시겠습니까?",
+    btnText: "삭제",
+    isOneBtn: false,
+    onClick: async () => {
+      modalStore.modals = []; // 모든 모달 닫기
+      try {
+        const deletedComment = await deleteComment(commentId);
+        deletedCommentId.value = deletedComment[0].id;
+      } catch (error) {
+        console.error("댓글 삭제 중 오류 발생:", error);
+      }
+    },
+  });
 };
 
 watch(deletedCommentId, (newId) => {
@@ -49,7 +60,7 @@ watch(deletedCommentId, (newId) => {
     >
       <h2 class="text-xl font-semibold">댓글</h2>
     </div>
-    <p class="mt-2" v-if="sortedComments.length === 0">아직 댓글이 없습니다</p>
+    <p class="mt-2" v-if="sortedComments.length === 0">아직 댓글이 없습니다.</p>
     <div
       v-for="comment in sortedComments"
       :key="comment.id"

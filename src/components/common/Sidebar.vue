@@ -22,7 +22,6 @@ const sidebarRef = ref(null);
 onClickOutside(sidebarRef, () => {
   if (sidebarStore.isHamburgerOpen) {
     sidebarStore.toggleHamburger();
-    console.log("dawdaw");
   }
 });
 
@@ -70,7 +69,7 @@ async function handleLogout() {
               :to="`/mypage/profile/${authStore.user.id}`"
             >
               <img
-                class="w-10 h-10 rounded-full object-cover"
+                class="object-cover w-10 h-10 rounded-full"
                 :src="authStore.profile.profile_url"
                 alt="사용자의 프로필 이미지입니다."
               />
@@ -149,7 +148,7 @@ async function handleLogout() {
       <div class="flex gap-4 py-3 xm:flex-col xm:py-[25%]">
         <RouterLink
           to="/record"
-          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
+          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center hover:scale-105"
         >
           <Icon
             icon="material-symbols:edit-outline"
@@ -160,7 +159,7 @@ async function handleLogout() {
         </RouterLink>
         <RouterLink
           to="/diary"
-          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center"
+          class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center hover:scale-105"
         >
           <Icon
             icon="material-symbols:book-2-outline"

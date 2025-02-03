@@ -167,16 +167,37 @@ export default {
                 })`,
               }"
             >
-              <span
-                :class="[
-                  'calendar-date-circle',
-                  {
-                    'calendar-date-circle--weekend':
-                      idx % 7 === 0 || idx % 7 === 6,
-                  },
-                ]"
-                >{{ dayObj.day }}</span
+              <div
+                class="calendar-square-background w-[12vw] lg:w-[6.25rem] aspect-square dark:block hidden"
+                :style="{
+                  backgroundImage: `url(${
+                    monthlyDiaries[
+                      `${dayObj.year}-${String(dayObj.month).padStart(
+                        2,
+                        '0'
+                      )}-${String(dayObj.day).padStart(2, '0')}`
+                    ]
+                      ? monthlyDiaries[
+                          `${dayObj.year}-${String(dayObj.month).padStart(
+                            2,
+                            '0'
+                          )}-${String(dayObj.day).padStart(2, '0')}`
+                        ].imgUrl || '/assets/imgs/img_placeholder_dark.png'
+                      : '/assets/imgs/calender_placeholder.png'
+                  })`,
+                }"
               >
+                <span
+                  :class="[
+                    'calendar-date-circle',
+                    {
+                      'calendar-date-circle--weekend':
+                        idx % 7 === 0 || idx % 7 === 6,
+                    },
+                  ]"
+                  >{{ dayObj.day }}</span
+                >
+              </div>
             </div>
           </div>
         </RouterLink>
@@ -202,14 +223,13 @@ export default {
 
 .calendar-square-background {
   position: relative;
-  background-image: url("/assets/imgs/img_placeholder.png");
   background-size: cover;
   cursor: pointer;
   transition: opacity 0.2s;
 }
 
 .calendar-square-background:hover {
-  opacity: 0.8;
+  scale: 1.05;
 }
 
 .calendar-date-circle {
