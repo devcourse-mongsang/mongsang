@@ -21,6 +21,7 @@ import Comment from "./Comment.vue";
 import LikesCounter from "@/components/common/LikesCounter.vue";
 import { useModalStore } from "@/store/modalStore";
 import { useFollowStore } from "@/store/followStore";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -233,26 +234,26 @@ register();
     <div>
       <swiper-container
         navigation="true"
-        class="mySwiper"
         initial-slide="0"
         pagination="true"
         centered-slides="true"
         slides-per-view="1"
         speed="450"
       >
-        <swiper-slide
-          v-for="(postImg, index) in postImgs"
-          :key="index"
-          class="md:rounded-[20px] bg-hc-white/50"
-        >
-          <div class="flex items-center aspect-square">
-            <img
-              class="object-contain w-full aspect-square"
-              :src="postImg"
-              alt="Post Image"
-            />
-          </div>
-        </swiper-slide>
+      <swiper-slide
+  v-for="(postImg, index) in postImgs"
+  :key="index"
+  class="md:rounded-[20px] bg-hc-white/50 overflow-hidden"
+>
+  <div class="flex items-center justify-center w-full h-full aspect-square">
+    <img
+      class="object-contain max-w-full max-h-full w-full h-full rounded-[20px]"
+      :src="postImg"
+      alt="Post Image"
+    />
+  </div>
+</swiper-slide>
+
       </swiper-container>
       <div class="mb-6">
         <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white">
@@ -306,5 +307,6 @@ register();
         목록으로
       </Button>
     </div>
+    <ScrollTopButton bottom="-20px" />
   </div>
 </template>

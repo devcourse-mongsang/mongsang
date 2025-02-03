@@ -5,6 +5,7 @@ import CoverflowSwiper from "@/components/common/CoverflowSwiper.vue";
 import { ref } from "vue";
 import { useAuthStore } from "@/store/authStore";
 import { mdiReload } from "@mdi/js";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 const videos = ref([]);
 const isLoading = ref(true); // 로딩 상태 추가
@@ -145,10 +146,11 @@ const isLoading = ref(true); // 로딩 상태 추가
       </ul>
     </div>
   </div>
-  <div class="flex justify-between px-4 text-hc-white/50">
+  <div class="flex justify-between px-4 pb-2 text-hc-white/50">
     <p>Copyright @2025 Mongsang inc. All rights reserved.</p>
-    <p>v.1.0.3</p>
+    <p>v.1.0.5</p>
   </div>
+  <ScrollTopButton bottom="-20px" />
 </template>
 
 <style scoped>
