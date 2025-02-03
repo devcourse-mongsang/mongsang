@@ -9,31 +9,31 @@ import { mdiReload } from "@mdi/js";
 const videos = ref([]);
 const isLoading = ref(true); // 로딩 상태 추가
 
-// const fetchASMRVideos = async () => {
-//   videos.value = [];
-//   isLoading.value = true; // 로딩 상태 시작
-//   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
-//   const keyword = "asmr ambience";
-//   const maxResults = 24;
+const fetchASMRVideos = async () => {
+  videos.value = [];
+  isLoading.value = true; // 로딩 상태 시작
+  const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+  const keyword = "asmr ambience";
+  const maxResults = 24;
 
-//   try {
-//     const response = await fetch(
-//       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
-//     );
-//     const data = await response.json();
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&maxResults=${maxResults}&key=${apiKey}`
+    );
+    const data = await response.json();
 
-//     if (data.items && data.items.length > 0) {
-//       const randomVideos = getRandomVideos(data.items, 4);
-//       videos.value = randomVideos;
-//     } else {
-//       console.error("ASMR 영상이 없습니다.");
-//     }
-//   } catch (error) {
-//     console.error("Error fetching ASMR videos:", error);
-//   } finally {
-//     isLoading.value = false; // 로딩 상태 종료
-//   }
-// };
+    if (data.items && data.items.length > 0) {
+      const randomVideos = getRandomVideos(data.items, 4);
+      videos.value = randomVideos;
+    } else {
+      console.error("ASMR 영상이 없습니다.");
+    }
+  } catch (error) {
+    console.error("Error fetching ASMR videos:", error);
+  } finally {
+    isLoading.value = false; // 로딩 상태 종료
+  }
+};
 
 const getRandomVideos = (arr, n) => {
   const mixed = arr.slice(0);
@@ -44,7 +44,7 @@ const getRandomVideos = (arr, n) => {
   return mixed.slice(0, n);
 };
 
-// fetchASMRVideos();
+fetchASMRVideos();
 </script>
 
 <template>
@@ -70,7 +70,9 @@ const getRandomVideos = (arr, n) => {
       <h1
         class="font-semibold sm:text-[24px] md:text-[32px] text-base dark:text-hc-white"
       >
-        꿈을 기록하는 몽상가가 되어보세요
+        꿈을 기록하는
+        <span class="text-hc-blue dark:text-hc-dark-blue">몽상가</span>가
+        되어보세요
       </h1>
       <div class="hidden mt-[10px] mb-6 text-xl md:flex md:flex-col">
         <h2 class="dark:text-hc-white">
@@ -109,6 +111,7 @@ const getRandomVideos = (arr, n) => {
           size="xs"
           @click="fetchASMRVideos"
           style="background-color: rgba(255, 255, 255, 0.5)"
+          class="dark:text-hc-dark-blue"
         >
           <v-icon>
             <svg
@@ -130,7 +133,7 @@ const getRandomVideos = (arr, n) => {
             class="w-full max-h-[300px] object-cover"
           ></v-skeleton-loader>
         </li>
-        <!-- <li v-for="video in videos" :key="video.id.videoId" v-else>
+        <li v-for="video in videos" :key="video.id.videoId" v-else>
           <iframe
             :src="'https://www.youtube.com/embed/' + video.id.videoId"
             frameborder="0"
@@ -139,7 +142,7 @@ const getRandomVideos = (arr, n) => {
             class="w-full max-h-[300px] rounded-[20px] object-cover h-auto"
             style="aspect-ratio: 16 / 9"
           ></iframe>
-        </li> -->
+        </li>
       </ul>
     </div>
   </div>
