@@ -38,7 +38,7 @@ const springs = [
       </div>
       <div class="relative w-full">
         <!-- DropDownDiary 외부 상단 위치 -->
-        <div class="absolute mt-[1vh] ml-[2vw] z-10">
+        <div class="absolute mt-[1vh] ml-[2vw]">
           <DropDownDiary @updateDate="updateDate" />
         </div>
 

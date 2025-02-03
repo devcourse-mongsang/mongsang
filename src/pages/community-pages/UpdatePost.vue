@@ -11,11 +11,14 @@ import {
 import { Icon } from "@iconify/vue";
 import DragDropImg from "@/components/community/DragDropImg.vue";
 import { useAuthStore } from "@/store/authStore";
+import { useModalStore } from "@/store/modalStore";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 const postId = ref(route.params.postId); // path에서 뽑아낸 게시글의 고유 ID
+const boardType = ref(route.params.boardType);
 const postData = ref({}); // postId를 가지고 수퍼베이스에 요청을 보내 얻어낸 기존 게시글 데이터
 const imageUrls = ref([]); // postId를 가지고 수퍼베이스 스토리지에서 가져온 기존 이미지 배열
 const imageFiles = ref([]);
@@ -75,36 +78,51 @@ const fetchUpdatedImage = async (postId) => {
 };
 
 const fetchUpdatedData = async () => {
-  try {
-    if (!authStore.isLoggedIn || !authStore.profile) return;
+  modalStore.addModal({
+    title: "알림",
+    content: "게시글 수정을 완료하시겠습니까?",
+    btnText: "완료하기",
+    isOneBtn: false,
+    onClick: async () => {
+      modalStore.modals = []; // 모든 모달 닫기
+      try {
+        if (!authStore.isLoggedIn || !authStore.profile) return;
 
-    const { title, content, author_id, category } = postData.value;
-    const updatedData = { title, content, author_id, category };
+        const { title, content, author_id, category } = postData.value;
+        const updatedData = { title, content, author_id, category };
 
-    const updateResponse = await updatePost(postId.value, updatedData);
-    if (
-      !updateResponse ||
-      !Array.isArray(updateResponse) ||
-      !updateResponse.length
-    ) {
-      throw new Error("게시글 업데이트 실패");
-    }
+        const updateResponse = await updatePost(postId.value, updatedData);
+        if (
+          !updateResponse ||
+          !Array.isArray(updateResponse) ||
+          !updateResponse.length
+        ) {
+          throw new Error("게시글 업데이트 실패");
+        }
 
-    const newPostId = updateResponse[0]?.id;
-    if (!newPostId) throw new Error("업데이트된 게시글 ID 없음");
+        const newPostId = updateResponse[0]?.id;
+        if (!newPostId) throw new Error("업데이트된 게시글 ID 없음");
 
-    // 🔵 삭제된 이미지만 개별 삭제
-    await deleteRemovedImages(postId.value, imageUrls.value);
+        // 🔵 삭제된 이미지만 개별 삭제
+        await deleteRemovedImages(postId.value, imageUrls.value);
 
-    if (imageFiles.value.length > 0) {
-      await fetchUpdatedImage(newPostId);
-    } else {
-      router.push({ name: "communityBoard" });
-    }
-  } catch (error) {
-    alert("업데이트에 실패하였습니다.");
-    console.error(error);
-  }
+        if (imageFiles.value.length > 0) {
+          await fetchUpdatedImage(newPostId);
+        } else {
+          router.push({
+            name: "postDetail",
+            params: {
+              boardType: boardType.value,
+              postId: postId.value,
+            },
+          });
+        }
+      } catch (error) {
+        alert("업데이트에 실패하였습니다.");
+        console.error(error);
+      }
+    },
+  });
 };
 
 onMounted(() => {
@@ -196,19 +214,21 @@ onMounted(() => {
 
 <style scoped>
 .loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  animation: spin 1s linear infinite;
+  background: conic-gradient(#3498db 0deg, #3498db 90deg, #f3f3f3 90deg);
+  animation: rotate 1s linear infinite;
+  mask: radial-gradient(circle, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 1) 56%);
 }
-@keyframes spin {
-  0% {
+
+@keyframes rotate {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
+
 </style>

@@ -86,8 +86,7 @@ const isLoading = ref(true); // 로딩 상태 추가
       <RouterLink to="/record"
         ><Button
           variant="shadowed"
-          size="lg"
-          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] w-[192px] text-[14px] sm:text-2xl h-[47px] sm:h-[63px] mb-[100px] xm:mb-[0px]"
+          class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] w-[192px] text-[14px] sm:text-2xl h-[47px] sm:h-[63px] mb-[100px] xm:mb-[0px] rounded-[20px]"
         >
           꿈 기록하러 가기
         </Button></RouterLink
@@ -103,7 +102,7 @@ const isLoading = ref(true); // 로딩 상태 추가
       class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] dark:bg-hc-beige/20 border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
-        <h3 class="text-2xl font-semibold dark:text-hc-white">
+        <h3 class="font-semibold xm:text-base sm:text-2xl dark:text-hc-white">
           당신의 꿈에 귀 기울이는 순간, ASMR 추천
         </h3>
         <Button
@@ -145,6 +144,10 @@ const isLoading = ref(true); // 로딩 상태 추가
         </li>
       </ul>
     </div>
+  </div>
+  <div class="flex justify-between px-4 text-hc-white/50">
+    <p>Copyright @2025 Mongsang inc. All rights reserved.</p>
+    <p>v.1.0.3</p>
   </div>
 </template>
 
