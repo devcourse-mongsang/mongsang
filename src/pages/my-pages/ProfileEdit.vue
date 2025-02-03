@@ -12,9 +12,9 @@ const authStore = useAuthStore();
 
 // 사용자 데이터
 const userData = ref({
-  username: authStore.profile.username,
-  profile_bio: authStore.profile.profile_bio,
-  profile_url: authStore.profile.profile_url,
+  username: authStore.profile.username || "",
+  profile_bio: authStore.profile.profile_bio || "",
+  profile_url: authStore.profile.profile_url || "",
   password: "",
   confirmPassword: "",
 });
@@ -302,7 +302,7 @@ const openConfirmationModal = () => {
                 'text-green': userData.profile_bio.length < 16,
               }"
             >
-              {{ userData.profile_bio.length }}/16
+              {{ (userData.profile_bio || "").length }}/16
             </p>
           </div>
 
