@@ -11,12 +11,17 @@ import {
   mdiMicrophoneOff,
 } from "@mdi/js";
 import { ref, onMounted } from "vue";
-import { useRoute, onBeforeRouteLeave } from "vue-router";
+import { useRoute, onBeforeRouteLeave, useRouter } from "vue-router";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
+import { useModalStore } from "@/store/modalStore";
+import { useAuthStore } from "@/store/authStore";
 import { checkDiaryExists, uploadDiaryImage } from "@/api/api-record/api";
 import { useDarkMode } from "@/utils/darkMode";
 const diaryStore = useDiaryStore();
+const modalStore = useModalStore();
+const authStore = useAuthStore();
+const router = useRouter();
 
 const isDiaryWritten = ref(false);
 const today = new Date().toISOString().split("T")[0];
@@ -42,6 +47,21 @@ const { isDark } = useDarkMode();
 
 //일기 작성 페이지를 제외한 다른 페이지 이동 시 데이터 초기화
 const route = useRoute();
+
+onMounted(() => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+  }
+});
 
 onBeforeRouteLeave((to) => {
   if (to.path !== "/diary/write") {
