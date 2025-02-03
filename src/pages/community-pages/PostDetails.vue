@@ -178,7 +178,7 @@ register();
             alt="작성자 프로필 사진입니다."
             class="w-[40px] h-[40px] rounded-full"
           />
-          <p class="font-bold text-[#18375B]">{{ author?.username }}</p>
+          <p class="font-bold text-hc-dark-blue">{{ author?.username }}</p>
         </div>
       </RouterLink>
       <div v-if="isLoggedIn">
@@ -235,7 +235,7 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] px-4 sm:px-0">
+        <div class="mt-[45px] px-4 sm:px-0 dark:text-hc-white">
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
@@ -254,12 +254,11 @@ register();
             </p>
             <div class="flex justify-end w-1/12 px-0">
               <Icon
-                class="cursor-pointer"
+                class="cursor-pointer text-hc-blue dark:text-hc-dark-blue"
                 icon="mdi:share-variant"
                 width="35"
                 height="35"
                 @click="shareKakao"
-                style="color: #729ecb"
               />
             </div>
           </div>
@@ -270,7 +269,9 @@ register();
         </div>
       </div>
 
-      <div class="h-[1px] w-full bg-hc-blue mb-[10px]"></div>
+      <div
+        class="h-[1px] w-full bg-hc-blue mb-[10px] dark:bg-hc-dark-blue"
+      ></div>
 
       <div class="flex flex-col">
         <Comment :postId="postId" :authorId="post.author_id" />

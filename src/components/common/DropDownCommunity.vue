@@ -94,7 +94,7 @@ const leave = (el, done) => {
           <li v-for="menu in menus" :key="menu.name">
             <RouterLink
               :to="menu.path"
-              class="block text-hc-white hover:text-[#729ECB] hover:bg-hc-white px-[19px] rounded-full pt-1 pb-[6px] transition-colors duration-500 ease-in-out"
+              class="block text-hc-white hover:text-hc-blue hover:bg-hc-white dark:hover:text-hc-dark-blue px-[19px] rounded-full pt-1 pb-[6px] transition-colors duration-500 ease-in-out"
               >{{ menu.name }}</RouterLink
             >
           </li>

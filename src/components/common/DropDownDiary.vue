@@ -42,11 +42,11 @@ const updateSelection = () => {
     <Menu as="div" class="relative inline-block">
       <div>
         <MenuButton
-          class="inline-flex w-full justify-center items-center gap-x-1.5 rounded-3xl bg-hc-white bg-opacity-70 px-3 py-2 text-xl shadow-blue hover:bg-gray-50"
+          class="inline-flex w-full justify-center items-center gap-x-1.5 rounded-3xl bg-hc-white bg-opacity-70 px-3 py-2 text-xl hover:bg-gray-50 shadow-dark-blue"
         >
           {{ selectedYear }}
           <ChevronDownIcon
-            class="-mr-1 text-hc-blue size-5"
+            class="-mr-1 text-hc-blue size-5 dark:text-hc-dark-blue"
             aria-hidden="true"
           />
         </MenuButton>
@@ -61,7 +61,7 @@ const updateSelection = () => {
         leave-to-class="transform scale-95 opacity-0"
       >
         <MenuItems
-          class="absolute right-0 z-10 mt-2 origin-top-right rounded-3xl shadow-lg bg-hc-white bg-opacity-70 focus:outline-none w-full"
+          class="absolute right-0 z-10 w-full mt-2 origin-top-right shadow-lg rounded-3xl bg-hc-white bg-opacity-70 focus:outline-none"
         >
           <div class="py-1">
             <MenuItem
@@ -91,11 +91,11 @@ const updateSelection = () => {
     <Menu as="div" class="relative inline-block text-left">
       <div>
         <MenuButton
-          class="inline-flex w-full justify-center items-center gap-x-1.5 rounded-3xl bg-hc-white bg-opacity-70 px-3 py-2 text-xl shadow-blue hover:bg-gray-50"
+          class="inline-flex w-full justify-center items-center gap-x-1.5 rounded-3xl bg-hc-white bg-opacity-70 px-3 py-2 text-xl shadow-dark-blue hover:bg-gray-50"
         >
           {{ selectedMonth }}
           <ChevronDownIcon
-            class="-mr-1 text-hc-blue size-5"
+            class="-mr-1 text-hc-blue size-5 dark:text-hc-dark-blue"
             aria-hidden="true"
           />
         </MenuButton>
@@ -110,7 +110,7 @@ const updateSelection = () => {
         leave-to-class="transform scale-95 opacity-0"
       >
         <MenuItems
-          class="absolute right-0 z-10 w-full mt-2 origin-top-right rounded-3xl shadow-lg bg-hc-white bg-opacity-70 focus:outline-none max-h-60 overflow-y-auto no-scrollbar"
+          class="absolute right-0 z-10 w-full mt-2 overflow-y-auto origin-top-right shadow-lg rounded-3xl bg-hc-white bg-opacity-70 focus:outline-none max-h-60 no-scrollbar"
         >
           <div class="py-1">
             <MenuItem

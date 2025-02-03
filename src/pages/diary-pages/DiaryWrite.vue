@@ -7,6 +7,7 @@ import { Icon } from "@iconify/vue";
 import { useDiaryStore } from "@/store/diaryStore";
 import { createDiary } from "@/api/api-diary/api.js";
 import { useAuthStore } from "@/store/authStore";
+import { useDarkMode } from "@/utils/darkMode";
 
 const props = defineProps({
   initialData: {
@@ -155,6 +156,8 @@ onMounted(() => {
     }
   }
 });
+
+const { isDark } = useDarkMode();
 </script>
 
 <template>
@@ -217,12 +220,16 @@ onMounted(() => {
 
         <!-- 미리보기 섹션 -->
         <div class="mt-6 xm:mt-11 xm:px-6 w-[90vw] md:w-full">
-          <p class="mb-2 text-lg font-semibold sm:text-xl">미리보기</p>
+          <p
+            class="mb-2 text-lg font-semibold sm:text-xl dark:text-hc-dark-teal"
+          >
+            미리보기
+          </p>
           <div class="space-y-4">
             <!-- 꿈 분석 -->
             <div class="relative w-[75vw] min-w-[295px] max-w-[620px]">
               <p
-                class="inline-block mb-2 text-lg font-semibold sm:text-xl text-hc-blue"
+                class="inline-block mb-2 text-lg font-semibold sm:text-xl text-hc-blue dark:text-hc-dark-blue"
               >
                 꿈 분석
               </p>
@@ -264,7 +271,7 @@ onMounted(() => {
                   >
                     <Icon
                       icon="material-symbols:notes-rounded"
-                      class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2"
+                      class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2 dark:text-hc-dark-blue"
                     />
                   </button>
                 </div>
@@ -275,7 +282,9 @@ onMounted(() => {
             <div class="flex flex-wrap pt-[3vh] gap-4">
               <!-- 이미지 -->
               <div class="relative">
-                <p class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue">
+                <p
+                  class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue dark:text-hc-dark-blue"
+                >
                   이미지
                 </p>
                 <div v-if="isUpdateMode">
@@ -316,7 +325,7 @@ onMounted(() => {
                     >
                       <Icon
                         icon="material-symbols:photo-library-rounded"
-                        class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2"
+                        class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue dark:text-hc-dark-blue top-1/2 left-1/2"
                       />
                     </button>
                   </div>
@@ -325,7 +334,9 @@ onMounted(() => {
 
               <!-- ASMR -->
               <div class="relative">
-                <p class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue">
+                <p
+                  class="mb-2 text-lg font-semibold sm:text-xl text-hc-blue dark:text-hc-dark-blue"
+                >
                   ASMR
                 </p>
                 <div v-if="isUpdateMode">
@@ -370,7 +381,7 @@ onMounted(() => {
                     >
                       <Icon
                         icon="material-symbols:slideshow-outline-rounded"
-                        class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2"
+                        class="absolute w-6 h-6 transform -translate-x-1/2 -translate-y-1/2 text-hc-blue top-1/2 left-1/2 dark:text-hc-dark-blue"
                       />
                     </button>
                   </div>
@@ -384,7 +395,7 @@ onMounted(() => {
       <!-- 하단 동그라미 버튼 -->
       <div class="flex justify-end mt-4">
         <button
-          class="w-[50px] h-[50px] bg-hc-blue rounded-full relative"
+          class="w-[50px] h-[50px] bg-hc-blue rounded-full relative dark:bg-hc-dark-blue"
           @click="handleCheckButtonClick"
         >
           <Icon

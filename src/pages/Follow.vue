@@ -91,8 +91,17 @@ onMounted(() => {
     class="w-full max-w-[642px] flex flex-col justify-center items-center min-h-screen"
   >
     <!-- 로고 -->
-    <div class="mb-8 hidden sm:block">
-      <img src="/assets/imgs/big_logo.png" alt="Logo" class="h-36" />
+    <div class="hidden mb-8 sm:block">
+      <img
+        src="/assets/imgs/big_logo.png"
+        alt="Logo"
+        class="block h-36 dark:hidden"
+      />
+      <img
+        src="/assets/imgs/big_logo_dark.png"
+        alt="Logo"
+        class="hidden h-36 dark:block"
+      />
     </div>
 
     <!-- 로딩 중 스켈레톤 -->
@@ -101,19 +110,20 @@ onMounted(() => {
     <!-- 메인 카드 -->
     <div
       v-else
-      class="w-full h-[1250px] bg-hc-blue/20 sm:border-[7px] border-hc-white/50 sm:rounded-[20px] relative p-8"
-      style="box-shadow: -4px 4px 50px 0 rgba(114, 158, 203, 0.7)"
+      class="w-full h-[1250px] bg-hc-blue/20 sm:border-[7px] border-hc-white/50 sm:rounded-[20px] shadow-blue dark:shadow-dark-blue relative p-8 dark:bg-hc-beige/10"
     >
       <div class="flex flex-col h-full">
         <!-- 현재 리스트 (Followers / Following) -->
         <div class="flex-1 px-4">
           <h2
-            class="text-2xl sm:text-[32px] font-semibold text-hc-black mb-2.5 sm:mb-6"
+            class="text-2xl sm:text-[32px] font-semibold text-hc-black mb-2.5 sm:mb-6 dark:text-hc-white"
           >
             @{{ profileUsername }}'s
             {{ viewType === "followers" ? "Followers" : "Following" }}
           </h2>
-          <div class="border-t border-hc-blue mb-5 block sm:hidden"></div>
+          <div
+            class="block mb-5 border-t border-hc-blue sm:hidden dark:border-hc-dark-blue"
+          ></div>
           <div
             v-if="currentList.length > 0"
             class="flex flex-col gap-4 overflow-y-auto no-scrollbar"
@@ -134,10 +144,14 @@ onMounted(() => {
                   class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <p class="text-xm sm:text-xl font-semibold">
+                  <p
+                    class="font-semibold text-xm sm:text-xl dark:text-hc-dark-blue"
+                  >
                     @{{ user.username }}
                   </p>
-                  <p class="text-base text-gray-600 mr-4">
+                  <p
+                    class="mr-4 text-base text-gray-600 dark:text-hc-dark-blue"
+                  >
                     {{ user.profile_bio }}
                   </p>
                 </div>
@@ -170,11 +184,13 @@ onMounted(() => {
         <!-- All Users -->
         <div class="flex-1 px-4 sm:pt-4">
           <h2
-            class="text-2xl sm:text-[32px] font-semibold text-hc-black mb-2.5 sm:mb-6"
+            class="text-2xl sm:text-[32px] font-semibold text-hc-black mb-2.5 sm:mb-6 dark:text-hc-white"
           >
             All Users
           </h2>
-          <div class="border-t border-hc-blue mb-5 block sm:hidden"></div>
+          <div
+            class="block mb-5 border-t border-hc-blue sm:hidden dark:border-hc-dark-blue"
+          ></div>
           <div
             v-if="allUsers.length > 0"
             class="flex flex-col gap-4 overflow-y-auto no-scrollbar"
@@ -184,7 +200,7 @@ onMounted(() => {
               v-for="user in allUsers"
               :key="user.id"
               @click="goToProfile(user.id)"
-              class="flex items-center justify-between p-4 rounded-[10px] shadow-sm"
+              class="flex items-center justify-between p-4 rounded-[10px]"
               style="background-color: rgba(255, 255, 255, 0.5) !important"
             >
               <div class="flex items-center gap-4">
@@ -194,8 +210,12 @@ onMounted(() => {
                   class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <p class="text-xl font-semibold">@{{ user.username }}</p>
-                  <p class="text-base text-hc-black mr-4">
+                  <p class="text-xl font-semibold dark:text-hc-dark-blue">
+                    @{{ user.username }}
+                  </p>
+                  <p
+                    class="mr-4 text-base text-hc-black dark:text-hc-dark-blue"
+                  >
                     {{ user.profile_bio }}
                   </p>
                 </div>
