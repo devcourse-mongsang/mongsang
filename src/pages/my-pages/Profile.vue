@@ -240,13 +240,15 @@ watch(
           <div class="flex flex-col gap-4">
             <div class="flex items-center gap-4 sm:gap-8">
               <p class="text-2xl font-semibold sm:text-4xl dark:text-hc-white">
-                {{ userData?.username || "알 수 없음" }}
+                {{ userData.username || "알 수 없음" }}
               </p>
             </div>
             <p class="text-xm sm:text-[30px] dark:text-hc-white">
               {{ userData.profile_bio || "소개 없음" }}
             </p>
-            <div class="stats-container flex gap-6 text-xm sm:text-[30px]">
+            <div
+              class="stats-container flex flex-wrap gap-6 text-xm sm:text-[30px]"
+            >
               <div class="flex items-center gap-2 dark:text-hc-white">
                 <p>게시물</p>
                 <span class="font-semibold">{{ userData.posts_count }}</span>
@@ -274,7 +276,7 @@ watch(
         </div>
 
         <div
-          class="flex items-center justify-center w-full edit-profile-btn xm:w-auto xm:justify-start sm:justify-end"
+          class="flex items-center justify-center w-full edit-profile-btn xm:w-auto xm:justify-center sm:justify-end"
         >
           <template v-if="loggedInUserId === userId">
             <router-link
@@ -284,7 +286,7 @@ watch(
               <Button
                 variant="custom"
                 size="md"
-                class="sm:text-hc-black text-hc-white text-xl sm:bg-hc-white bg-hc-blue w-[550px] sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px] sm:dark:bg-hc-white/70 sm:dark:text-hc-dark-blue dark:bg-hc-dark-blue dark:text-hc-white"
+                class="edit-button sm:text-hc-black text-hc-white text-xl sm:bg-hc-white bg-hc-blue max-w-full sm:w-[160px] xm:w-[380px] sm:rounded-[20px] rounded-[30px] sm:dark:bg-hc-white/70 sm:dark:text-hc-dark-blue dark:bg-hc-dark-blue dark:text-hc-white"
               >
                 프로필 편집
               </Button>
@@ -355,31 +357,43 @@ watch(
 </template>
 
 <style>
-/* 반응형 스타일 */
+/* 기존 스타일 유지 */
 .profile-container {
   display: flex;
-  flex-direction: column; /* 기본적으로 세로 배치 */
-  align-items: center; /* 내부 요소 가운데 정렬 */
-  gap: 36px; /* 더 작은 간격 */
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  min-width: 300px;
+  max-width: 100%;
 }
 
-@media (min-width: 768px) {
+/* 375px 이하일 때 특별한 스타일 적용 */
+@media (max-width: 766px) {
   .profile-container {
-    flex-direction: row; /* 큰 화면에서는 가로 배치 */
+    gap: 36px;
+  }
+
+  .profile-section {
+    gap: 24px; /* 프로필 섹션의 간격도 조정 가능 */
+  }
+
+  .stats-container {
+    gap: 12px; /* 통계 컨테이너 간격 조정 */
+  }
+
+  .edit-profile-btn button {
+    width: 360px !important; /* Tailwind 클래스를 덮어쓰기 위해 !important 사용 */
+    border-radius: 30px !important;
+    background-color: #729ecb;
+    color: #ffffff;
   }
 }
 
-.profile-section {
-  display: flex;
-  flex-direction: row; /* 프로필 사진과 정보는 가로 정렬 */
-  align-items: flex-start;
-  gap: 42px; /* 사진과 정보 사이 간격 */
-}
-
-.stats-container {
-  display: flex;
-  flex-direction: row; /* 게시물, 팔로워, 팔로잉을 가로 정렬 */
-  gap: 20px; /* 요소들 사이 간격 */
+/* 기존 미디어 쿼리 유지 */
+@media (min-width: 768px) {
+  .profile-container {
+    flex-direction: row;
+  }
 }
 
 /* 스크롤바 숨기기 */

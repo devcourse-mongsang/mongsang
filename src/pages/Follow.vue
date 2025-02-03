@@ -164,7 +164,7 @@ onMounted(() => {
                   followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
                 "
                 size="xl"
-                class="min-w-32"
+                class="max-w-16 sm:max-w-32"
               >
                 {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
@@ -210,7 +210,9 @@ onMounted(() => {
                   class="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <p class="text-xl font-semibold dark:text-hc-dark-blue">
+                  <p
+                    class="text-xm sm:text-xl font-semibold dark:text-hc-dark-blue"
+                  >
                     @{{ user.username }}
                   </p>
                   <p
@@ -226,7 +228,7 @@ onMounted(() => {
                   followStore.isUserFollowed(user.id) ? 'regular' : 'filled'
                 "
                 size="xl"
-                class="min-w-32"
+                class="max-w-16 sm:max-w-32"
               >
                 {{ followStore.isUserFollowed(user.id) ? "팔로잉" : "팔로우" }}
               </Button>
