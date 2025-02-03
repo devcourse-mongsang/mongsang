@@ -67,19 +67,27 @@ const fetchImg = async (postId) => {
 };
 
 const fetchAllData = async () => {
-  if (postId.value) {
-    try {
-      loadingStore.startLoading();
-      await Promise.all([fetchPostItem(postId.value), fetchImg(postId.value)]);
-      if (post.value.author_id) {
-        await fetchAuthor(post.value.author_id);
-      }
-      await followStore.fetchLoggedInUserFollowing(authStore.profile.id);
-    } catch (error) {
-      console.error("Error during data fetch:", error);
-    } finally {
-      loadingStore.stopLoading();
+  if (!postId.value) return;
+
+  try {
+    loadingStore.startLoading();
+
+    // post 데이터를 먼저 가져옴
+    await fetchPostItem(postId.value);
+
+    // post.value가 갱신될 때까지 기다린 후 확인
+    if (post.value?.author_id) {
+      await fetchAuthor(post.value.author_id);
     }
+
+    await Promise.all([
+      fetchImg(postId.value),
+      followStore.fetchLoggedInUserFollowing(authStore.profile?.id),
+    ]);
+  } catch (error) {
+    console.error("❌ Error during data fetch:", error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -184,8 +192,7 @@ register();
       <div v-if="isLoggedIn">
         <Button
           v-if="author?.id !== authStore.profile.id"
-          size="md"
-          class-name="w-[60px] h-[35px] text-xs px-[6px] py-2 md:w-[80px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base"
+          class-name="w-[80px] h-[35px] text-xs px-[6px] py-2 md:w-[100px] md:h-[40px] md:text-[14px] lg:w-[128px] lg:h-[45px] lg:text-base rounded-[20px]"
           @click="onfollowButtonClick(author)"
           :variant="
             followStore.isUserFollowed(author?.id) ? 'regular' : 'filled'
@@ -223,7 +230,7 @@ register();
         <swiper-slide
           v-for="(postImg, index) in postImgs"
           :key="index"
-          class="bg-hc-white/50"
+          class="md:rounded-[20px] bg-hc-white/50"
         >
           <div class="flex items-center aspect-square">
             <img
@@ -235,7 +242,7 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[45px] px-4 sm:px-0 dark:text-hc-white">
+        <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white">
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
@@ -270,7 +277,7 @@ register();
       </div>
 
       <div
-        class="h-[1px] w-full bg-hc-blue mb-[10px] dark:bg-hc-dark-blue"
+        class="h-[1px] border-b-[1px] w-full border-hc-blue dark:border-hc-blue"
       ></div>
 
       <div class="flex flex-col">
