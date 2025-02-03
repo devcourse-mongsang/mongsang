@@ -19,7 +19,6 @@ import { useAuthStore } from "@/store/authStore";
 import { checkDiaryExists, uploadDiaryImage } from "@/api/api-record/api";
 import { useDarkMode } from "@/utils/darkMode";
 
-
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -584,6 +583,20 @@ onMounted(async () => {
         >
           AI 그림 생성
         </p>
+
+        <div
+          v-if="isGeneratingImage"
+          class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 rounded-xl"
+        >
+          <v-progress-circular
+            v-if="isGeneratingImage"
+            color="#0C3B51"
+            indeterminate
+            :size="50"
+            :width="7"
+          >
+          </v-progress-circular>
+        </div>
 
         <img
           v-if="diaryStore.imgUrl"
