@@ -402,6 +402,14 @@ watch(
   }
 }
 
+/* 스크린 크기가 width가 640px에서 766px 사이일 때 버튼 너비 조정 */
+@media (min-width: 640px) and (max-width: 766px) {
+  .edit-profile-btn button {
+    width: 70vw !important; /* 화면 너비의 90%로 설정 */
+    max-width: 100%;
+  }
+}
+
 /* 스크롤바 숨기기 */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
