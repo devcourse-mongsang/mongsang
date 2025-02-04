@@ -127,7 +127,7 @@ async function handleMarkAllRead() {
 
     <div
       :class="[
-        'w-full sm:w-[642px] h-[900px] bg-hc-white/30 dark:bg-hc-beige/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-4 sm:p-8 shadow-blue dark:shadow-dark-blue',
+        'w-full sm:w-[642px] h-[600px] sm:h-[900px] bg-hc-white/30 dark:bg-hc-beige/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-4 sm:p-8 shadow-blue dark:shadow-dark-blue',
         {
           'no-notifications-padding': !notificationsStore.notifications.length,
         },
