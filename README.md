@@ -128,6 +128,26 @@
 ```
 
 ## 🔥 Trouble Shooting
+<table>
+  <tbody>
+     <tr>
+      <td align="center">문제</td>
+      <td align="center">원인</td>
+      <td align="center">해결</td>
+    </tr>
+    <tr>
+      <td>
+         <img src="https://github.com/user-attachments/assets/4ead4d0f-6b62-4ef1-89f0-635e801e43a7" width="300" height="250" />
+      </td>
+      <td>
+         <img src="https://github.com/user-attachments/assets/b3cbcaf5-6a62-4584-97b4-19a271c010e8" width="300" height="250" />
+      </td>
+      <td>
+         <img src="https://github.com/user-attachments/assets/e27ea944-e3ee-459d-980e-147d903d7d6f" width="300" height="250" />
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ## 🌟 Result
 
