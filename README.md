@@ -1,13 +1,19 @@
 <div align="center">
-<h1>🌫️ MongSang (꿈 일기장) 🌫️</h1>
-
-### <b>🗓01/14 ~ 02/04</b>
-
-### 🛏️ 꿈을 기록하는 몽상가가 되어보세요! 🛏️
+  
+<h1>🌫️ 夢像 - 몽상 🌫️</h1>
 
 <a href="https://mongsang.netlify.app/"><img src="https://github.com/user-attachments/assets/1b886526-ba4e-41bd-9721-7085c5d9a84d" width="50%" height="250px"/></a>
 
+
+### 🛏️ AI를 통해 꿈을 기록하는 몽상가가 되어보세요! 🛏️
 </div>
+
+## 📌 OverView
+🔥 <strong>주제</strong>: 생성형 AI기반 꿈 일기 아카이빙 플랫폼 서비스
+
+🧷 <strong>배포 링크</strong>: https://mongsang.netlify.app/
+
+📅 <strong>개발 기간</strong>: 2025.01.14 ~ 02.04
 
 ## 🧑🏻‍💻Developers👩🏻‍💻
 
