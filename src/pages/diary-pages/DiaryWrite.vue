@@ -40,6 +40,21 @@ const weather = ref(props.initialData?.weather || "sunny");
 const content = ref("");
 const modalStore = useModalStore();
 
+onMounted(() => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+  }
+});
+
 watch(
   () => diaryStore.content,
   (newValue) => {
