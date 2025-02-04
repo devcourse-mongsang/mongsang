@@ -157,6 +157,8 @@ const createNewPost = async () => {
     },
   });
 };
+
+const handleEnter = (event) => {};
 </script>
 
 <template>
@@ -185,7 +187,8 @@ const createNewPost = async () => {
           id="newPostContent"
           class="w-full min-h-[462px] h-auto outline-none text-sm sm:text-base resize-none"
           v-model="content"
-        ></textarea>
+          @keydown.enter.exact="handleEnter"
+        />
       </div>
       <div class="m-[25px] flex flex-col gap-[10px]">
         <p class="pl-2 text-xl font-semibold dark:text-hc-white">

@@ -273,7 +273,9 @@ register();
           </div>
 
           <div class="flex items-start mt-2">
-            <p class="w-11/12 text-lg break-words sm:text-xl sm:px-3">
+            <p
+              class="w-11/12 text-lg break-words whitespace-pre-line sm:text-xl sm:px-3"
+            >
               {{ post.content }}
             </p>
             <div class="flex justify-end w-1/12 px-0">
