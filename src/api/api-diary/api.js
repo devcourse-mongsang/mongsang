@@ -9,7 +9,6 @@ export const createDiary = async (diary) => {
 
     if (error) throw new Error(error.message);
 
-    console.log(data);
     return data;
   } catch (error) {
     console.error("일기 저장 실패:", error.message);

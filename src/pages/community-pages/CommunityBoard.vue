@@ -144,13 +144,7 @@ onMounted(fetchPosts);
       >
         {{ currentBoard.title }}
       </h1>
-      <DropDownPostList
-        @select="
-          (selected) => {
-            console.log(selected);
-          }
-        "
-      />
+      <DropDownPostList />
     </div>
     <div
       class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden dark:bg-hc-dark-blue"

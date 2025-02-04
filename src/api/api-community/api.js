@@ -7,7 +7,6 @@ export const createPost = async (post) => {
       .insert(post)
       .select();
     if (error) throw new Error(error.message); // Error 메시지 처리
-    console.log(data);
     return data;
   } catch (error) {
     console.error("게시물 생성 실패:", error.message); // 에러 로깅

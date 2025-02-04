@@ -68,7 +68,6 @@ const handleInputChange = (event) => {
   if (files) {
     addImages(files);
     imageFiles.value = Array.from(files);
-    console.log(imageFiles.value);
   }
 };
 
@@ -135,12 +134,10 @@ const createNewPost = async () => {
           const postId = postResponse[0].id;
 
           if (postId) {
-            console.log(imageFiles.value);
             const uploadedImageUrls = await uploadImagesToSupabase(
               imageFiles.value,
               postId
             );
-            console.log("Uploaded image URLs:", uploadedImageUrls);
 
             router.push({ name: "communityBoard" });
           }

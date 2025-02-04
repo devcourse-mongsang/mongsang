@@ -8,7 +8,6 @@ const selectedDate = ref([new Date().getFullYear(), new Date().getMonth() + 1]);
 
 const updateDate = (dateArray) => {
   selectedDate.value = dateArray;
-  console.log("업데이트된 날짜:", selectedDate.value);
 };
 
 const springs = [

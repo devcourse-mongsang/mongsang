@@ -6,8 +6,6 @@ export const uploadImagesToSupabase = async (files, postId) => {
   const imageUrls = [];
   const uploadPromises = [];
 
-  console.log("files:", files);
-
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const fileName = `community_img/${postId}/${uuidv4()}`;
@@ -59,7 +57,6 @@ export const fetchImagesFromSupabase = async (postId) => {
     }
 
     if (!data || data.length === 0) {
-      console.log("No images found for this postId.");
       return [];
     }
 
@@ -90,7 +87,6 @@ export const deleteImagesFromFolder = async (postId) => {
     }
 
     if (data.length === 0) {
-      console.log("No images found in the folder.");
       return;
     }
 
@@ -110,12 +106,8 @@ export const deleteImagesFromFolder = async (postId) => {
         console.error(
           `Error deleting file ${data[index].name}: ${error.message}`
         );
-      } else {
-        console.log(`Successfully deleted file: ${data[index].name}`);
       }
     });
-
-    console.log("All images deleted successfully.");
   } catch (error) {
     console.error("Error deleting images:", error);
   }
@@ -139,7 +131,6 @@ export const deleteSingleImage = async (postId, fileName) => {
 
 // 🔹 삭제된 이미지 목록을 찾아 개별 삭제하는 함수
 export const deleteRemovedImages = async (postId, remainingImages) => {
-  console.log(remainingImages);
   try {
     const originalImages = await fetchImagesFromSupabase(postId);
     const deletedImages = originalImages.filter(

@@ -13,7 +13,6 @@ export const useAuthStore = defineStore("auth", {
     initAuthListener() {
       supabase.auth.onAuthStateChange(async (event, session) => {
         if (session?.user) {
-          console.log("Auth Event:", event);
           await this.setUser(session.user.id); // 사용자 정보 설정
         } else {
           this.clearState(); // 로그아웃 시 상태 초기화
@@ -39,8 +38,6 @@ export const useAuthStore = defineStore("auth", {
             .select("*")
             .eq("id", userId)
             .single();
-
-          console.log("now online - profileData: ", profileData);
           if (profileError) {
             console.warn(
               "유저 정보를 가져오는 데 실패했습니다:",

@@ -58,8 +58,6 @@ onMounted(async () => {
       imgUrl: diaryResponse.img_url,
       youtubeUrl: diaryResponse.youtube_url,
     };
-
-    console.log("diaryData:", diaryData.value);
   } catch (error) {
     console.error("데이터 로딩 에러:", error);
   }
