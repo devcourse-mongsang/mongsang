@@ -387,6 +387,11 @@ watch(
     background-color: #729ecb;
     color: #ffffff;
   }
+
+  .dark .edit-profile-btn button {
+    background-color: #0c3b51; /* 다크 모드 배경색 */
+    color: #ffffff; /* 다크 모드 텍스트 색상 */
+  }
 }
 
 /* 기존 미디어 쿼리 유지 */
