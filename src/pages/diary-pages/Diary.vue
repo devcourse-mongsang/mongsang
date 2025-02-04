@@ -11,21 +11,6 @@ const modalStore = useModalStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
-onMounted(() => {
-  if (!authStore.profile?.id) {
-    modalStore.addModal({
-      title: "로그인 필요",
-      content: "로그인 후 이용해주세요.",
-      btnText: "로그인",
-      isOneBtn: true,
-      onClick: () => {
-        modalStore.modals = [];
-        router.push({ name: "login" });
-      },
-    });
-  }
-});
-
 const selectedDate = ref([new Date().getFullYear(), new Date().getMonth() + 1]);
 
 const updateDate = (dateArray) => {

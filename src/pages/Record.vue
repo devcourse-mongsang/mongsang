@@ -49,20 +49,7 @@ const { isDark } = useDarkMode();
 //일기 작성 페이지를 제외한 다른 페이지 이동 시 데이터 초기화
 const route = useRoute();
 
-onMounted(() => {
-  if (!authStore.profile?.id) {
-    modalStore.addModal({
-      title: "로그인 필요",
-      content: "로그인 후 이용해주세요.",
-      btnText: "로그인",
-      isOneBtn: true,
-      onClick: () => {
-        modalStore.modals = [];
-        router.push({ name: "login" });
-      },
-    });
-  }
-});
+
 
 onBeforeRouteLeave((to) => {
   if (to.path !== "/diary/write") {
