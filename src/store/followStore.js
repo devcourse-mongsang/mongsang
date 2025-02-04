@@ -53,7 +53,6 @@ export const useFollowStore = defineStore("followStore", {
 
     // 알림 생성 함수 추가
     async createNotification(senderId, recipientId) {
-      console.log("Creating notification...");
       const kstNow = new Date()
         .toLocaleString("sv-SE", { timeZone: "Asia/Seoul" })
         .replace(" ", "T");
@@ -84,7 +83,6 @@ export const useFollowStore = defineStore("followStore", {
 
       if (isFollowing) {
         // 이미 팔로우 중이라면 언팔로우
-        console.log("Unfollowing user:", user.id);
         await supabase
           .from("follow")
           .delete()

@@ -2,13 +2,34 @@
 import Calender from "../../components/common/Calender.vue";
 import DropDownDiary from "../../components/common/DropDownDiary.vue";
 import GlassBox from "../../components/common/GlassBox.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useModalStore } from "@/store/modalStore";
+import { useAuthStore } from "@/store/authStore";
+
+const modalStore = useModalStore();
+const authStore = useAuthStore();
+const router = useRouter();
+
+onMounted(() => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+  }
+});
 
 const selectedDate = ref([new Date().getFullYear(), new Date().getMonth() + 1]);
 
 const updateDate = (dateArray) => {
   selectedDate.value = dateArray;
-  console.log("업데이트된 날짜:", selectedDate.value);
 };
 
 const springs = [

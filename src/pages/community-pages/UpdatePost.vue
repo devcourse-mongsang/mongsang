@@ -35,7 +35,6 @@ const fetchData = async (id) => {
     imageUrls.value = fetchedImages || [];
   } catch (error) {
     console.error("Error fetching post or images:", error);
-    alert("데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해주세요.");
   } finally {
     isLoading.value = false;
   }
@@ -67,17 +66,41 @@ const handleInputChange = (event) => {
 const fetchUpdatedImage = async (postId) => {
   if (!imageFiles) return;
   if (postId) {
-    console.log(imageFiles.value);
     const uploadedImageUrls = await uploadImagesToSupabase(
       imageFiles.value,
       postId
     );
-    console.log("Uploaded image URLs:", uploadedImageUrls); // 업로드된 이미지 URL 로그 출력
     router.push({ name: "communityBoard" });
   }
 };
 
 const fetchUpdatedData = async () => {
+  if (!postData.value.title.trim()) {
+    modalStore.addModal({
+      title: "알림",
+      content: "제목을 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: async () => {
+        modalStore.modals = []; // 모든 모달 닫기
+      },
+    });
+    return;
+  }
+
+  if (!postData.value.content.trim()) {
+    modalStore.addModal({
+      title: "알림",
+      content: "내용을 입력해주세요.",
+      btnText: "확인",
+      isOneBtn: true,
+      onClick: async () => {
+        modalStore.modals = []; // 모든 모달 닫기
+      },
+    });
+    return;
+  }
+
   modalStore.addModal({
     title: "알림",
     content: "게시글 수정을 완료하시겠습니까?",
@@ -118,7 +141,6 @@ const fetchUpdatedData = async () => {
           });
         }
       } catch (error) {
-        alert("업데이트에 실패하였습니다.");
         console.error(error);
       }
     },
@@ -193,21 +215,28 @@ onMounted(() => {
         </div>
       </div>
 
-      <v-fab
-        icon="$mdi-plus"
-        class="fixed bottom-[50px] right-[70px] scale-[110%] z-30"
-        color="#729ECB"
-        @click="
-          fetchUpdatedData(
-            postData.title,
-            postData.content,
-            postData.author_id,
-            postData.category
-          )
-        "
+      <div
+        class="fixed bottom-[20px] right-[10px] z-30 bg-hc-white dark:bg-hc-dark-blue aspect-square w-[3.5rem] rounded-full shadow-lg hover:scale-105 transition-colors duration-300"
       >
-        <Icon icon="ic:round-arrow-forward" width="24" height="24" />
-      </v-fab>
+        <div
+          class="flex items-center justify-center w-full h-full"
+          @click="
+            fetchUpdatedData(
+              postData.title,
+              postData.content,
+              postData.author_id,
+              postData.category
+            )
+          "
+        >
+          <Icon
+            icon="ic:round-arrow-forward"
+            width="30"
+            height="30"
+            class="text-hc-blue dark:text-hc-white"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -230,5 +259,4 @@ onMounted(() => {
     transform: rotate(360deg);
   }
 }
-
 </style>

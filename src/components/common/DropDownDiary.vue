@@ -32,8 +32,6 @@ const updateSelection = () => {
 
   const selectedDateArray = [year, month];
   emit("updateDate", selectedDateArray);
-
-  console.log("선택한 연도와 월 배열:", selectedDateArray);
 };
 </script>
 

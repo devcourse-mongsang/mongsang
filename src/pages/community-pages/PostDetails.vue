@@ -21,6 +21,7 @@ import Comment from "./Comment.vue";
 import LikesCounter from "@/components/common/LikesCounter.vue";
 import { useModalStore } from "@/store/modalStore";
 import { useFollowStore } from "@/store/followStore";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
@@ -197,7 +198,7 @@ register();
           <img
             :src="author?.profile_url || imgPlaceholder"
             alt="작성자 프로필 사진입니다."
-            class="w-[40px] h-[40px] rounded-full"
+            class="w-[40px] h-[40px] rounded-full object-cover"
           />
           <p class="font-bold text-hc-dark-blue">{{ author?.username }}</p>
         </div>
@@ -233,7 +234,6 @@ register();
     <div>
       <swiper-container
         navigation="true"
-        class="mySwiper"
         initial-slide="0"
         pagination="true"
         centered-slides="true"
@@ -243,11 +243,13 @@ register();
         <swiper-slide
           v-for="(postImg, index) in postImgs"
           :key="index"
-          class="md:rounded-[20px] bg-hc-white/50"
+          class="md:rounded-[20px] bg-hc-white/50 overflow-hidden"
         >
-          <div class="flex items-center aspect-square">
+          <div
+            class="flex items-center justify-center w-full h-full aspect-square"
+          >
             <img
-              class="object-contain w-full aspect-square"
+              class="object-contain max-w-full max-h-full w-full h-full rounded-[20px]"
               :src="postImg"
               alt="Post Image"
             />
@@ -255,7 +257,9 @@ register();
         </swiper-slide>
       </swiper-container>
       <div class="mb-6">
-        <div class="mt-[30px] px-4 sm:px-0 dark:text-hc-white">
+        <div
+          class="mt-[30px] px-4 sm:px-0 dark:text-hc-white transition-colors duration-300"
+        >
           <div class="flex items-center">
             <h1 class="w-11/12 font-semibold xm:text-xl sm:text-2xl sm:px-3">
               {{ post.title }}
@@ -269,12 +273,14 @@ register();
           </div>
 
           <div class="flex items-start mt-2">
-            <p class="w-11/12 text-lg break-words sm:text-xl sm:px-3">
+            <p
+              class="w-11/12 text-lg break-words whitespace-pre-line sm:text-xl sm:px-3"
+            >
               {{ post.content }}
             </p>
             <div class="flex justify-end w-1/12 px-0">
               <Icon
-                class="cursor-pointer text-hc-blue dark:text-hc-dark-blue"
+                class="transition-colors duration-300 cursor-pointer text-hc-blue dark:text-hc-dark-blue"
                 icon="mdi:share-variant"
                 width="35"
                 height="35"
@@ -306,5 +312,12 @@ register();
         목록으로
       </Button>
     </div>
+    <ScrollTopButton bottom="-20px" />
   </div>
 </template>
+
+<style scoped>
+.object-cover {
+  object-fit: cover;
+}
+</style>

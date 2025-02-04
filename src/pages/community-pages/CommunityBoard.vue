@@ -1,7 +1,9 @@
 <script setup>
 import imgPlaceholder from "../../../public/assets/imgs/img_placeholder.png";
+import imgPlaceholderDark from "../../../public/assets/imgs/img_placeholder_dark.png";
 import { getPostByCategory } from "@/api/api-community/api";
 import dateConverter from "@/utils/dateConveter";
+
 import "@mdi/font/css/materialdesignicons.css";
 
 import { computed, onMounted, ref, watch } from "vue";
@@ -19,6 +21,7 @@ import { getPostLike } from "@/api/api-like/api";
 import { useAuthStore } from "@/store/authStore";
 import { useModalStore } from "@/store/modalStore";
 import router from "@/router";
+import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
 
 // 페이지네이션
 const page = ref(1);
@@ -107,7 +110,7 @@ const onIsLoggedout = () => {
     title: "",
     content: "로그인 후 이용해주세요.",
     btnText: "로그인",
-    isOneBtn: true,
+    isOneBtn: false,
     onClick: () => {
       modalStore.modals = []; // 모든 모달 닫기
       router.push({ name: "login" });
@@ -136,16 +139,12 @@ onMounted(fetchPosts);
     <div
       class="flex justify-between h-[46px] items-start mb-[18px] mx-4 sm:mx-0"
     >
-      <h1 class="text-2xl font-semibold dark:text-hc-white">
+      <h1
+        class="text-2xl font-semibold transition-colors duration-300 dark:text-hc-white"
+      >
         {{ currentBoard.title }}
       </h1>
-      <DropDownPostList
-        @select="
-          (selected) => {
-            console.log(selected);
-          }
-        "
-      />
+      <DropDownPostList />
     </div>
     <div
       class="h-[1px] w-full mb-[27px] bg-hc-blue sm:hidden dark:bg-hc-dark-blue"
@@ -185,11 +184,15 @@ onMounted(fetchPosts);
                   "
                   alt="User profile image"
                 />
-                <p class="font-semibold lg:text-xl dark:text-hc-white">
+                <p
+                  class="font-semibold transition-colors duration-300 lg:text-xl dark:text-hc-white"
+                >
                   {{ authorCache[post.author_id]?.username || "@anonymous" }}
                 </p>
               </span>
-              <span class="flex flex-col dark:text-hc-white">
+              <span
+                class="flex flex-col transition-colors duration-300 dark:text-hc-white"
+              >
                 <h2 class="font-semibold sm:text-xl lg:text-2xl">
                   {{ post.title }}
                 </h2>
@@ -199,10 +202,19 @@ onMounted(fetchPosts);
               </span>
             </div>
             <img
-              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover"
+              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover dark:hidden block"
               :src="
                 Object.keys(postImgs[post.id] || {}).length === 0
                   ? imgPlaceholder
+                  : postImgs[post.id]
+              "
+              alt="Post image"
+            />
+            <img
+              class="sm:w-[180px] sm:h-[180px] w-[100px] h-[100px] rounded-[20px] object-cover hidden dark:block"
+              :src="
+                Object.keys(postImgs[post.id] || {}).length === 0
+                  ? imgPlaceholderDark
                   : postImgs[post.id]
               "
               alt="Post image"
@@ -220,39 +232,40 @@ onMounted(fetchPosts);
 
     <!-- 게시글 없음 메시지 -->
     <div v-else class="flex justify-center py-10 h-[500px] items-center">
-      <p class="text-lg dark:text-hc-white">아직 게시글이 없습니다.</p>
+      <p class="text-lg transition-colors duration-300 dark:text-hc-white">
+        아직 게시글이 없습니다.
+      </p>
     </div>
-
     <!-- 글 작성 버튼 -->
+
     <RouterLink
       v-show="isLoggedIn"
       :to="`/${route.params.boardType}/create-post`"
     >
-      <v-fab
-        icon="$mdi-plus"
-        class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      <div
+        class="fixed bottom-[-30px] right-[-40px] z-30 m-[80px] bg-hc-white dark:bg-hc-dark-blue transition-colors duration-300 aspect-square w-[3rem] flex justify-center items-center rounded-full hover:scale-105 shadow-lg ease-in-out"
       >
         <Icon
           icon="material-symbols:edit-outline"
-          width="1.5rem"
-          height="1.5rem"
-          class="text-hc-blue dark:text-hc-dark-blue"
+          width="24px"
+          height="24px"
+          class="text-hc-blue dark:text-hc-white"
         />
-      </v-fab>
+      </div>
     </RouterLink>
-    <v-fab
+
+    <div
       v-show="!isLoggedIn"
-      icon="$mdi-plus"
-      class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      class="fixed bottom-[-30px] right-[-40px] z-30 m-[80px] bg-hc-white dark:bg-hc-dark-blue transition-colors duration-300 aspect-square w-[3rem] flex justify-center items-center rounded-full hover:scale-105 shadow-lg ease-in-out"
       @click="onIsLoggedout"
     >
       <Icon
         icon="material-symbols:edit-outline"
-        width="1.5rem"
-        height="1.5rem"
-        class="text-hc-blue dark:text-hc-dark-blue"
+        width="24px"
+        height="24px"
+        class="text-hc-blue dark:text-hc-white"
       />
-    </v-fab>
+    </div>
     <div class="text-xs-center" v-if="!isLoading">
       <v-pagination
         v-model="page"
@@ -261,6 +274,8 @@ onMounted(fetchPosts);
         next-icon="mdi-menu-right"
       ></v-pagination>
     </div>
+
+    <ScrollTopButton bottom="50px" right="-40px" />
   </div>
 </template>
 

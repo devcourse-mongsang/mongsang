@@ -11,13 +11,19 @@ import {
   mdiMicrophoneOff,
 } from "@mdi/js";
 import { ref, onMounted } from "vue";
-import { useRoute, onBeforeRouteLeave } from "vue-router";
+import { useRoute, onBeforeRouteLeave, useRouter } from "vue-router";
 import { OpenAI } from "openai";
 import { useDiaryStore } from "@/store/diaryStore";
+import { useModalStore } from "@/store/modalStore";
+import { useAuthStore } from "@/store/authStore";
 import { checkDiaryExists, uploadDiaryImage } from "@/api/api-record/api";
 import { useDarkMode } from "@/utils/darkMode";
-const diaryStore = useDiaryStore();
 
+const authStore = useAuthStore();
+const router = useRouter();
+
+const diaryStore = useDiaryStore();
+const modalStore = useModalStore();
 const isDiaryWritten = ref(false);
 const today = new Date().toISOString().split("T")[0];
 
@@ -43,6 +49,21 @@ const { isDark } = useDarkMode();
 //일기 작성 페이지를 제외한 다른 페이지 이동 시 데이터 초기화
 const route = useRoute();
 
+onMounted(() => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: true,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+  }
+});
+
 onBeforeRouteLeave((to) => {
   if (to.path !== "/diary/write") {
     diaryStore.resetData();
@@ -54,7 +75,12 @@ const startListening = () => {
   if (isListening.value) return;
 
   if (!("webkitSpeechRecognition" in window)) {
-    alert("⚠️음성 입력을 지원하지 않는 브라우저입니다.");
+    modalStore.addModal({
+      title: "오류",
+      content: "음성 입력을 지원하지 않는 브라우저입니다.",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     return;
   }
 
@@ -75,7 +101,12 @@ const startListening = () => {
 
   speechRecognition.onerror = (event) => {
     console.error("❌ 음성 인식 에러 발생:", event.error);
-    alert("음성 인식 중 에러가 발생했습니다!");
+    modalStore.addModal({
+      title: "오류",
+      content: "음성 입력 중 오류가 발생했습니다.",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     stopListening();
   };
 
@@ -93,13 +124,17 @@ const stopListening = () => {
     speechRecognition.stop();
     isListening.value = false;
   }
-  console.log("📝 음성 인식 내용:", diaryStore.content);
 };
 
 //꿈 분석
 const analyzeDream = async () => {
   if (!diaryStore.content.trim()) {
-    alert("꿈이 입력 되지 않았습니다 😢 꿈을 입력해주세요!");
+    modalStore.addModal({
+      title: "꿈이 입력 되지 않았습니다😢",
+      content: "꿈을 입력해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
     return;
   }
 
@@ -123,7 +158,12 @@ const analyzeDream = async () => {
     diaryStore.setDreamAnalysis(response.choices[0].message.content);
   } catch (error) {
     console.error("❌Open AI API 호출 에러", error);
-    alert("꿈 분석 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+    modalStore.addModal({
+      title: "꿈 분석 중 에러가 발생했습니다😢",
+      content: "다시 시도해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isAnalyzing.value = false;
   }
@@ -134,12 +174,21 @@ const copyAnalysis = () => {
   navigator.clipboard
     .writeText(diaryStore.dreamAnalysis)
     .then(() => {
-      alert("분석 결과가 복사되었습니다! 📋");
-      console.log("분석 결과: ", diaryStore.dreamAnalysis);
+      modalStore.addModal({
+        title: "완료",
+        content: "분석 결과가 복사되었습니다! 📋",
+        btnText: "확인",
+        isOneBtn: true,
+      });
     })
     .catch(() => {
       console.error("❌ 분석 결과 복사에 실패했습니다.", error);
-      alert("분석 결과 복사에 실패했습니다. 다시 시도해주세요!");
+      modalStore.addModal({
+        title: "복사 실패",
+        content: "다시 시도해주세요!",
+        btnText: "확인",
+        isOneBtn: true,
+      });
     });
 };
 
@@ -197,7 +246,12 @@ const generateImage = async () => {
     diaryStore.setImgUrl(imgUrl);
   } catch (error) {
     console.error("이미지 생성 오류:", error);
-    alert("이미지 생성 중 문제가 발생했습니다. 다시 시도해주세요.");
+    modalStore.addModal({
+      title: "이미지 생성 실패",
+      content: "다시 시도해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isGeneratingImage.value = false;
   }
@@ -232,7 +286,6 @@ const analyzeEmotion = async () => {
     });
 
     const emotion = response.choices[0].message.content;
-    console.log("분석된 감정:", emotion);
     return emotion;
   } catch (error) {
     console.error("❌감정 분석 중 에러 발생", error);
@@ -304,7 +357,12 @@ const recommendASMR = async (dreamAnalysis) => {
     }
   } catch (error) {
     console.error("❌ASMR 추천 중 에러 발생", error);
-    alert("ASMR 추천 중 에러가 발생했습니다 😢 다시 시도해주세요!");
+    modalStore.addModal({
+      title: "ASMR 추천 중 에러가 발생했습니다😢",
+      content: "다시 시도해주세요!",
+      btnText: "확인",
+      isOneBtn: true,
+    });
   } finally {
     isFetching.value = false;
   }
@@ -320,17 +378,16 @@ onMounted(async () => {
   try {
     const exists = await checkDiaryExists(today);
     isDiaryWritten.value = exists;
-    console.log("오늘 일기 작성 여부:", exists);
   } catch (error) {
     console.error("onMounted에서 에러 발생:", error.message);
   }
 });
 </script>
 <template>
-  <div class="flex flex-col md:flex-row h-full gap-x-[85px] overflow-hidden">
+  <div class="flex flex-col xl:flex-row h-full gap-x-[85px] overflow-hidden">
     <!-- 꿈 기록 -->
     <div
-      class="md:ml-[70px] h-full md:fixed md:w-[480px] lg:w-[560px] xl:w-[640px] 2xl:w-[700px] 3xl:w-[760px]"
+      class="xl:ml-[70px] h-full xl:fixed xl:w-[640px] 2xl:w-[700px] 3xl:w-[760px]"
     >
       <textarea
         v-model="diaryStore.content"
@@ -339,10 +396,10 @@ onMounted(async () => {
         maxlength="1600"
         placeholder="꿈 일기를 기록해주세요 (최대 1600자)"
         style="background-color: rgba(255, 255, 255, 0.7); aspect-ratio: 1 / 1"
-        class="w-full p-16 text-xl resize-none md:rounded-3xl focus:outline-none"
+        class="w-full p-16 text-xl resize-none xl:rounded-3xl focus:outline-none"
       ></textarea>
 
-      <div class="flex justify-between xm:mx-4 md:mx-0 mt-[10px]">
+      <div class="flex justify-between mx-4 xl:mx-0 mt-[10px]">
         <div class="flex gap-x-[10px]">
           <!-- 음성인식 버튼-->
           <Button
@@ -468,10 +525,10 @@ onMounted(async () => {
 
     <div
       style="--webkit-scrollbar-width: none; scrollbar-width: none"
-      class="flex flex-col xm:mt-[37px] md:mt-0 md:w-[640px] lg:w-[660px] xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] md:mr-[70px] overflow-y-auto md:ml-[640px] lg:ml-[760px] xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
+      class="flex flex-col mt-[37px] xl:mt-0 xl:w-[680px] 2xl:w-[700px] 3xl:w-[840px] gap-y-[50px] xl:mr-[70px] overflow-y-auto xl:ml-[800px] 2xl:ml-[920px] 3xl:ml-[960px]"
     >
       <div
-        class="flex flex-col items-center w-full md:rounded-3xl px-[65px] relative pb-[78px]"
+        class="flex flex-col items-center w-full xl:rounded-3xl px-[65px] relative pb-[78px]"
         style="background-color: rgba(255, 255, 255, 0.7)"
       >
         <img
@@ -517,28 +574,42 @@ onMounted(async () => {
       <!-- ai 그림 생성 -->
       <div class="relative">
         <p
-          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 xl:pl-0 dark:text-hc-white"
         >
           AI 그림 생성
         </p>
+
+        <div
+          v-if="isGeneratingImage"
+          class="absolute inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 rounded-xl"
+        >
+          <v-progress-circular
+            v-if="isGeneratingImage"
+            color="#0C3B51"
+            indeterminate
+            :size="50"
+            :width="7"
+          >
+          </v-progress-circular>
+        </div>
 
         <img
           v-if="diaryStore.imgUrl"
           :src="diaryStore.imgUrl"
           alt="AI 생성 이미지"
-          class="w-full h-fit md:rounded-3xl"
+          class="w-full h-fit xl:rounded-3xl"
         />
         <img
           v-else
           src="/public/assets/imgs/img_placeholder.png"
           alt="AI 그림"
-          class="w-full h-fit md:rounded-3xl dark:hidden"
+          class="w-full h-fit xl:rounded-3xl dark:hidden"
         />
         <img
           v-if="!diaryStore.imgUrl"
           src="/public/assets/imgs/img_placeholder_dark.png"
           alt="AI 그림"
-          class="hidden w-full h-fit md:rounded-3xl dark:block"
+          class="hidden w-full h-fit xl:rounded-3xl dark:block"
         />
 
         <Button
@@ -563,12 +634,12 @@ onMounted(async () => {
       <!-- 추천 asmr -->
       <div class="mb-16 video-container">
         <p
-          class="mb-[10px] font-semibold text-2xl xm:pl-4 md:pl-0 dark:text-hc-white"
+          class="mb-[10px] font-semibold text-2xl xm:pl-4 xl:pl-0 dark:text-hc-white"
         >
           추천 ASMR
         </p>
         <div
-          class="relative w-full overflow-hidden md:rounded-3xl"
+          class="relative w-full overflow-hidden xl:rounded-3xl"
           style="padding-top: 56.25%"
         >
           <iframe

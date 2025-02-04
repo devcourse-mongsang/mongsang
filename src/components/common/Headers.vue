@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useSidebarStore } from "../../store/sidebar";
 import { Icon } from "@iconify/vue";
 import { useAuthStore } from "@/store/authStore";
@@ -12,6 +12,12 @@ defineExpose({ headersElement });
 const sidebarStore = useSidebarStore();
 const authStore = useAuthStore();
 const notificationsStore = useNotificationsStore();
+
+const isAtTop = ref(true);
+
+const handleScroll = () => {
+  isAtTop.value = window.scrollY === 0;
+};
 
 const sendToLogin = () => {
   router.push({ name: "login" });
@@ -28,16 +34,30 @@ const hasUnreadNotifications = computed(() => {
 });
 
 onMounted(async () => {
+  window.addEventListener("scroll", handleScroll);
+
   if (authStore.isLoggedIn) {
     await notificationsStore.fetchNotifications(authStore.user.id);
   }
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 
 <template ref="headersElement">
   <!-- 상단 바 -->
+  <div
+    class="fixed top-0 z-10 w-full transition-all duration-300 ease-in-out"
+    :class="{
+      'bg-hc-white/50 dark:bg-hc-gray/50 h-[0px]': isAtTop,
+      'bg-hc-white/50 dark:bg-hc-gray/50 shadow-md backdrop-blur-md h-[60px]':
+        !isAtTop,
+    }"
+  ></div>
   <nav
-    class="flex items-center justify-between h-10 p-[30px] z-20 fixed mx-auto w-full"
+    class="flex items-center justify-between h-10 p-[30px] z-20 mx-auto fixed top-0 left-0 w-full"
   >
     <!-- 햄버거 메뉴 -->
     <div class="flex items-center">
@@ -96,7 +116,7 @@ onMounted(async () => {
             icon="material-symbols:notifications-outline"
             width="29"
             height="29"
-            class="cursor-pointer dark:text-hc-white text-hc-blue"
+            class="transition-all duration-300 cursor-pointer dark:text-hc-white text-hc-blue"
           />
           <!-- Red dot for unread notifications -->
           <span
@@ -113,7 +133,7 @@ onMounted(async () => {
             icon="material-symbols:home-outline-rounded"
             width="32"
             height="32"
-            class="cursor-pointer dark:text-hc-white text-hc-blue"
+            class="transition-all duration-300 cursor-pointer dark:text-hc-white text-hc-blue"
           />
         </router-link>
       </div>

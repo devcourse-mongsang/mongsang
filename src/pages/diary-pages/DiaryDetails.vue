@@ -29,11 +29,9 @@ const handleDeleteDiary = () => {
       try {
         await deleteDiary(diaryId);
         modalStore.modals = [];
-        alert("일기가 삭제되었습니다.");
         router.push("/diary");
       } catch (error) {
         console.error("일기 삭제 실패:", error);
-        alert("일기 삭제에 실패했습니다.");
       }
     },
   });
@@ -60,8 +58,6 @@ onMounted(async () => {
       imgUrl: diaryResponse.img_url,
       youtubeUrl: diaryResponse.youtube_url,
     };
-
-    console.log("diaryData:", diaryData.value);
   } catch (error) {
     console.error("데이터 로딩 에러:", error);
   }
@@ -100,31 +96,44 @@ const toggleModal = () => {
         <p
           class="absolute right-7 top-[89px] text-2xl text-justify text-black whitespace-nowrap"
         >
-          <span class="font-semibold">{{ diaryData.username }}</span>
-          <span>의 꿈 일기</span>
+          <span
+            class="font-semibold transition-colors duration-300 dark:text-hc-white"
+            >{{ diaryData.username }}</span
+          >
+          <span class="transition-colors duration-300 dark:text-hc-white"
+            >의 꿈 일기</span
+          >
         </p>
       </div>
 
       <div class="flex items-center gap-8">
-        <p class="text-xl dark:text-hc-white sm:text-xl">{{ formattedDate }}</p>
+        <p
+          class="text-xl transition-colors duration-300 dark:text-hc-white sm:text-xl"
+        >
+          {{ formattedDate }}
+        </p>
 
         <div class="flex items-center justify-end gap-2 ml-auto">
-          <p class="text-xl xm:hidden sm:block dark:text-hc-white">
+          <p
+            class="text-xl transition-colors duration-300 xm:hidden sm:block dark:text-hc-white"
+          >
             오늘의 기분
           </p>
           <Icon
             :icon="getIconByName(faceIcons, diaryData.condition)"
-            class="w-6 h-6 text-hc-blue dark:text-hc-dark-blue"
+            class="w-6 h-6 transition-colors duration-300 text-hc-blue dark:text-hc-dark-blue"
           />
         </div>
 
         <div class="flex items-center justify-end gap-2">
-          <p class="text-xl xm:hidden sm:block dark:text-hc-white">
+          <p
+            class="text-xl transition-colors duration-300 xm:hidden sm:block dark:text-hc-white"
+          >
             오늘의 날씨
           </p>
           <Icon
             :icon="getIconByName(weatherIcons, diaryData.weather)"
-            class="w-6 h-6 text-hc-blue dark:text-hc-dark-blue"
+            class="w-6 h-6 transition-colors duration-300 text-hc-blue dark:text-hc-dark-blue"
           />
         </div>
 
@@ -133,7 +142,7 @@ const toggleModal = () => {
           <button class="flex items-center gap-2" @click="toggleModal">
             <Icon
               icon="mdi:dots-horizontal"
-              class="w-6 h-6 cursor-pointer text-hc-blue dark:text-hc-white"
+              class="w-6 h-6 transition-colors duration-300 cursor-pointer text-hc-blue dark:text-hc-white"
             />
           </button>
 
@@ -187,12 +196,12 @@ const toggleModal = () => {
 
     <!-- 꿈 일기 제목과 내용 -->
     <h2
-      class="text-2xl font-semibold mb-4 xm:text-xl xm:px-4 sm:px-[0px] dark:text-hc-white"
+      class="text-2xl font-semibold mb-4 xm:text-xl xm:px-4 sm:px-[0px] dark:text-hc-white transition-colors duration-300"
     >
       {{ diaryData.title }}
     </h2>
     <p
-      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white"
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white transition-colors duration-300"
     >
       {{ diaryData.content }}
     </p>
@@ -201,29 +210,31 @@ const toggleModal = () => {
 
     <!-- 꿈 분석 -->
     <h3
-      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px] dark:text-hc-dark-blue"
+      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px] dark:text-hc-dark-blue transition-colors duration-300"
     >
       꿈 분석
     </h3>
     <p
       v-if="diaryData.dreamAnalysis"
-      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white"
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] dark:text-hc-white transition-colors duration-300"
     >
       {{ diaryData.dreamAnalysis }}
     </p>
     <p
       v-else
-      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] text-hc-gray dark:text-hc-white"
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] text-hc-gray dark:text-hc-white transition-colors duration-300"
     >
       분석된 꿈이 없습니다.
     </p>
 
     <!-- 구분선 -->
-    <hr class="my-8 border-hc-blue dark:border-hc-dark-blue" />
+    <hr
+      class="my-8 transition-colors duration-300 border-hc-blue dark:border-hc-dark-blue"
+    />
 
     <!-- ASMR 섹션 -->
     <h3
-      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px] dark:text-hc-dark-blue"
+      class="text-xl font-semibold text-hc-blue mb-4 xm:text-lg xm:px-4 sm:px-[0px] dark:text-hc-dark-blue transition-colors duration-300"
     >
       ASMR
     </h3>
@@ -241,23 +252,24 @@ const toggleModal = () => {
     </div>
     <p
       v-else
-      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] text-hc-gray dark:text-hc-white"
+      class="text-xl text-justify mb-8 xm:text-base xm:px-4 sm:px-[0px] text-hc-gray dark:text-hc-white transition-colors duration-300"
     >
       추천 영상이 없습니다.
     </p>
 
     <RouterLink to="/diary">
-      <v-fab
-        icon="$mdi-plus"
-        class="fixed scale-[110%] bottom-0 right-0 z-30 m-[80px]"
+      <div
+        class="fixed bottom-[20px] right-[10px] z-30 bg-hc-white dark:bg-hc-dark-blue aspect-square w-[3.5rem] rounded-full shadow-lg hover:scale-105 transition-colors duration-300"
       >
-        <Icon
-          icon="material-symbols:book-2-outline"
-          width="1.5rem"
-          height="1.5rem"
-          class="text-hc-blue dark:text-hc-dark-blue"
-        />
-      </v-fab>
+        <div class="flex items-center justify-center w-full h-full">
+          <Icon
+            icon="material-symbols:book-2-outline"
+            width="1.5rem"
+            height="1.5rem"
+            class="transition-colors duration-300 text-hc-blue dark:text-hc-white"
+          />
+        </div>
+      </div>
     </RouterLink>
   </div>
 </template>

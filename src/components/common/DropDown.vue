@@ -43,9 +43,7 @@ defineProps({
           :key="index"
           class="cursor-pointer"
         >
-          <v-list-item-title @click="() => console.log(`${item.title}`)">{{
-            item.title
-          }}</v-list-item-title>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
