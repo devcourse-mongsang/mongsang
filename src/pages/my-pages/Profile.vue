@@ -330,13 +330,13 @@ watch(
 
       <!-- 게시물 그리드 -->
       <div
-        class="w-full sm:w-[830px] mx-auto mt-8 grid grid-cols-3 sm:gap-[10px] gap-[0px] pb-[0px] sm:pb-[128px] sm:px-4 px-0"
+        class="w-full sm:max-w-[830px] sm:min-w-[640px] sm:w-auto mx-auto mt-8 grid grid-cols-3 sm:gap-[10px] gap-[0px] pb-[0px] sm:pb-[128px] sm:px-4 px-0"
         v-if="posts.length > 0"
       >
         <div
           v-for="post in posts"
           :key="post.id"
-          class="relative pt-[100%] cursor-pointer w-full rounded-none sm:rounded-[20px] overflow-hidden"
+          class="relative aspect-square cursor-pointer w-full rounded-none sm:rounded-[20px] overflow-hidden"
           @click="goToPost(post.id, post.category)"
         >
           <img
@@ -345,6 +345,7 @@ watch(
           />
         </div>
       </div>
+
       <div v-else class="w-full sm:w-[830px] mx-auto text-center mt-20">
         <p
           class="pb-32 text-sm text-gray-500 xm:text-base sm:text-xl dark:text-hc-white"
