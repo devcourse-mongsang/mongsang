@@ -281,24 +281,26 @@ const { isDark } = useDarkMode();
             class="block mb-1 ml-10 text-xl font-semibold text-hc-blue dark:text-hc-dark-blue"
             >이메일</label
           >
-          <div class="flex items-center">
-            <Input
-              type="email"
-              placeholder="이메일을 입력해주세요"
-              v-model="registerCredentials.email"
-              variant="shadowed"
-              size="xs"
-              borderRadius="lg"
-              :isPasswordInput="true"
-            />
-            <Button
-              variant="filled"
-              size="sm"
-              class="ml-2 text-sm sm:text-xl font-semibold w-[43px] h-[43px] sm:w-[63px] sm:h-[63px]"
-              @click.prevent="checkEmail"
-            >
-              확인
-            </Button>
+          <div class="w-[300px] sm:w-[480px]">
+            <div class="flex items-center">
+              <Input
+                type="email"
+                placeholder="이메일을 입력해주세요"
+                v-model="registerCredentials.email"
+                variant="shadowed"
+                size="xs"
+                borderRadius="lg"
+                :isPasswordInput="true"
+              />
+              <Button
+                variant="filled"
+                size="sm"
+                class="ml-2 text-sm sm:text-xl font-semibold w-[43px] max-h-[43px] sm:w-[63px] sm:h-[63px] sm:max-h-[63px]"
+                @click.prevent="checkEmail"
+              >
+                확인
+              </Button>
+            </div>
           </div>
           <p v-if="emailError" class="mt-2 mx-10 text-xs sm:text-sm text-red">
             {{ emailError }}
@@ -331,7 +333,7 @@ const { isDark } = useDarkMode();
               <Button
                 variant="filled"
                 size="sm"
-                class="ml-2 text-sm sm:text-xl font-semibold w-[43px] h-[43px] sm:w-[63px] sm:h-[63px]"
+                class="ml-2 text-sm sm:text-xl font-semibold w-[43px] max-h-[43px] sm:w-[63px] sm:h-[63px] sm:max-h-[63px]"
                 @click.prevent="checkUsername"
               >
                 확인
