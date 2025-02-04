@@ -43,7 +43,7 @@ const onLikeButtonClick = () => {
       title: "",
       content: "로그인 후 이용해주세요.",
       btnText: "로그인",
-      isOneBtn: true,
+      isOneBtn: false,
       onClick: () => {
         modalStore.modals = []; // 모든 모달 닫기
         router.push({ name: "login" });

@@ -13,8 +13,8 @@ import { ref } from "vue";
 
 const modalStore = useModalStore();
 const authStore = useAuthStore();
-const sidebarStore = useSidebarStore();
 const router = useRouter();
+const sidebarStore = useSidebarStore();
 const { isDark, toggleDarkMode } = useDarkMode();
 
 const sidebarRef = ref(null);
@@ -41,6 +41,40 @@ async function handleLogout() {
     },
   });
 }
+
+const onRecordButtonClick = () => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: false,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+    return;
+  }
+  router.push({ name: "record" });
+};
+
+const onDiaryButtonClick = () => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: false,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+    return;
+  }
+  router.push({ name: "diary" });
+};
 </script>
 
 <template>
@@ -73,7 +107,9 @@ async function handleLogout() {
                 :src="authStore.profile.profile_url"
                 alt="사용자의 프로필 이미지입니다."
               />
-              <div class="transition-all duration-300 text-hc-white dark:text-hc-dark-blue">
+              <div
+                class="transition-all duration-300 text-hc-white dark:text-hc-dark-blue"
+              >
                 <p
                   class="font-semibold"
                   :style="{ fontSize: 'clamp(16px, 2.5vw, 20px)' }"
@@ -146,8 +182,8 @@ async function handleLogout() {
       </div>
 
       <div class="flex gap-4 py-3 xm:flex-col xm:py-[25%]">
-        <RouterLink
-          to="/record"
+        <div
+          @click="onRecordButtonClick"
           class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center hover:scale-105"
         >
           <Icon
@@ -156,9 +192,9 @@ async function handleLogout() {
             height="1.5rem"
             class="transition-all duration-300 text-hc-blue dark:text-hc-dark-blue"
           />
-        </RouterLink>
-        <RouterLink
-          to="/diary"
+        </div>
+        <div
+          @click="onDiaryButtonClick"
           class="bg-hc-white rounded-full w-[2.5rem] h-[2.5rem] flex justify-center items-center hover:scale-105"
         >
           <Icon
@@ -167,7 +203,7 @@ async function handleLogout() {
             height="1.5rem"
             class="transition-all duration-300 text-hc-blue dark:text-hc-dark-blue"
           />
-        </RouterLink>
+        </div>
       </div>
 
       <DropDownCommunity />

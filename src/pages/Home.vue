@@ -6,9 +6,14 @@ import { ref } from "vue";
 import { useAuthStore } from "@/store/authStore";
 import { mdiReload } from "@mdi/js";
 import ScrollTopButton from "@/components/common/ScrollTopButton.vue";
+import { useModalStore } from "@/store/modalStore";
+import { useRouter } from "vue-router";
 
 const videos = ref([]);
 const isLoading = ref(true); // 로딩 상태 추가
+const modalStore = useModalStore();
+const authStore = useAuthStore();
+const router = useRouter();
 
 const fetchASMRVideos = async () => {
   videos.value = [];
@@ -43,6 +48,23 @@ const getRandomVideos = (arr, n) => {
     [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
   }
   return mixed.slice(0, n);
+};
+
+const onRecordButtonClick = () => {
+  if (!authStore.profile?.id) {
+    modalStore.addModal({
+      title: "로그인 필요",
+      content: "로그인 후 이용해주세요.",
+      btnText: "로그인",
+      isOneBtn: false,
+      onClick: () => {
+        modalStore.modals = [];
+        router.push({ name: "login" });
+      },
+    });
+    return;
+  }
+  router.push({ name: "record" });
 };
 
 fetchASMRVideos();
@@ -84,14 +106,14 @@ fetchASMRVideos();
           몽상가가 되어 당신의 꿈을 세상과 나누는 특별한 경험을 시작하세요.
         </h2>
       </div>
-      <RouterLink to="/record"
-        ><Button
+      <div @click="onRecordButtonClick">
+        <Button
           variant="shadowed"
           class-name="sm:w-[336px] sm:mt-[40px] md:mt-0 hover:scale-[105%] w-[192px] text-[14px] sm:text-2xl h-[47px] sm:h-[63px] mb-[100px] xm:mb-[0px] rounded-[20px]"
         >
           꿈 기록하러 가기
-        </Button></RouterLink
-      >
+        </Button>
+      </div>
     </div>
 
     <div class="max-w-[1300px] w-full">
@@ -103,7 +125,9 @@ fetchASMRVideos();
       class="max-w-[1280px] px-4 md:px-8 lg:px-11 pb-8 pt-6 mt-20 bg-[rgba(255,255,255,0.3)] dark:bg-hc-beige/20 border-[7px] border-[rgba(255,255,255,0.5)] rounded-[20px] w-full"
     >
       <div class="flex items-center mb-4 gap-x-3">
-        <h3 class="font-semibold transition-all duration-300 xm:text-base sm:text-2xl dark:text-hc-white">
+        <h3
+          class="font-semibold transition-all duration-300 xm:text-base sm:text-2xl dark:text-hc-white"
+        >
           당신의 꿈에 귀 기울이는 순간, ASMR 추천
         </h3>
         <Button
