@@ -167,6 +167,16 @@ export default {
                 })`,
               }"
             >
+              <span
+                :class="[
+                  'calendar-date-circle',
+                  {
+                    'calendar-date-circle--weekend':
+                      idx % 7 === 0 || idx % 7 === 6,
+                  },
+                ]"
+                >{{ dayObj.day }}</span
+              >
               <div
                 class="calendar-square-background w-[12vw] lg:w-[6.25rem] aspect-square dark:block hidden"
                 :style="{
