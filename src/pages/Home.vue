@@ -20,7 +20,7 @@ const fetchASMRVideos = async () => {
   isLoading.value = true; // 로딩 상태 시작
   const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
   const keyword = "asmr ambience";
-  const maxResults = 24;
+  const maxResults = 8;
 
   try {
     const response = await fetch(
