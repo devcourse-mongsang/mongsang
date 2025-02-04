@@ -116,17 +116,22 @@ async function handleMarkAllRead() {
       <img
         src="/assets/imgs/big_logo.png"
         alt="Logo"
-        class="block h-36 dark:hidden"
+        class="logo block h-36 dark:hidden"
       />
       <img
         src="/assets/imgs/big_logo_dark.png"
         alt="Logo"
-        class="hidden h-36 dark:block"
+        class="logo hidden h-36 dark:block"
       />
     </div>
 
     <div
-      class="w-full sm:w-[642px] h-[900px] bg-hc-white/30 dark:bg-hc-beige/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-4 sm:p-8 shadow-blue dark:shadow-dark-blue"
+      :class="[
+        'w-full sm:w-[642px] h-[600px] sm:h-[900px] bg-hc-white/30 dark:bg-hc-beige/30 border-[7px] border-hc-white/50 rounded-[20px] relative p-4 sm:p-8 shadow-blue dark:shadow-dark-blue',
+        {
+          'no-notifications-padding': !notificationsStore.notifications.length,
+        },
+      ]"
     >
       <div class="flex flex-col h-full">
         <!-- 알림 섹션 -->
@@ -239,5 +244,39 @@ async function handleMarkAllRead() {
 
 .notification-text {
   transition: color 0.3s ease-in-out;
+}
+
+/* 화면 크기가 sm 이하일 때 width 및 글자 크기 조정 */
+@media (max-width: 640px) {
+  .no-notifications-padding,
+  .w-full {
+    width: 90vw; /* 화면 width의 90%로 설정 */
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .text-lg {
+    font-size: 1rem; /* 글자 크기 한 단계 낮춤 */
+  }
+
+  .text-2xs {
+    font-size: 0.75rem; /* 글자 크기 한 단계 낮춤 */
+  }
+
+  .text-2sm {
+    font-size: 0.875rem; /* 글자 크기 한 단계 낮춤 */
+  }
+
+  /* 로고 이미지 크기 조정 */
+  .logo {
+    height: 96px; /* 최소 높이 설정 */
+  }
+}
+
+/* 화면 크기가 640px 이상일 때 로고 이미지 크기 조정 */
+@media (min-width: 641px) {
+  .logo {
+    height: 144px; /* 기본 높이 설정 */
+  }
 }
 </style>
