@@ -66,12 +66,10 @@ const handleInputChange = (event) => {
 const fetchUpdatedImage = async (postId) => {
   if (!imageFiles) return;
   if (postId) {
-    console.log(imageFiles.value);
     const uploadedImageUrls = await uploadImagesToSupabase(
       imageFiles.value,
       postId
     );
-    console.log("Uploaded image URLs:", uploadedImageUrls); // 업로드된 이미지 URL 로그 출력
     router.push({ name: "communityBoard" });
   }
 };

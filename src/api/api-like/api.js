@@ -52,7 +52,7 @@ export const unlikePost = async (likeId) => {
 };
 
 export const getPostLike = async (postId) => {
-  if (!postId) return console.log("No PostId");
+  if (!postId) return;
   try {
     const { data, error } = await supabase
       .from("post_likes")

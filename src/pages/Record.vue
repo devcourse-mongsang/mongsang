@@ -124,7 +124,6 @@ const stopListening = () => {
     speechRecognition.stop();
     isListening.value = false;
   }
-  console.log("📝 음성 인식 내용:", diaryStore.content);
 };
 
 //꿈 분석
@@ -181,8 +180,6 @@ const copyAnalysis = () => {
         btnText: "확인",
         isOneBtn: true,
       });
-
-      console.log("분석 결과: ", diaryStore.dreamAnalysis);
     })
     .catch(() => {
       console.error("❌ 분석 결과 복사에 실패했습니다.", error);
@@ -289,7 +286,6 @@ const analyzeEmotion = async () => {
     });
 
     const emotion = response.choices[0].message.content;
-    console.log("분석된 감정:", emotion);
     return emotion;
   } catch (error) {
     console.error("❌감정 분석 중 에러 발생", error);
@@ -382,7 +378,6 @@ onMounted(async () => {
   try {
     const exists = await checkDiaryExists(today);
     isDiaryWritten.value = exists;
-    console.log("오늘 일기 작성 여부:", exists);
   } catch (error) {
     console.error("onMounted에서 에러 발생:", error.message);
   }
